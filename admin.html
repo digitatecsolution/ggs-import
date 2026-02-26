@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,7 +39,7 @@ body{background:var(--ink);color:var(--white);font-family:'Plus Jakarta Sans',sa
 .login-err{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.25);border-radius:9px;padding:11px 14px;font-size:.8rem;color:#fca5a5;margin-top:12px;display:none}
 .login-err.show{display:block}
 
-/* APP */
+/* APP SHELL */
 #app{display:none;min-height:100vh}
 .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar);background:var(--ink2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:300;transition:transform .3s}
 .sb-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
@@ -103,7 +104,7 @@ body{background:var(--ink);color:var(--white);font-family:'Plus Jakarta Sans',sa
 .tbl-search{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:9px 14px;color:var(--white);font-family:'Plus Jakarta Sans';font-size:.82rem;outline:none;min-width:200px;transition:.2s}
 .tbl-search:focus{border-color:rgba(200,137,26,.4)}
 .tbl-search::placeholder{color:var(--muted)}
-.ftab{background:none;border:1px solid var(--border);border-radius:8px;padding:7px 14px;color:var(--muted2);font-size:.75rem;font-weight:600;cursor:pointer;transition:.2s;font-family:'Plus Jakarta Sans'}
+.ftab{background:none;border:1px solid var(--border);border-radius:8px;padding:7px 14px;color:var(--muted2);font-size:.75rem;font-weight:600;cursor:pointer;transition:.2s;font-family:'Plus Jakarta Sans';white-space:nowrap}
 .ftab.on{background:rgba(200,137,26,.1);border-color:rgba(200,137,26,.3);color:var(--gold-bright)}
 table{width:100%;border-collapse:collapse}
 th{padding:12px 16px;text-align:left;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)}
@@ -116,8 +117,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:.62rem;font-weight:700;letter-spacing:.06em}
 .b-active{background:rgba(21,128,61,.15);border:1px solid rgba(21,128,61,.3);color:#4ade80}
 .b-false,.b-hidden{background:rgba(92,89,104,.12);border:1px solid rgba(92,89,104,.3);color:var(--muted2)}
-.b-tech{background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);color:#60a5fa}
-.b-fashion{background:rgba(219,39,119,.1);border:1px solid rgba(219,39,119,.2);color:#f472b6}
+.b-cat{background:rgba(200,137,26,.1);border:1px solid rgba(200,137,26,.2);color:var(--gold-bright)}
 .b-paid,.b-delivered,.b-completed{background:rgba(21,128,61,.15);border:1px solid rgba(21,128,61,.3);color:#4ade80}
 .b-pending{background:rgba(234,179,8,.12);border:1px solid rgba(234,179,8,.3);color:#facc15}
 .b-processing{background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);color:#60a5fa}
@@ -132,7 +132,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 /* MODAL */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);z-index:600;place-items:center;padding:20px}
 .modal-bg.open{display:grid}
-.modal-box{background:var(--card);border:1px solid rgba(200,137,26,.2);border-radius:var(--r3);padding:36px;max-width:580px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+.modal-box{background:var(--card);border:1px solid rgba(200,137,26,.2);border-radius:var(--r3);padding:36px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
 .modal-box::before{content:'';position:absolute;top:0;inset-inline:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold-deep),var(--gold-bright),var(--gold-deep),transparent);border-radius:var(--r3) var(--r3) 0 0}
 .modal-box::-webkit-scrollbar{width:3px}
 .modal-x{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:50%;width:32px;height:32px;display:grid;place-items:center;cursor:pointer;color:var(--muted2);transition:.2s;font-size:.85rem}
@@ -147,10 +147,17 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .mf select option{background:var(--card);color:var(--white)}
 .mf textarea{min-height:80px;resize:vertical}
 .mf-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* CATEGORY COMBO */
+.cat-hint{font-size:.62rem;color:var(--muted);margin-top:5px;line-height:1.6}
+.cat-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.cat-tag-btn{background:rgba(200,137,26,.08);border:1px solid rgba(200,137,26,.2);color:var(--gold-bright);font-size:.68rem;font-weight:700;padding:4px 11px;border-radius:100px;cursor:pointer;transition:.18s;font-family:'Plus Jakarta Sans'}
+.cat-tag-btn:hover{background:rgba(200,137,26,.2)}
+
 .save-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--teal),var(--teal-mid),var(--teal-bright));color:#fff;font-weight:800;font-size:.95rem;border-radius:11px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans';transition:.3s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px}
 .save-btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(18,184,150,.35)}
 
-/* IMAGE UPLOAD */
+/* IMAGE */
 .img-upload-area{border:2px dashed rgba(200,137,26,.25);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:.25s;background:rgba(200,137,26,.03)}
 .img-upload-area:hover,.img-upload-area.drag{border-color:var(--gold);background:rgba(200,137,26,.06)}
 .upload-icon{font-size:2rem;display:block;margin-bottom:8px;opacity:.5}
@@ -159,7 +166,8 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .img-preview{width:100%;max-height:140px;object-fit:cover;border-radius:9px;margin-top:10px;display:none}
 .img-or{text-align:center;font-size:.7rem;color:var(--muted);margin:8px 0}
 .img-url-row{display:flex;gap:8px;align-items:center}
-.img-url-row input{flex:1}
+.img-url-row input{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--white);font-family:'Plus Jakarta Sans';font-size:.86rem;outline:none;transition:.2s}
+.img-url-row input:focus{border-color:rgba(200,137,26,.45)}
 
 /* SETTINGS */
 .settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
@@ -201,6 +209,17 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .rw-hdr{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
 .rw-hdr h3{font-size:1rem;font-weight:800}
 
+/* CATEGORY OVERVIEW CHIPS */
+.cat-overview{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.co-chip{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:.75rem;font-weight:600;color:var(--muted2);display:flex;align-items:center;gap:6px}
+.co-chip strong{color:var(--gold-bright)}
+
+/* SEED PANEL */
+.seed-card{background:var(--card);border:1px solid rgba(200,137,26,.18);border-radius:var(--r3);padding:40px;max-width:560px;margin:0 auto;text-align:center}
+.seed-card h3{font-family:'Playfair Display';font-size:1.8rem;font-weight:900;margin-bottom:10px}
+.seed-card h3 em{color:var(--gold-bright);font-style:italic}
+.seed-card p{font-size:.84rem;color:var(--muted2);line-height:1.8;margin-bottom:28px}
+
 /* MISC */
 .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
 .empty-state .ei{font-size:3rem;display:block;margin-bottom:14px;opacity:.3}
@@ -232,6 +251,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="loginPage">
   <div class="login-box">
     <div class="login-logo">
@@ -240,17 +260,22 @@ tr:hover td{background:rgba(255,255,255,.015)}
     </div>
     <div style="font-size:1.1rem;font-weight:700;margin-bottom:6px">Welcome Back 👋</div>
     <div style="font-size:.78rem;color:var(--muted2);margin-bottom:28px">Sign in to manage your store, products and orders.</div>
-    <div class="lf"><label>Email Address</label><input type="email" id="loginEmail" placeholder="ggsglobalconsult@gmail.com"></div>
-    <div class="lf"><label>Password</label><input type="password" id="loginPass" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="lf"><label>Email Address</label><input type="email" id="loginEmail" placeholder="ggsglobalconsult@gmail.com" autocomplete="email"></div>
+    <div class="lf"><label>Password</label><input type="password" id="loginPass" placeholder="Your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="login-btn" onclick="doLogin()" id="loginBtn">🔐 Sign In to Admin</button>
     <div class="login-err" id="loginErr"></div>
   </div>
 </div>
 
+<!-- APP -->
 <div id="app">
   <div class="sb-overlay" id="sbOverlay" onclick="toggleSB()"></div>
+
   <aside class="sidebar" id="sidebar">
-    <div class="sb-logo"><div class="name">GGS <em>Global</em></div><span class="tag">Admin Dashboard</span></div>
+    <div class="sb-logo">
+      <div class="name">GGS <em>Global</em></div>
+      <span class="tag">Admin Dashboard</span>
+    </div>
     <nav class="sb-nav">
       <div class="sb-sec">Main</div>
       <button class="sb-link active" onclick="goto('overview')" id="nav-overview">📊 Overview</button>
@@ -259,13 +284,16 @@ tr:hover td{background:rgba(255,255,255,.015)}
       <div class="sb-sec">Manage</div>
       <button class="sb-link" onclick="goto('settings')" id="nav-settings">⚙️ Site Settings</button>
       <button class="sb-link" onclick="goto('referrals')" id="nav-referrals">🎁 Referrals</button>
-      <div class="sb-sec">Store</div>
+      <div class="sb-sec">Tools</div>
       <button class="sb-link" onclick="window.open('index.html','_blank')">🏪 View Storefront</button>
       <button class="sb-link" onclick="window.open('https://wa.me/2348142717585','_blank')">💬 WhatsApp</button>
       <button class="sb-link" onclick="goto('seed')" id="nav-seed">🌱 Seed Products</button>
     </nav>
     <div class="sb-foot">
-      <div class="sb-user"><div class="sb-av" id="sbAv">GG</div><div><div class="sb-uname">GGS Admin</div><div class="sb-uemail" id="sbEmail">—</div></div></div>
+      <div class="sb-user">
+        <div class="sb-av" id="sbAv">GG</div>
+        <div><div class="sb-uname">GGS Admin</div><div class="sb-uemail" id="sbEmail">—</div></div>
+      </div>
       <button class="logout-btn" onclick="doLogout()">🚪 Sign Out</button>
     </div>
   </aside>
@@ -278,6 +306,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
       </div>
       <div class="tb-badge"><span class="live-dot"></span> Live Store</div>
     </div>
+
     <div class="content">
 
       <!-- OVERVIEW -->
@@ -295,21 +324,28 @@ tr:hover td{background:rgba(255,255,255,.015)}
           <div class="quick-card" onclick="window.open('index.html','_blank')"><span class="qc-icon">🏪</span><div class="qc-title">View Storefront</div><div class="qc-sub">See live page</div></div>
         </div>
         <div class="recent-wrap">
-          <div class="rw-hdr"><h3>📦 Recent Orders</h3><button class="btn btn-ghost" style="font-size:.75rem;padding:7px 14px" onclick="goto('orders')">View All →</button></div>
+          <div class="rw-hdr">
+            <h3>📦 Recent Orders</h3>
+            <button class="btn btn-ghost" style="font-size:.75rem;padding:7px 14px" onclick="goto('orders')">View All →</button>
+          </div>
           <div id="recentBody"><div class="page-loader"><span class="loader"></span> Loading...</div></div>
         </div>
       </div>
 
       <!-- PRODUCTS -->
       <div class="panel" id="panel-products">
-        <div class="sec-hdr"><h2>Product <em>Catalog</em></h2><button class="btn btn-teal" onclick="openAddModal()">➕ Add Product</button></div>
+        <div class="sec-hdr">
+          <h2>Product <em>Catalog</em></h2>
+          <button class="btn btn-teal" onclick="openAddModal()">➕ Add Product</button>
+        </div>
+        <!-- Live category chips from Firestore data -->
+        <div class="cat-overview" id="catOverview"></div>
         <div class="tbl-wrap">
           <div class="tbl-toolbar">
             <input class="tbl-search" placeholder="🔍 Search products..." oninput="renderProds()" id="pSearch">
-            <button class="ftab on" onclick="setCat(this,'all')">All</button>
-            <button class="ftab" onclick="setCat(this,'tech')">📱 Tech</button>
-            <button class="ftab" onclick="setCat(this,'fashion')">👜 Fashion</button>
-            <button class="ftab" onclick="setCat(this,'hidden')">👁 Hidden</button>
+            <button class="ftab on" onclick="setProdCat(this,'all')">All</button>
+            <div id="prodCatTabs" style="display:contents"></div>
+            <button class="ftab" onclick="setProdCat(this,'hidden')">👁 Hidden</button>
           </div>
           <div id="prodBody"><div class="page-loader"><span class="loader"></span> Loading products...</div></div>
         </div>
@@ -317,7 +353,10 @@ tr:hover td{background:rgba(255,255,255,.015)}
 
       <!-- ORDERS -->
       <div class="panel" id="panel-orders">
-        <div class="sec-hdr"><h2>Order <em>Management</em></h2><button class="btn btn-ghost" onclick="exportCSV()">📥 Export CSV</button></div>
+        <div class="sec-hdr">
+          <h2>Order <em>Management</em></h2>
+          <button class="btn btn-ghost" onclick="exportCSV()">📥 Export CSV</button>
+        </div>
         <div class="tbl-wrap">
           <div class="tbl-toolbar">
             <input class="tbl-search" placeholder="🔍 Search name, email, ref..." oninput="renderOrds()" id="oSearch">
@@ -333,29 +372,48 @@ tr:hover td{background:rgba(255,255,255,.015)}
 
       <!-- SETTINGS -->
       <div class="panel" id="panel-settings">
-        <div class="sec-hdr"><h2>Site <em>Settings</em></h2><button class="btn btn-teal" onclick="saveSettings()">💾 Save All Changes</button></div>
+        <div class="sec-hdr">
+          <h2>Site <em>Settings</em></h2>
+          <button class="btn btn-teal" onclick="saveSettings()">💾 Save All Changes</button>
+        </div>
         <div class="settings-grid">
-          <div class="settings-card"><h3>📣 Announcement Bar</h3><p>Scrolling text at the very top of your storefront.</p><div class="sf"><label>Text</label><textarea id="sAnn" placeholder="⚡ Pre-Order Round 2 LIVE..."></textarea></div></div>
-          <div class="settings-card"><h3>⏱️ Countdown & Urgency</h3><p>Timer and slot numbers shown on storefront.</p>
+          <div class="settings-card">
+            <h3>📣 Announcement Bar</h3>
+            <p>Scrolling text at the very top of your storefront.</p>
+            <div class="sf"><label>Text</label><textarea id="sAnn" placeholder="⚡ Pre-Order Round 2 LIVE..."></textarea></div>
+          </div>
+          <div class="settings-card">
+            <h3>⏱️ Countdown & Urgency</h3>
+            <p>Timer and slot numbers shown on storefront.</p>
             <div class="sf"><label>Deadline</label><input type="datetime-local" id="sDL"></div>
             <div class="sf"><label>Total Slots</label><input type="number" id="sTotal" placeholder="15"></div>
             <div class="sf"><label>Slots Remaining</label><input type="number" id="sRem" placeholder="7"></div>
             <div class="sf"><label>Round Label</label><input type="text" id="sRound" placeholder="Round 2"></div>
           </div>
-          <div class="settings-card"><h3>🚚 Delivery Fees</h3><p>Fees after goods arrive from China.</p>
+          <div class="settings-card">
+            <h3>🚚 Delivery Fees</h3>
+            <p>Fees after goods arrive from China.</p>
             <div class="sf"><label>Port Harcourt Fee (₦)</label><input type="number" id="sPH" placeholder="0"></div>
             <div class="sf"><label>Other States Fee (₦)</label><input type="number" id="sOther" placeholder="5000"></div>
           </div>
-          <div class="settings-card"><h3>📱 Contact</h3><p>Business WhatsApp number site-wide.</p><div class="sf"><label>WhatsApp Number (no +)</label><input type="text" id="sWA" placeholder="2348142717585"></div></div>
-          <div class="settings-card"><h3>🔧 Site Controls</h3><p>Quick site-wide toggles.</p>
-            <div class="toggle-row"><div><div class="tl">Maintenance Mode</div><div class="ts">Show maintenance page</div></div><label class="toggle"><input type="checkbox" id="sMaint"><span class="toggle-slider"></span></label></div>
-            <div class="toggle-row"><div><div class="tl">Accepting Orders</div><div class="ts">Allow checkout</div></div><label class="toggle"><input type="checkbox" id="sAccept" checked><span class="toggle-slider"></span></label></div>
+          <div class="settings-card">
+            <h3>📱 Contact</h3>
+            <p>Business WhatsApp number site-wide.</p>
+            <div class="sf"><label>WhatsApp Number (no +)</label><input type="text" id="sWA" placeholder="2348142717585"></div>
           </div>
-          <div class="settings-card"><h3>🎁 Referral Rewards</h3><p>Cash/credit per referral tier (₦).</p>
-            <div class="sf"><label>🥉 Bronze (1 ref)</label><input type="number" id="rB" placeholder="25000"></div>
-            <div class="sf"><label>🥈 Silver (3 refs)</label><input type="number" id="rS" placeholder="100000"></div>
-            <div class="sf"><label>🥇 Gold (5 refs)</label><input type="number" id="rG" placeholder="200000"></div>
-            <div class="sf"><label>💎 Platinum (10 refs)</label><input type="number" id="rP" placeholder="500000"></div>
+          <div class="settings-card">
+            <h3>🔧 Site Controls</h3>
+            <p>Quick site-wide toggles.</p>
+            <div class="toggle-row"><div><div class="tl">Maintenance Mode</div><div class="ts">Show maintenance page to visitors</div></div><label class="toggle"><input type="checkbox" id="sMaint"><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><div><div class="tl">Accepting Orders</div><div class="ts">Allow customers to checkout</div></div><label class="toggle"><input type="checkbox" id="sAccept" checked><span class="toggle-slider"></span></label></div>
+          </div>
+          <div class="settings-card">
+            <h3>🎁 Referral Rewards</h3>
+            <p>Cash/credit per referral tier (₦).</p>
+            <div class="sf"><label>🥉 Bronze (1 referral)</label><input type="number" id="rB" placeholder="25000"></div>
+            <div class="sf"><label>🥈 Silver (3 referrals)</label><input type="number" id="rS" placeholder="100000"></div>
+            <div class="sf"><label>🥇 Gold (5 referrals)</label><input type="number" id="rG" placeholder="200000"></div>
+            <div class="sf"><label>💎 Platinum (10 referrals)</label><input type="number" id="rP" placeholder="500000"></div>
           </div>
         </div>
       </div>
@@ -369,51 +427,131 @@ tr:hover td{background:rgba(255,255,255,.015)}
         </div>
       </div>
 
-    </div>
+      <!-- SEED -->
+      <div class="panel" id="panel-seed">
+        <div class="sec-hdr"><h2>🌱 Seed <em>Products</em></h2></div>
+        <div class="seed-card">
+          <h3>Seed Initial <em>Catalog</em></h3>
+          <p>This will add 14 pre-built products (8 tech + 6 fashion) to your Firestore database. Run this only <strong>once</strong> when setting up. Existing products with the same IDs will be overwritten.</p>
+          <div style="background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.18);border-radius:10px;padding:14px;margin-bottom:24px;font-size:.78rem;color:#fca5a5;line-height:1.7">
+            ⚠️ <strong>Only run once!</strong> If you have already added products manually, skip this step to avoid overwriting them.
+          </div>
+          <button class="btn btn-teal" style="width:100%;padding:16px;font-size:.95rem;justify-content:center" onclick="seedProducts()">
+            🌱 Seed 14 Products to Firebase
+          </button>
+          <p style="font-size:.72rem;color:var(--muted);margin-top:16px">After seeding, go to Products to see and edit them.</p>
+        </div>
+      </div>
+
+    </div><!-- /content -->
   </main>
-</div>
+</div><!-- /app -->
 
 <!-- PRODUCT MODAL -->
 <div class="modal-bg" id="prodModal">
   <div class="modal-box">
     <button class="modal-x" onclick="closeProdModal()">✕</button>
     <div class="modal-title" id="prodModalTitle">Add New Product</div>
-    <div class="modal-sub">All changes go live on the storefront instantly.</div>
+    <div class="modal-sub">Changes go live on the storefront <strong>instantly</strong>.</div>
     <input type="hidden" id="editId">
+
     <div class="mf-row">
-      <div class="mf"><label>Product Name</label><input type="text" id="pName" placeholder="iPhone 15 Pro Max"></div>
-      <div class="mf"><label>Category</label><select id="pCat"><option value="tech">📱 Tech & Gadgets</option><option value="fashion">👜 Fashion & Lifestyle</option></select></div>
+      <div class="mf">
+        <label>Product Name *</label>
+        <input type="text" id="pName" placeholder="iPhone 15 Pro Max">
+      </div>
+      <div class="mf">
+        <label>Category * — <span style="color:var(--gold-bright);font-weight:400;letter-spacing:0;text-transform:none;font-size:.7rem">type anything!</span></label>
+        <!-- Free-text input with datalist — creates ANY category dynamically -->
+        <input type="text" id="pCat" list="catSuggestions" placeholder="tech, fashion, skincare, bags, gaming…" autocomplete="off">
+        <datalist id="catSuggestions">
+          <option value="tech">
+          <option value="fashion">
+          <option value="skincare">
+          <option value="bags">
+          <option value="shoes">
+          <option value="watches">
+          <option value="gaming">
+          <option value="home">
+          <option value="perfume">
+          <option value="jewelry">
+          <option value="accessories">
+          <option value="general">
+        </datalist>
+        <div class="cat-hint">💡 Typing a new category auto-creates its tab on the storefront. Quick-pick existing:</div>
+        <div class="cat-tags" id="existingCatTags"></div>
+      </div>
     </div>
+
     <div class="mf-row">
-      <div class="mf"><label>Price (₦)</label><input type="number" id="pPrice" placeholder="2100000"></div>
-      <div class="mf"><label>Icon (emoji)</label><input type="text" id="pIcon" placeholder="📱" maxlength="4"></div>
+      <div class="mf">
+        <label>Price (₦) *</label>
+        <input type="number" id="pPrice" placeholder="2100000">
+      </div>
+      <div class="mf">
+        <label>Icon (emoji)</label>
+        <input type="text" id="pIcon" placeholder="📱" maxlength="4">
+      </div>
     </div>
-    <div class="mf"><label>Short Spec / Subtitle</label><input type="text" id="pSpec" placeholder="256GB · All Colors · Factory Sealed"></div>
-    <div class="mf"><label>Variants (one per line)</label><textarea id="pVars" placeholder="Natural Titanium&#10;Blue Titanium&#10;White Titanium"></textarea></div>
+
+    <div class="mf">
+      <label>Short Spec / Subtitle</label>
+      <input type="text" id="pSpec" placeholder="256GB · All Colors · Factory Sealed">
+    </div>
+
+    <div class="mf">
+      <label>Variants (one per line — leave blank if no variants)</label>
+      <textarea id="pVars" placeholder="Natural Titanium&#10;Blue Titanium&#10;White Titanium&#10;Black Titanium"></textarea>
+    </div>
+
     <div class="mf-row">
-      <div class="mf"><label>Badge Type</label><select id="pBadge"><option value="">No Badge</option><option value="hot">🔥 Hot</option><option value="new">🆕 New</option><option value="pick">💰 Pick</option></select></div>
-      <div class="mf"><label>Badge Text</label><input type="text" id="pBadgeTxt" placeholder="🔥 Bestseller"></div>
+      <div class="mf">
+        <label>Badge Type</label>
+        <select id="pBadge">
+          <option value="">No Badge</option>
+          <option value="hot">🔥 Hot</option>
+          <option value="new">🆕 New</option>
+          <option value="pick">💰 Best Pick</option>
+        </select>
+      </div>
+      <div class="mf">
+        <label>Badge Text</label>
+        <input type="text" id="pBadgeTxt" placeholder="🔥 Bestseller">
+      </div>
     </div>
+
     <div class="mf">
       <label>Product Image</label>
-      <div class="img-upload-area" id="uploadArea" onclick="document.getElementById('imgFile').click()" ondragover="ev.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="dropImg(event)">
+      <div class="img-upload-area" id="uploadArea"
+        onclick="document.getElementById('imgFile').click()"
+        ondragover="event.preventDefault();this.classList.add('drag')"
+        ondragleave="this.classList.remove('drag')"
+        ondrop="dropImg(event)">
         <span class="upload-icon">🖼️</span>
-        <div class="upload-text"><strong>Click to upload photo</strong> or drag & drop<br>JPG, PNG max 5MB</div>
-        <img class="img-preview" id="imgPrev">
+        <div class="upload-text"><strong>Click to upload</strong> or drag & drop<br><span style="font-size:.72rem">JPG, PNG max 5MB</span></div>
+        <img class="img-preview" id="imgPrev" alt="">
       </div>
       <input type="file" id="imgFile" accept="image/*" style="display:none" onchange="onFile(this)">
-      <div class="img-or">— or paste image URL below —</div>
+      <div class="img-or">— or paste image URL —</div>
       <div class="img-url-row">
-        <input type="text" class="mf input" id="pImg" placeholder="https://images.unsplash.com/..." style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--white);font-family:'Plus Jakarta Sans';font-size:.86rem;outline:none;width:100%">
+        <input type="text" id="pImg" placeholder="https://images.unsplash.com/…">
         <button class="btn btn-gold" onclick="prevUrl()" style="white-space:nowrap;padding:9px 14px;font-size:.75rem">Preview</button>
       </div>
     </div>
-    <div class="mf"><label>Visibility</label><select id="pActive"><option value="true">✅ Active — Visible on storefront</option><option value="false">👁 Hidden — Not shown to customers</option></select></div>
+
+    <div class="mf">
+      <label>Visibility</label>
+      <select id="pActive">
+        <option value="true">✅ Active — Visible on storefront</option>
+        <option value="false">👁 Hidden — Not shown to customers</option>
+      </select>
+    </div>
+
     <button class="save-btn" onclick="saveProd()" id="saveProdBtn">💾 Save Product to Firebase</button>
   </div>
 </div>
 
-<!-- ORDER MODAL -->
+<!-- ORDER DETAIL MODAL -->
 <div class="modal-bg" id="ordModal">
   <div class="modal-box">
     <button class="modal-x" onclick="closeOrdModal()">✕</button>
@@ -423,7 +561,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
   </div>
 </div>
 
-<!-- CONFIRM -->
+<!-- CONFIRM DIALOG -->
 <div class="confirm-bg" id="confBg">
   <div class="confirm-box">
     <span class="confirm-icon">⚠️</span>
@@ -439,9 +577,9 @@ tr:hover td{background:rgba(255,255,255,.015)}
 <div id="adminToast"><div class="toast-inner" id="toastEl"></div></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDocs, getDoc, addDoc, setDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, doc, getDocs, getDoc, addDoc, setDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyCGU14FHH82Ja5Bx9ZE3ImlePoyKvZLdYg",
@@ -452,256 +590,326 @@ const app = initializeApp({
   appId:"1:688407888100:web:a9f3e068ca9624e3b66cf1"
 });
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db   = getFirestore(app);
 
+// ═══ STATE ═════════════════════════════════════════════
 let prods=[], ords=[], prodCatFilter='all', ordStatusFilter='all', uploadFile=null;
+
 const fmt = n => '₦'+(n||0).toLocaleString('en-NG');
 const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const cap = s => (s||'').replace(/[_-]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 const sLabel = s => ({processing:'🔄 Processing',shipped:'🚚 Shipped',delivered:'🎉 Delivered',paid:'✅ Paid',pending:'⏳ Pending',completed:'✅ Completed',failed:'❌ Failed'}[s]||s);
 
-// AUTH
+// Category icon lookup (extendable)
+const CAT_ICONS = {tech:'📱',fashion:'👜',skincare:'✨',home:'🏠',shoes:'👟',watches:'⌚',bags:'👜',gaming:'🎮',perfume:'🌸',jewelry:'💍',accessories:'💎',general:'📦'};
+function getCatIcon(cat){ return CAT_ICONS[(cat||'').toLowerCase()] || '🏷️'; }
+
+// ═══ AUTH ══════════════════════════════════════════════
 onAuthStateChanged(auth, u => {
-  if(u){
-    document.getElementById('loginPage').style.display='none';
-    document.getElementById('app').style.display='block';
-    document.getElementById('sbEmail').textContent=u.email;
-    document.getElementById('sbAv').textContent=u.email.substring(0,2).toUpperCase();
+  if (u) {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('sbEmail').textContent = u.email;
+    document.getElementById('sbAv').textContent = u.email.substring(0,2).toUpperCase();
     loadAll();
   } else {
-    document.getElementById('loginPage').style.display='flex';
-    document.getElementById('app').style.display='none';
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
   }
 });
 
-window.doLogin = async function(){
-  const em=document.getElementById('loginEmail').value.trim();
-  const pw=document.getElementById('loginPass').value;
-  const btn=document.getElementById('loginBtn');
-  const err=document.getElementById('loginErr');
+window.doLogin = async function() {
+  const em = document.getElementById('loginEmail').value.trim();
+  const pw = document.getElementById('loginPass').value;
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginErr');
   err.classList.remove('show');
-  if(!em||!pw){err.textContent='Please enter email and password.';err.classList.add('show');return;}
-  btn.textContent='Signing in...';btn.disabled=true;
-  try{ await signInWithEmailAndPassword(auth,em,pw); }
-  catch(e){
-    const m={'auth/wrong-password':'Incorrect password.','auth/user-not-found':'No account found.','auth/invalid-email':'Invalid email.','auth/invalid-credential':'Incorrect email or password.','auth/too-many-requests':'Too many attempts. Wait a moment.'};
-    err.textContent=m[e.code]||'Error: '+e.message;err.classList.add('show');
-    btn.textContent='🔐 Sign In to Admin';btn.disabled=false;
+  if (!em||!pw) { err.textContent='Please enter email and password.'; err.classList.add('show'); return; }
+  btn.textContent='Signing in…'; btn.disabled=true;
+  try { await signInWithEmailAndPassword(auth,em,pw); }
+  catch(e) {
+    const m = {'auth/wrong-password':'Incorrect password.','auth/user-not-found':'No account found.','auth/invalid-email':'Invalid email.','auth/invalid-credential':'Incorrect email or password.','auth/too-many-requests':'Too many attempts. Wait a moment.'};
+    err.textContent = m[e.code]||'Error: '+e.message; err.classList.add('show');
+    btn.textContent='🔐 Sign In to Admin'; btn.disabled=false;
+  }
+};
+
+window.doLogout = async function() { await signOut(auth); };
+
+// ═══ LOAD ALL ══════════════════════════════════════════
+async function loadAll() { await loadProds(); await loadOrds(); await loadSettings(); }
+
+// ═══ PRODUCTS ══════════════════════════════════════════
+async function loadProds() {
+  try {
+    const snap = await getDocs(collection(db,'products'));
+    prods = snap.docs.map(d=>({fid:d.id,...d.data()})).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+    renderProds();
+    buildCatFilterTabs();
+    buildCatOverview();
+    buildExistingCatTags();
+    document.getElementById('sProd').textContent = prods.filter(p=>p.active!==false).length;
+  } catch(e) {
+    document.getElementById('prodBody').innerHTML = `<div class="empty-state"><span class="ei">❌</span><p>${esc(e.message)}</p></div>`;
   }
 }
 
-window.doLogout = async function(){ await signOut(auth); }
-
-// LOAD
-async function loadAll(){ await loadProds(); await loadOrds(); await loadSettings(); }
-
-// PRODUCTS
-async function loadProds(){
-  try{
-    const snap=await getDocs(collection(db,'products'));
-    prods=snap.docs.map(d=>({fid:d.id,...d.data()})).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
-    renderProds();
-    document.getElementById('sProd').textContent=prods.filter(p=>p.active!==false).length;
-  }catch(e){ document.getElementById('prodBody').innerHTML=`<div class="empty-state"><span class="ei">❌</span><p>${e.message}</p></div>`; }
+// Dynamic filter tabs built from actual Firestore categories
+function buildCatFilterTabs() {
+  const cats = [...new Set(prods.map(p=>p.category).filter(Boolean))].sort();
+  const container = document.getElementById('prodCatTabs');
+  if (!container) return;
+  container.innerHTML = cats.map(cat =>
+    `<button class="ftab" onclick="setProdCat(this,'${cat}')">${getCatIcon(cat)} ${cap(cat)}</button>`
+  ).join('');
 }
 
-window.renderProds = function(){
-  const q=(document.getElementById('pSearch')?.value||'').toLowerCase();
-  let list=[...prods];
-  if(prodCatFilter==='tech') list=list.filter(p=>p.category==='tech');
-  else if(prodCatFilter==='fashion') list=list.filter(p=>p.category==='fashion');
-  else if(prodCatFilter==='hidden') list=list.filter(p=>p.active===false);
-  if(q) list=list.filter(p=>p.name?.toLowerCase().includes(q)||p.spec?.toLowerCase().includes(q));
-  const b=document.getElementById('prodBody');
-  if(!list.length){b.innerHTML='<div class="empty-state"><span class="ei">📭</span><p>No products found.</p></div>';return;}
-  b.innerHTML=`<table><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody>${list.map(p=>`
+// Category overview chips
+function buildCatOverview() {
+  const cats = [...new Set(prods.map(p=>p.category).filter(Boolean))].sort();
+  const el = document.getElementById('catOverview');
+  if (!el) return;
+  el.innerHTML = cats.map(cat => {
+    const active = prods.filter(p=>p.category===cat && p.active!==false).length;
+    const hidden = prods.filter(p=>p.category===cat && p.active===false).length;
+    return `<div class="co-chip">${getCatIcon(cat)} ${cap(cat)} <strong>${active} active</strong>${hidden?` · ${hidden} hidden`:''}`;
+  }).join('');
+}
+
+// Quick-pick existing category tags inside add/edit modal
+function buildExistingCatTags() {
+  const cats = [...new Set(prods.map(p=>p.category).filter(Boolean))].sort();
+  const el = document.getElementById('existingCatTags');
+  if (!el) return;
+  el.innerHTML = cats.map(cat =>
+    `<button type="button" class="cat-tag-btn" onclick="document.getElementById('pCat').value='${cat}';document.getElementById('pCat').focus()">${getCatIcon(cat)} ${cap(cat)}</button>`
+  ).join('');
+}
+
+window.renderProds = function() {
+  const q = (document.getElementById('pSearch')?.value||'').toLowerCase();
+  let list = [...prods];
+  if (prodCatFilter==='hidden') list = list.filter(p=>p.active===false);
+  else if (prodCatFilter!=='all') list = list.filter(p=>(p.category||'').toLowerCase()===prodCatFilter.toLowerCase());
+  if (q) list = list.filter(p=>(p.name||'').toLowerCase().includes(q)||(p.spec||'').toLowerCase().includes(q)||(p.category||'').toLowerCase().includes(q));
+  const b = document.getElementById('prodBody');
+  if (!list.length) { b.innerHTML='<div class="empty-state"><span class="ei">📭</span><p>No products found.</p></div>'; return; }
+  b.innerHTML = `<table><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+    ${list.map(p=>`
     <tr>
       <td><div style="display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;border-radius:8px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;overflow:hidden">${p.img?`<img src="${esc(p.img)}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`:p.icon||'📦'}</div>
+        <div style="width:44px;height:44px;border-radius:8px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;overflow:hidden">
+          ${p.img?`<img src="${esc(p.img)}" style="width:100%;height:100%;object-fit:cover;border-radius:8px" alt="">`:p.icon||'📦'}
+        </div>
         <div><div class="td-name">${esc(p.name)}</div><div class="td-sub">${esc((p.spec||'').substring(0,55))}${(p.spec||'').length>55?'…':''}</div></div>
       </div></td>
-      <td><span class="badge b-${p.category}">${p.category==='tech'?'📱 Tech':'👜 Fashion'}</span></td>
+      <td><span class="badge b-cat">${getCatIcon(p.category)} ${cap(p.category||'general')}</span></td>
       <td><div class="td-price">${fmt(p.price)}</div></td>
       <td><span class="badge ${p.active!==false?'b-active':'b-hidden'}">${p.active!==false?'✅ Active':'👁 Hidden'}</span></td>
       <td><div class="act-row">
         <button class="act-btn act-edit" onclick="openEdit('${p.fid}')" title="Edit">✏️</button>
-        <button class="act-btn act-eye" onclick="toggleVis('${p.fid}',${p.active!==false})" title="Toggle">${p.active!==false?'👁':'🚫'}</button>
+        <button class="act-btn act-eye" onclick="toggleVis('${p.fid}',${p.active!==false})" title="Toggle visibility">${p.active!==false?'🙈':'👁'}</button>
         <button class="act-btn act-del" onclick="confDel('${p.fid}','${esc(p.name)}')" title="Delete">🗑️</button>
       </div></td>
-    </tr>`).join('')}</tbody></table>`;
-}
+    </tr>`).join('')}
+  </tbody></table>`;
+};
 
-window.setCat = function(el,cat){
+window.setProdCat = function(el, cat) {
   document.querySelectorAll('#panel-products .ftab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');prodCatFilter=cat;renderProds();
-}
+  el.classList.add('on'); prodCatFilter=cat; renderProds();
+};
 
-window.openAddModal = function(){
-  document.getElementById('prodModalTitle').textContent='Add New Product';
-  document.getElementById('editId').value='';
-  ['pName','pSpec','pVars','pBadgeTxt','pImg'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('pCat').value='tech';
-  document.getElementById('pPrice').value='';
-  document.getElementById('pIcon').value='';
-  document.getElementById('pBadge').value='';
-  document.getElementById('pActive').value='true';
-  document.getElementById('imgPrev').style.display='none';
-  uploadFile=null;
+window.openAddModal = function() {
+  document.getElementById('prodModalTitle').textContent = 'Add New Product';
+  document.getElementById('editId').value = '';
+  ['pName','pSpec','pVars','pBadgeTxt','pImg','pCat'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pPrice').value = '';
+  document.getElementById('pIcon').value = '';
+  document.getElementById('pBadge').value = '';
+  document.getElementById('pActive').value = 'true';
+  document.getElementById('imgPrev').style.display = 'none';
+  uploadFile = null;
+  buildExistingCatTags();
   document.getElementById('prodModal').classList.add('open');
-}
+};
 
-window.openEdit = function(fid){
-  const p=prods.find(x=>x.fid===fid);if(!p)return;
-  document.getElementById('prodModalTitle').textContent='Edit Product';
-  document.getElementById('editId').value=fid;
-  document.getElementById('pName').value=p.name||'';
-  document.getElementById('pCat').value=p.category||'tech';
-  document.getElementById('pPrice').value=p.price||'';
-  document.getElementById('pIcon').value=p.icon||'';
-  document.getElementById('pSpec').value=p.spec||'';
-  document.getElementById('pVars').value=(p.variants||[]).join('\n');
-  document.getElementById('pBadge').value=p.badge||'';
-  document.getElementById('pBadgeTxt').value=p.badgeText||'';
-  document.getElementById('pImg').value=p.img||'';
-  document.getElementById('pActive').value=p.active===false?'false':'true';
-  const prev=document.getElementById('imgPrev');
-  if(p.img){prev.src=p.img;prev.style.display='block';}else{prev.style.display='none';}
-  uploadFile=null;
+window.openEdit = function(fid) {
+  const p = prods.find(x=>x.fid===fid); if (!p) return;
+  document.getElementById('prodModalTitle').textContent = 'Edit Product';
+  document.getElementById('editId').value = fid;
+  document.getElementById('pName').value = p.name||'';
+  document.getElementById('pCat').value = p.category||'';
+  document.getElementById('pPrice').value = p.price||'';
+  document.getElementById('pIcon').value = p.icon||'';
+  document.getElementById('pSpec').value = p.spec||'';
+  document.getElementById('pVars').value = (p.variants||[]).join('\n');
+  document.getElementById('pBadge').value = p.badge||'';
+  document.getElementById('pBadgeTxt').value = p.badgeText||'';
+  document.getElementById('pImg').value = p.img||'';
+  document.getElementById('pActive').value = p.active===false?'false':'true';
+  const prev = document.getElementById('imgPrev');
+  if (p.img) { prev.src=p.img; prev.style.display='block'; } else { prev.style.display='none'; }
+  uploadFile = null;
+  buildExistingCatTags();
   document.getElementById('prodModal').classList.add('open');
-}
+};
 
-window.closeProdModal = function(){document.getElementById('prodModal').classList.remove('open');}
+window.closeProdModal = function() { document.getElementById('prodModal').classList.remove('open'); };
 
-window.saveProd = async function(){
-  const btn=document.getElementById('saveProdBtn');
-  const fid=document.getElementById('editId').value;
-  const name=document.getElementById('pName').value.trim();
-  const price=parseInt(document.getElementById('pPrice').value);
-  if(!name){toast('Product name required','error');return;}
-  if(!price||price<0){toast('Enter valid price','error');return;}
-  btn.innerHTML='<span class="loader"></span> Saving...';btn.disabled=true;
-  let img=document.getElementById('pImg').value.trim();
-  if(uploadFile){
-    img=await new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(uploadFile);});
+window.saveProd = async function() {
+  const btn = document.getElementById('saveProdBtn');
+  const fid = document.getElementById('editId').value;
+  const name = document.getElementById('pName').value.trim();
+  const price = parseInt(document.getElementById('pPrice').value);
+  // Category: free-text, normalise to lowercase, replace spaces with hyphens
+  const rawCat = document.getElementById('pCat').value.trim().toLowerCase().replace(/\s+/g,'-');
+  if (!name) { toast('Product name is required','error'); return; }
+  if (!price||price<0) { toast('Enter a valid price','error'); return; }
+  if (!rawCat) { toast('Please enter a category (e.g. tech, fashion, skincare)','error'); return; }
+  btn.innerHTML = '<span class="loader"></span> Saving…'; btn.disabled=true;
+  let img = document.getElementById('pImg').value.trim();
+  if (uploadFile) {
+    img = await new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(uploadFile);});
   }
-  const vars=document.getElementById('pVars').value.split('\n').map(v=>v.trim()).filter(Boolean);
-  const data={name,price,category:document.getElementById('pCat').value,icon:document.getElementById('pIcon').value||'📦',spec:document.getElementById('pSpec').value.trim(),variants:vars,badge:document.getElementById('pBadge').value,badgeText:document.getElementById('pBadgeTxt').value.trim(),img,active:document.getElementById('pActive').value==='true',updatedAt:serverTimestamp()};
-  try{
-    if(fid){await updateDoc(doc(db,'products',fid),data);toast('✅ Product updated!','success');}
-    else{data.createdAt=serverTimestamp();data.sortOrder=prods.length;await addDoc(collection(db,'products'),data);toast('✅ Product added!','success');}
-    closeProdModal();loadProds();
-  }catch(e){toast('Error: '+e.message,'error');}
-  btn.innerHTML='💾 Save Product to Firebase';btn.disabled=false;
-}
+  const vars = document.getElementById('pVars').value.split('\n').map(v=>v.trim()).filter(Boolean);
+  const data = {
+    name, price, category: rawCat,
+    icon: document.getElementById('pIcon').value||'📦',
+    spec: document.getElementById('pSpec').value.trim(),
+    variants: vars,
+    badge: document.getElementById('pBadge').value,
+    badgeText: document.getElementById('pBadgeTxt').value.trim(),
+    img, active: document.getElementById('pActive').value==='true',
+    updatedAt: serverTimestamp()
+  };
+  try {
+    if (fid) { await updateDoc(doc(db,'products',fid),data); toast('✅ Product updated!','success'); }
+    else { data.createdAt=serverTimestamp(); data.sortOrder=prods.length; await addDoc(collection(db,'products'),data); toast('✅ Product added!','success'); }
+    closeProdModal(); loadProds();
+  } catch(e) { toast('Error: '+e.message,'error'); }
+  btn.innerHTML='💾 Save Product to Firebase'; btn.disabled=false;
+};
 
-window.toggleVis = async function(fid,isActive){
+window.toggleVis = async function(fid, isActive) {
   await updateDoc(doc(db,'products',fid),{active:!isActive});
-  toast(isActive?'👁 Product hidden':'✅ Product visible','info');
+  toast(isActive?'🙈 Product hidden':'👁 Product visible','info');
   loadProds();
-}
+};
 
-window.confDel = function(fid,name){
+window.confDel = function(fid, name) {
   document.getElementById('confTitle').textContent='Delete Product?';
   document.getElementById('confMsg').textContent=`"${name}" will be permanently removed.`;
-  document.getElementById('confOk').onclick=async()=>{closeConf();await deleteDoc(doc(db,'products',fid));toast('🗑️ Product deleted','info');loadProds();};
+  document.getElementById('confOk').onclick = async()=>{closeConf();await deleteDoc(doc(db,'products',fid));toast('🗑️ Product deleted','info');loadProds();};
   document.getElementById('confBg').classList.add('open');
-}
+};
 
-// IMAGE
-window.onFile = function(input){
-  const f=input.files[0];if(!f)return;
-  if(f.size>5*1024*1024){toast('Max 5MB','error');return;}
-  uploadFile=f;
-  const r=new FileReader();r.onload=e=>{const p=document.getElementById('imgPrev');p.src=e.target.result;p.style.display='block';};r.readAsDataURL(f);
-  toast('📸 Image ready','info');
-}
-window.dropImg = function(e){
-  e.preventDefault();document.getElementById('uploadArea').classList.remove('drag');
-  const f=e.dataTransfer.files[0];
-  if(f){const dt=new DataTransfer();dt.items.add(f);document.getElementById('imgFile').files=dt.files;onFile(document.getElementById('imgFile'));}
-}
-window.prevUrl = function(){
-  const u=document.getElementById('pImg').value.trim();if(!u)return;
-  const p=document.getElementById('imgPrev');p.src=u;p.style.display='block';uploadFile=null;
-}
+// ═══ IMAGE HANDLING ═════════════════════════════════════
+window.onFile = function(input) {
+  const f = input.files[0]; if (!f) return;
+  if (f.size>5*1024*1024) { toast('Max file size is 5MB','error'); return; }
+  uploadFile = f;
+  const r = new FileReader();
+  r.onload = e => { const p=document.getElementById('imgPrev'); p.src=e.target.result; p.style.display='block'; };
+  r.readAsDataURL(f);
+  toast('📸 Image ready to upload','info');
+};
 
-// ORDERS
-async function loadOrds(){
-  try{
-    const snap=await getDocs(query(collection(db,'orders'),orderBy('createdAt','desc')));
-    ords=snap.docs.map(d=>({fid:d.id,...d.data()}));
-    renderOrds();renderRecent();
-    document.getElementById('sOrd').textContent=ords.length;
-    const rev=ords.filter(o=>o.status==='paid'||o.status==='completed').reduce((s,o)=>s+(o.totalPaid||0),0);
-    document.getElementById('sRev').textContent=fmt(rev);
-    const pend=ords.filter(o=>!o.orderStatus||o.orderStatus==='processing'||o.orderStatus==='pending').length;
-    document.getElementById('sPend').textContent=pend;
-    if(pend>0){document.getElementById('pendingBadge').textContent=pend;document.getElementById('pendingBadge').style.display='inline-flex';}
+window.dropImg = function(e) {
+  e.preventDefault(); document.getElementById('uploadArea').classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f) { const dt=new DataTransfer(); dt.items.add(f); document.getElementById('imgFile').files=dt.files; onFile(document.getElementById('imgFile')); }
+};
+
+window.prevUrl = function() {
+  const u = document.getElementById('pImg').value.trim(); if (!u) return;
+  const p = document.getElementById('imgPrev'); p.src=u; p.style.display='block'; uploadFile=null;
+};
+
+// ═══ ORDERS ═════════════════════════════════════════════
+async function loadOrds() {
+  try {
+    const snap = await getDocs(query(collection(db,'orders'),orderBy('createdAt','desc')));
+    ords = snap.docs.map(d=>({fid:d.id,...d.data()}));
+    renderOrds(); renderRecent();
+    document.getElementById('sOrd').textContent = ords.length;
+    const rev = ords.filter(o=>['paid','completed','delivered'].includes(o.status)||['paid','completed','delivered'].includes(o.orderStatus))
+                    .reduce((s,o)=>s+(o.totalPaid||o.total||0),0);
+    document.getElementById('sRev').textContent = fmt(rev);
+    const pend = ords.filter(o=>!o.orderStatus||['processing','pending'].includes(o.orderStatus)).length;
+    document.getElementById('sPend').textContent = pend;
+    if (pend>0) { document.getElementById('pendingBadge').textContent=pend; document.getElementById('pendingBadge').style.display='inline-flex'; }
     buildRefs();
-  }catch(e){
-    document.getElementById('ordBody').innerHTML='<div class="empty-state"><span class="ei">📦</span><p>No orders yet. Customers will appear here after checkout.</p></div>';
-    document.getElementById('recentBody').innerHTML='<div class="empty-state"><span class="ei">📦</span><p>No orders yet.</p></div>';
-    document.getElementById('refBody').innerHTML='<div class="empty-state"><span class="ei">🎁</span><p>No referral data yet.</p></div>';
+  } catch(e) {
+    ['ordBody','recentBody','refBody'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.innerHTML='<div class="empty-state"><span class="ei">📦</span><p>No orders yet. Customers will appear here after checkout.</p></div>';
+    });
   }
 }
 
-window.renderOrds = function(){
-  const q=(document.getElementById('oSearch')?.value||'').toLowerCase();
-  let list=[...ords];
-  if(ordStatusFilter!=='all') list=list.filter(o=>(o.orderStatus||o.status)===ordStatusFilter);
-  if(q) list=list.filter(o=>(`${o.customer?.firstName} ${o.customer?.lastName} ${o.customer?.email} ${o.txRef}`).toLowerCase().includes(q));
-  const b=document.getElementById('ordBody');
-  if(!list.length){b.innerHTML='<div class="empty-state"><span class="ei">📦</span><p>No orders found.</p></div>';return;}
-  b.innerHTML=`<table><thead><tr><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Update</th><th>Actions</th></tr></thead><tbody>${list.map(o=>{
-    const n=(`${o.customer?.firstName||''} ${o.customer?.lastName||''}`).trim()||'Unknown';
-    const st=o.orderStatus||o.status||'pending';
-    const items=(o.items||[]).reduce((s,i)=>s+(i.qty||1),0);
-    const dt=o.createdAt?.toDate?o.createdAt.toDate().toLocaleDateString('en-NG'):'—';
-    return `<tr>
-      <td><div class="td-name">${esc(n)}</div><div class="td-sub">${esc(o.customer?.phone||'')} · ${esc(o.customer?.state||'')}</div><div class="td-sub" style="opacity:.6;margin-top:2px">${dt}</div></td>
-      <td><div class="td-sub">${items} item${items>1?'s':''}</div><div class="td-sub">${esc((o.shippingMethod||'').substring(0,18))}</div></td>
-      <td><div class="td-price">${fmt(o.totalPaid||0)}</div></td>
-      <td><span class="badge b-${st}">${sLabel(st)}</span></td>
-      <td><select class="status-sel" onchange="updOrdStatus('${o.fid}',this.value)">
-        <option value="processing" ${st==='processing'?'selected':''}>🔄 Processing</option>
-        <option value="shipped" ${st==='shipped'?'selected':''}>🚚 Shipped</option>
-        <option value="delivered" ${st==='delivered'?'selected':''}>🎉 Delivered</option>
-        <option value="paid" ${st==='paid'?'selected':''}>✅ Paid</option>
-      </select></td>
-      <td><div class="act-row">
-        <button class="act-btn act-edit" onclick="viewOrd('${o.fid}')" title="View">👁</button>
-        <button class="act-btn act-wa" onclick="waMsg('${o.fid}')" title="WhatsApp">💬</button>
-      </div></td>
-    </tr>`;
-  }).join('')}</tbody></table>`;
+window.renderOrds = function() {
+  const q = (document.getElementById('oSearch')?.value||'').toLowerCase();
+  let list = [...ords];
+  if (ordStatusFilter!=='all') list = list.filter(o=>(o.orderStatus||o.status)===ordStatusFilter);
+  if (q) list = list.filter(o=>(`${o.customer?.firstName||''} ${o.customer?.lastName||''} ${o.customer?.email||''} ${o.txRef||''}`).toLowerCase().includes(q));
+  const b = document.getElementById('ordBody');
+  if (!list.length) { b.innerHTML='<div class="empty-state"><span class="ei">📦</span><p>No orders found.</p></div>'; return; }
+  b.innerHTML = `<table><thead><tr><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Update</th><th>Actions</th></tr></thead><tbody>
+    ${list.map(o=>{
+      const n = (`${o.customer?.firstName||''} ${o.customer?.lastName||''}`).trim()||'Unknown';
+      const st = o.orderStatus||o.status||'pending';
+      const items = (o.items||[]).reduce((s,i)=>s+(i.qty||1),0);
+      const dt = o.createdAt?.toDate?o.createdAt.toDate().toLocaleDateString('en-NG'):'—';
+      return `<tr>
+        <td><div class="td-name">${esc(n)}</div><div class="td-sub">${esc(o.customer?.phone||'')} · ${esc(o.customer?.state||'')}</div><div class="td-sub" style="opacity:.6;margin-top:2px">${dt}</div></td>
+        <td><div class="td-sub">${items} item${items!==1?'s':''}</div><div class="td-sub">${esc((o.shippingMethod||o.shipping||'').substring(0,20))}</div></td>
+        <td><div class="td-price">${fmt(o.totalPaid||o.total||0)}</div></td>
+        <td><span class="badge b-${st}">${sLabel(st)}</span></td>
+        <td><select class="status-sel" onchange="updOrdStatus('${o.fid}',this.value)">
+          <option value="processing" ${st==='processing'?'selected':''}>🔄 Processing</option>
+          <option value="shipped" ${st==='shipped'?'selected':''}>🚚 Shipped</option>
+          <option value="delivered" ${st==='delivered'?'selected':''}>🎉 Delivered</option>
+          <option value="paid" ${st==='paid'?'selected':''}>✅ Paid</option>
+        </select></td>
+        <td><div class="act-row">
+          <button class="act-btn act-edit" onclick="viewOrd('${o.fid}')" title="View Details">👁</button>
+          <button class="act-btn act-wa" onclick="waMsg('${o.fid}')" title="WhatsApp">💬</button>
+        </div></td>
+      </tr>`;
+    }).join('')}
+  </tbody></table>`;
+};
+
+function renderRecent() {
+  const b = document.getElementById('recentBody');
+  if (!ords.length) { b.innerHTML='<div class="empty-state"><span class="ei">📦</span><p>No orders yet.</p></div>'; return; }
+  b.innerHTML = `<table><thead><tr><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>
+    ${ords.slice(0,8).map(o=>{
+      const n = (`${o.customer?.firstName||''} ${o.customer?.lastName||''}`).trim()||'Unknown';
+      const st = o.orderStatus||o.status||'pending';
+      const dt = o.createdAt?.toDate?o.createdAt.toDate().toLocaleDateString('en-NG'):'—';
+      return `<tr><td><div class="td-name">${esc(n)}</div><div class="td-sub">${esc(o.customer?.state||'')}</div></td><td><div class="td-price" style="font-size:.95rem">${fmt(o.totalPaid||o.total||0)}</div></td><td><span class="badge b-${st}">${sLabel(st)}</span></td><td style="font-size:.75rem;color:var(--muted2)">${dt}</td></tr>`;
+    }).join('')}
+  </tbody></table>`;
 }
 
-function renderRecent(){
-  const b=document.getElementById('recentBody');
-  if(!ords.length){b.innerHTML='<div class="empty-state"><span class="ei">📦</span><p>No orders yet.</p></div>';return;}
-  b.innerHTML=`<table><thead><tr><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>${ords.slice(0,6).map(o=>{
-    const n=(`${o.customer?.firstName||''} ${o.customer?.lastName||''}`).trim()||'Unknown';
-    const st=o.orderStatus||o.status||'pending';
-    const dt=o.createdAt?.toDate?o.createdAt.toDate().toLocaleDateString('en-NG'):'—';
-    return `<tr><td><div class="td-name">${esc(n)}</div><div class="td-sub">${esc(o.customer?.state||'')}</div></td><td><div class="td-price" style="font-size:.95rem">${fmt(o.totalPaid||0)}</div></td><td><span class="badge b-${st}">${sLabel(st)}</span></td><td style="font-size:.75rem;color:var(--muted2)">${dt}</td></tr>`;
-  }).join('')}</tbody></table>`;
-}
-
-window.setOrdStatus = function(el,s){
+window.setOrdStatus = function(el, s) {
   document.querySelectorAll('#panel-orders .ftab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');ordStatusFilter=s;renderOrds();
-}
+  el.classList.add('on'); ordStatusFilter=s; renderOrds();
+};
 
-window.updOrdStatus = async function(fid,status){
+window.updOrdStatus = async function(fid, status) {
   await updateDoc(doc(db,'orders',fid),{orderStatus:status});
-  const o=ords.find(x=>x.fid===fid);if(o) o.orderStatus=status;
+  const o = ords.find(x=>x.fid===fid); if (o) o.orderStatus=status;
   toast('📦 Status updated: '+sLabel(status),'success');
-}
+};
 
-window.viewOrd = function(fid){
-  const o=ords.find(x=>x.fid===fid);if(!o)return;
-  const n=(`${o.customer?.firstName||''} ${o.customer?.lastName||''}`).trim();
-  document.getElementById('ordRef').textContent='Ref: '+(o.txRef||fid);
-  const items=(o.items||[]).map(i=>`<div class="od-row"><span>${esc(i.name)} ×${i.qty} (${esc(i.variant||'')})</span><span>${fmt((i.price||0)*i.qty)}</span></div>`).join('');
+window.viewOrd = function(fid) {
+  const o = ords.find(x=>x.fid===fid); if (!o) return;
+  const n = (`${o.customer?.firstName||''} ${o.customer?.lastName||''}`).trim();
+  document.getElementById('ordRef').textContent = 'Ref: '+(o.txRef||fid);
+  const items = (o.items||[]).map(i=>`<div class="od-row"><span>${esc(i.name)} ×${i.qty} (${esc(i.variant||'')})</span><span>${fmt((i.price||0)*i.qty)}</span></div>`).join('');
   document.getElementById('ordDetail').innerHTML=`
     <div class="od">
       <div class="od-row"><span>👤 Customer</span><span>${esc(n)}</span></div>
@@ -709,128 +917,175 @@ window.viewOrd = function(fid){
       <div class="od-row"><span>📱 Phone</span><span>${esc(o.customer?.phone||'—')}</span></div>
       <div class="od-row"><span>📍 State</span><span>${esc(o.customer?.state||'—')}</span></div>
       <div class="od-row"><span>🏠 Address</span><span>${esc(o.customer?.address||'—')}</span></div>
-      <div class="od-row"><span>🚚 Shipping</span><span>${esc(o.shippingMethod||'—')}</span></div>
-      <div class="od-row"><span>🎁 Referral</span><span>${esc(o.referralCode||'None')}</span></div>
+      <div class="od-row"><span>🚚 Shipping</span><span>${esc(o.shippingMethod||o.shipping||'—')}</span></div>
+      <div class="od-row"><span>🎁 Referral</span><span>${esc(o.referralCode||o.referral||'None')}</span></div>
     </div>
     <div style="margin:16px 0 6px;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:700">Items Ordered</div>
-    <div class="od">${items}<div class="od-row" style="margin-top:6px;padding-top:10px;border-top:1px solid var(--border)"><span style="font-weight:700;color:var(--white)">💰 Total Paid</span><span style="color:var(--teal-bright);font-size:1.1rem;font-weight:800">${fmt(o.totalPaid||0)}</span></div></div>
+    <div class="od">
+      ${items}
+      <div class="od-row" style="margin-top:6px;padding-top:10px;border-top:1px solid var(--border)">
+        <span style="font-weight:700;color:var(--white)">💰 Total Paid</span>
+        <span style="color:var(--teal-bright);font-size:1.1rem;font-weight:800">${fmt(o.totalPaid||o.total||0)}</span>
+      </div>
+    </div>
     <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-teal" onclick="waMsg('${fid}')">💬 WhatsApp Customer</button>
       <button class="btn btn-ghost" onclick="closeOrdModal()">Close</button>
     </div>`;
   document.getElementById('ordModal').classList.add('open');
-}
-window.closeOrdModal = function(){document.getElementById('ordModal').classList.remove('open');}
+};
 
-window.waMsg = function(fid){
-  const o=ords.find(x=>x.fid===fid);if(!o)return;
-  const ph=(o.customer?.phone||'').replace(/\D/g,'');
-  if(!ph){toast('No phone on this order','error');return;}
-  const msg=`Hi ${o.customer?.firstName||'Customer'}, this is GGS Global Consult.\n\nFollowing up on your order (Ref: ${o.txRef||fid}).\nTotal Paid: ${fmt(o.totalPaid||0)}\n\nItems: ${(o.items||[]).map(i=>`${i.name}×${i.qty}`).join(', ')}\n\nKindly reach out if you have any questions. Thank you!`;
-  window.open(`https://wa.me/${ph}?text=${encodeURIComponent(msg)}`, '_blank');
-}
+window.closeOrdModal = function() { document.getElementById('ordModal').classList.remove('open'); };
 
-window.exportCSV = function(){
+window.waMsg = function(fid) {
+  const o = ords.find(x=>x.fid===fid); if (!o) return;
+  const ph = (o.customer?.phone||'').replace(/\D/g,'');
+  if (!ph) { toast('No phone number on this order','error'); return; }
+  const msg = `Hi ${o.customer?.firstName||'Customer'}, this is GGS Global Consult.\n\nFollowing up on your order (Ref: ${o.txRef||fid}).\nTotal Paid: ${fmt(o.totalPaid||o.total||0)}\n\nItems: ${(o.items||[]).map(i=>`${i.name}×${i.qty}`).join(', ')}\n\nKindly reach out if you have any questions. Thank you! 🙏`;
+  window.open(`https://wa.me/${ph}?text=${encodeURIComponent(msg)}`,'_blank');
+};
+
+window.exportCSV = function() {
   const rows=[['Name','Email','Phone','State','Address','Items','Total (₦)','Shipping','Status','Referral','Date']];
   ords.forEach(o=>rows.push([
     `${o.customer?.firstName||''} ${o.customer?.lastName||''}`.trim(),
-    o.customer?.email||'',o.customer?.phone||'',o.customer?.state||'',o.customer?.address||'',
+    o.customer?.email||'', o.customer?.phone||'', o.customer?.state||'', o.customer?.address||'',
     (o.items||[]).map(i=>`${i.name}×${i.qty}(${i.variant})`).join('; '),
-    o.totalPaid||0,o.shippingMethod||'',o.orderStatus||o.status||'',
-    o.referralCode||'',o.createdAt?.toDate?o.createdAt.toDate().toLocaleDateString():''
+    o.totalPaid||o.total||0, o.shippingMethod||o.shipping||'', o.orderStatus||o.status||'',
+    o.referralCode||o.referral||'',
+    o.createdAt?.toDate?o.createdAt.toDate().toLocaleDateString():''
   ]));
-  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download=`GGS_Orders_${new Date().toISOString().slice(0,10)}.csv`;a.click();
-  toast('📥 Exported!','success');
+  const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download = `GGS_Orders_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('📥 CSV exported successfully!','success');
+};
+
+// ═══ SETTINGS ═══════════════════════════════════════════
+async function loadSettings() {
+  try {
+    const s = (await getDoc(doc(db,'settings','site-config'))).data()||{};
+    document.getElementById('sAnn').value   = s.announcementText||'';
+    if (s.countdownDeadline?.toDate) document.getElementById('sDL').value = s.countdownDeadline.toDate().toISOString().slice(0,16);
+    document.getElementById('sTotal').value = s.urgencySlots?.total||15;
+    document.getElementById('sRem').value   = s.urgencySlots?.remaining||7;
+    document.getElementById('sRound').value = s.currentRound||'Round 2';
+    document.getElementById('sPH').value    = s.deliveryFeePH||0;
+    document.getElementById('sOther').value = s.deliveryFeeOther||5000;
+    document.getElementById('sWA').value    = s.whatsappNumber||'2348142717585';
+    document.getElementById('sMaint').checked  = s.maintenanceMode||false;
+    document.getElementById('sAccept').checked = s.acceptingOrders!==false;
+    document.getElementById('rB').value = s.referralTiers?.bronze||25000;
+    document.getElementById('rS').value = s.referralTiers?.silver||100000;
+    document.getElementById('rG').value = s.referralTiers?.gold||200000;
+    document.getElementById('rP').value = s.referralTiers?.platinum||500000;
+  } catch(e) { /* settings doc may not exist yet on first run */ }
 }
 
-// SETTINGS
-async function loadSettings(){
-  try{
-    const s=(await getDoc(doc(db,'settings','site-config'))).data()||{};
-    document.getElementById('sAnn').value=s.announcementText||'';
-    if(s.countdownDeadline?.toDate) document.getElementById('sDL').value=s.countdownDeadline.toDate().toISOString().slice(0,16);
-    document.getElementById('sTotal').value=s.urgencySlots?.total||15;
-    document.getElementById('sRem').value=s.urgencySlots?.remaining||7;
-    document.getElementById('sRound').value=s.currentRound||'Round 2';
-    document.getElementById('sPH').value=s.deliveryFeePH||0;
-    document.getElementById('sOther').value=s.deliveryFeeOther||5000;
-    document.getElementById('sWA').value=s.whatsappNumber||'2348142717585';
-    document.getElementById('sMaint').checked=s.maintenanceMode||false;
-    document.getElementById('sAccept').checked=s.acceptingOrders!==false;
-    document.getElementById('rB').value=s.referralTiers?.bronze||25000;
-    document.getElementById('rS').value=s.referralTiers?.silver||100000;
-    document.getElementById('rG').value=s.referralTiers?.gold||200000;
-    document.getElementById('rP').value=s.referralTiers?.platinum||500000;
-  }catch(e){}
-}
+window.saveSettings = async function() {
+  const dl = document.getElementById('sDL').value;
+  const data = {
+    announcementText: document.getElementById('sAnn').value.trim(),
+    urgencySlots: { total:parseInt(document.getElementById('sTotal').value)||15, remaining:parseInt(document.getElementById('sRem').value)||7 },
+    countdownDeadline: dl ? new Date(dl) : null,
+    currentRound: document.getElementById('sRound').value.trim(),
+    deliveryFeePH: parseInt(document.getElementById('sPH').value)||0,
+    deliveryFeeOther: parseInt(document.getElementById('sOther').value)||5000,
+    whatsappNumber: document.getElementById('sWA').value.trim(),
+    maintenanceMode: document.getElementById('sMaint').checked,
+    acceptingOrders: document.getElementById('sAccept').checked,
+    referralTiers: { bronze:parseInt(document.getElementById('rB').value)||25000, silver:parseInt(document.getElementById('rS').value)||100000, gold:parseInt(document.getElementById('rG').value)||200000, platinum:parseInt(document.getElementById('rP').value)||500000 },
+    updatedAt: serverTimestamp()
+  };
+  try { await setDoc(doc(db,'settings','site-config'),data,{merge:true}); toast('✅ Settings saved!','success'); }
+  catch(e) { toast('Error: '+e.message,'error'); }
+};
 
-window.saveSettings = async function(){
-  const dl=document.getElementById('sDL').value;
-  const data={announcementText:document.getElementById('sAnn').value.trim(),urgencySlots:{total:parseInt(document.getElementById('sTotal').value)||15,remaining:parseInt(document.getElementById('sRem').value)||7},countdownDeadline:dl?new Date(dl):null,currentRound:document.getElementById('sRound').value.trim(),deliveryFeePH:parseInt(document.getElementById('sPH').value)||0,deliveryFeeOther:parseInt(document.getElementById('sOther').value)||5000,whatsappNumber:document.getElementById('sWA').value.trim(),maintenanceMode:document.getElementById('sMaint').checked,acceptingOrders:document.getElementById('sAccept').checked,referralTiers:{bronze:parseInt(document.getElementById('rB').value)||25000,silver:parseInt(document.getElementById('rS').value)||100000,gold:parseInt(document.getElementById('rG').value)||200000,platinum:parseInt(document.getElementById('rP').value)||500000},updatedAt:serverTimestamp()};
-  try{await setDoc(doc(db,'settings','site-config'),data,{merge:true});toast('✅ Settings saved!','success');}
-  catch(e){toast('Error: '+e.message,'error');}
+// ═══ REFERRALS ══════════════════════════════════════════
+function buildRefs() {
+  const map = {};
+  ords.forEach(o=>{
+    const c = (o.referralCode||o.referral||'').trim();
+    if (c && c!=='none') {
+      if (!map[c]) map[c]={code:c,count:0,val:0};
+      map[c].count++;
+      map[c].val += o.totalPaid||o.total||0;
+    }
+  });
+  const list = Object.values(map).sort((a,b)=>b.count-a.count);
+  const b = document.getElementById('refBody');
+  if (!list.length) { b.innerHTML='<div class="empty-state"><span class="ei">🎁</span><p>No referrals recorded yet.</p></div>'; return; }
+  b.innerHTML = `<table><thead><tr><th>Referral Code</th><th>Orders</th><th>Total Value</th><th>Tier</th></tr></thead><tbody>
+    ${list.map(r=>{
+      const t = r.count>=10?'💎 Platinum':r.count>=5?'🥇 Gold':r.count>=3?'🥈 Silver':'🥉 Bronze';
+      return `<tr><td><div class="td-name">${esc(r.code)}</div></td><td>${r.count} order${r.count!==1?'s':''}</td><td><div class="td-price" style="font-size:.95rem">${fmt(r.val)}</div></td><td>${t}</td></tr>`;
+    }).join('')}
+  </tbody></table>`;
 }
+window.filterRefs = function(v) {
+  document.querySelectorAll('#refBody tbody tr').forEach(r=>{ r.style.display=r.textContent.toLowerCase().includes(v.toLowerCase())?'':'none'; });
+};
 
-// REFERRALS
-function buildRefs(){
-  const map={};
-  ords.forEach(o=>{const c=(o.referralCode||'').trim();if(c&&c!=='none'&&c!==''){if(!map[c])map[c]={code:c,count:0,val:0};map[c].count++;map[c].val+=o.totalPaid||0;}});
-  const list=Object.values(map).sort((a,b)=>b.count-a.count);
-  const b=document.getElementById('refBody');
-  if(!list.length){b.innerHTML='<div class="empty-state"><span class="ei">🎁</span><p>No referrals recorded yet.</p></div>';return;}
-  b.innerHTML=`<table><thead><tr><th>Referral Code</th><th>Orders</th><th>Total Value</th><th>Tier Reached</th></tr></thead><tbody>${list.map(r=>{
-    const t=r.count>=10?'💎 Platinum':r.count>=5?'🥇 Gold':r.count>=3?'🥈 Silver':'🥉 Bronze';
-    return `<tr><td><div class="td-name">${esc(r.code)}</div></td><td>${r.count} order${r.count>1?'s':''}</td><td><div class="td-price" style="font-size:.95rem">${fmt(r.val)}</div></td><td>${t}</td></tr>`;
-  }).join('')}</tbody></table>`;
-}
-window.filterRefs = function(v){document.querySelectorAll('#refBody tbody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(v.toLowerCase())?'':'none';});}
-
-// NAVIGATION
-window.goto = function(p){
-  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+// ═══ NAVIGATION ══════════════════════════════════════════
+window.goto = function(p) {
+  document.querySelectorAll('#app .panel').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.sb-link').forEach(x=>x.classList.remove('active'));
   document.getElementById('panel-'+p)?.classList.add('active');
   document.getElementById('nav-'+p)?.classList.add('active');
-  const t={overview:'Overview',products:'Products',orders:'Orders',settings:'Site Settings',referrals:'Referral Tracker'};
-  document.getElementById('topTitle').textContent=t[p]||p;
-  if(window.innerWidth<900){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('show');}
-}
+  const titles = {overview:'Overview',products:'Products',orders:'Orders',settings:'Site Settings',referrals:'Referral Tracker',seed:'Seed Products'};
+  document.getElementById('topTitle').textContent = titles[p]||p;
+  if (window.innerWidth<900) { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sbOverlay').classList.remove('show'); }
+};
 
-window.toggleSB = function(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOverlay').classList.toggle('show');}
-window.closeConf = function(){document.getElementById('confBg').classList.remove('open');}
+window.toggleSB = function() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sbOverlay').classList.toggle('show');
+};
 
-window.toast = function(msg,type='info'){
-  const t=document.getElementById('adminToast');const el=document.getElementById('toastEl');
-  el.textContent=msg;el.className='toast-inner t-'+type;t.style.opacity='1';
-  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity='0';},3000);
-}
+window.closeConf = function() { document.getElementById('confBg').classList.remove('open'); };
 
-// SEED PRODUCTS — run window.seedProducts() from browser console once
-window.seedProducts = async function(){
-  const defs=[
-    {id:'T01',name:'iPhone 15 Pro Max',spec:'256GB · All Colors · Factory Sealed · Unlocked · Verified Authentic',price:2100000,icon:'📱',badge:'hot',badgeText:'🔥 Bestseller',variants:['Natural Titanium','Blue Titanium','White Titanium','Black Titanium'],img:'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&q=80',category:'tech',active:true,sortOrder:1},
-    {id:'T02',name:'iPhone 14 Pro',spec:'256GB · All Colors · Factory Sealed · Verified Authentic',price:1350000,icon:'📱',badge:'pick',badgeText:'💰 Budget Pick',variants:['Space Black','Gold','Silver','Deep Purple'],img:'https://images.unsplash.com/photo-1664478546384-d57ffe74a78c?w=600&q=80',category:'tech',active:true,sortOrder:2},
-    {id:'T03',name:'Samsung S24 Ultra',spec:'All Storage Variants · Unlocked · Original Factory Seal',price:1450000,icon:'📱',badge:'',badgeText:'',variants:['Titanium Black','Titanium Gray','Titanium Violet','Titanium Yellow'],img:'https://images.unsplash.com/photo-1707148029295-0b24dc8c45e6?w=600&q=80',category:'tech',active:true,sortOrder:3},
-    {id:'T04',name:'MacBook Air M2',spec:'256GB SSD · 8GB RAM · All Colors · Original Apple Seal',price:1850000,icon:'💻',badge:'hot',badgeText:'⭐ Top Rated',variants:['Midnight','Starlight','Space Gray','Silver'],img:'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=600&q=80',category:'tech',active:true,sortOrder:4},
-    {id:'T05',name:'iPad Air 11" M2',spec:'128GB · WiFi · All Colors · Sealed Apple Box',price:950000,icon:'📲',badge:'',badgeText:'',variants:['Blue','Purple','Starlight','Space Gray'],img:'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600&q=80',category:'tech',active:true,sortOrder:5},
-    {id:'T06',name:'AirPods Pro 2nd Gen',spec:'USB-C Charging Case · Adaptive Audio · Original Apple Seal',price:180000,icon:'🎧',badge:'',badgeText:'',variants:['White (Standard)'],img:'https://images.unsplash.com/photo-1588156979435-379b9d802b0a?w=600&q=80',category:'tech',active:true,sortOrder:6},
-    {id:'T07',name:'Apple Watch Series 9',spec:'45mm · GPS · All Colors · Sealed Apple Box',price:320000,icon:'⌚',badge:'new',badgeText:'🆕 New',variants:['Midnight','Starlight','Product Red','Pink'],img:'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=600&q=80',category:'tech',active:true,sortOrder:7},
-    {id:'T08',name:'Anker PowerBank 20K',spec:'20,000mAh · PD Fast Charge · Original Packaging',price:45000,icon:'⚡',badge:'pick',badgeText:'Add-On',variants:['Black','White'],img:'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=600&q=80',category:'tech',active:true,sortOrder:8},
-    {id:'F01',name:'Designer Crossbody Bag',spec:'50+ styles · Premium leather finish · All colors',price:70000,icon:'👜',badge:'new',badgeText:'💎 New Drop',variants:['Black','Brown','Beige/Nude','White','Red','Navy Blue'],img:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80',category:'fashion',active:true,sortOrder:9},
-    {id:'F02',name:'Luxury Tote Bag',spec:'Structured & soft styles · Multiple sizes · Premium finish',price:78000,icon:'👜',badge:'',badgeText:'',variants:['Black','Brown','Beige','Caramel','Grey'],img:'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=600&q=80',category:'fashion',active:true,sortOrder:10},
-    {id:'F03',name:'Premium Ladies Heels',spec:'Kitten · Block · Stiletto styles · Sizes 36–42',price:48000,icon:'👠',badge:'hot',badgeText:'🔥 High Demand',variants:['Size 36','Size 37','Size 38','Size 39','Size 40','Size 41','Size 42'],img:'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=80',category:'fashion',active:true,sortOrder:11},
+// ═══ TOAST ═══════════════════════════════════════════════
+window.toast = function(msg, type='info') {
+  const t = document.getElementById('adminToast');
+  const el = document.getElementById('toastEl');
+  el.textContent = msg; el.className='toast-inner t-'+type; t.style.opacity='1';
+  clearTimeout(t._t); t._t = setTimeout(()=>{ t.style.opacity='0'; }, 3200);
+};
+
+// ═══ SEED — run once to populate Firestore ═══════════════
+window.seedProducts = async function() {
+  const defs = [
+    {id:'T01',name:'iPhone 15 Pro Max',spec:'256GB · All Colors · Factory Sealed · Unlocked',price:2100000,icon:'📱',badge:'hot',badgeText:'🔥 Bestseller',variants:['Natural Titanium','Blue Titanium','White Titanium','Black Titanium'],img:'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&q=80',category:'tech',active:true,sortOrder:1},
+    {id:'T02',name:'iPhone 14 Pro',spec:'256GB · All Colors · Factory Sealed',price:1350000,icon:'📱',badge:'pick',badgeText:'💰 Budget Pick',variants:['Space Black','Gold','Silver','Deep Purple'],img:'https://images.unsplash.com/photo-1664478546384-d57ffe74a78c?w=600&q=80',category:'tech',active:true,sortOrder:2},
+    {id:'T03',name:'Samsung S24 Ultra',spec:'All Storage · Unlocked · Original Seal',price:1450000,icon:'📱',badge:'',badgeText:'',variants:['Titanium Black','Titanium Gray','Titanium Violet','Titanium Yellow'],img:'https://images.unsplash.com/photo-1707148029295-0b24dc8c45e6?w=600&q=80',category:'tech',active:true,sortOrder:3},
+    {id:'T04',name:'MacBook Air M2',spec:'256GB SSD · 8GB RAM · All Colors · Apple Seal',price:1850000,icon:'💻',badge:'hot',badgeText:'⭐ Top Rated',variants:['Midnight','Starlight','Space Gray','Silver'],img:'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=600&q=80',category:'tech',active:true,sortOrder:4},
+    {id:'T05',name:'iPad Air 11" M2',spec:'128GB · WiFi · All Colors · Sealed Box',price:950000,icon:'📲',badge:'',badgeText:'',variants:['Blue','Purple','Starlight','Space Gray'],img:'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600&q=80',category:'tech',active:true,sortOrder:5},
+    {id:'T06',name:'AirPods Pro 2nd Gen',spec:'USB-C · Adaptive Audio · Apple Seal',price:180000,icon:'🎧',badge:'',badgeText:'',variants:['White (Standard)'],img:'https://images.unsplash.com/photo-1588156979435-379b9d802b0a?w=600&q=80',category:'tech',active:true,sortOrder:6},
+    {id:'T07',name:'Apple Watch Series 9',spec:'45mm · GPS · All Colors · Sealed',price:320000,icon:'⌚',badge:'new',badgeText:'🆕 New',variants:['Midnight','Starlight','Product Red','Pink'],img:'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=600&q=80',category:'tech',active:true,sortOrder:7},
+    {id:'T08',name:'Anker PowerBank 20K',spec:'20,000mAh · PD Fast Charge · Original Pack',price:45000,icon:'⚡',badge:'pick',badgeText:'Add-On',variants:['Black','White'],img:'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=600&q=80',category:'tech',active:true,sortOrder:8},
+    {id:'F01',name:'Designer Crossbody Bag',spec:'50+ styles · Premium leather · All colors',price:70000,icon:'👜',badge:'new',badgeText:'💎 New Drop',variants:['Black','Brown','Beige/Nude','White','Red','Navy Blue'],img:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80',category:'fashion',active:true,sortOrder:9},
+    {id:'F02',name:'Luxury Tote Bag',spec:'Structured & soft styles · Premium finish',price:78000,icon:'👜',badge:'',badgeText:'',variants:['Black','Brown','Beige','Caramel','Grey'],img:'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=600&q=80',category:'fashion',active:true,sortOrder:10},
+    {id:'F03',name:'Premium Ladies Heels',spec:'Kitten · Block · Stiletto · Sizes 36–42',price:48000,icon:'👠',badge:'hot',badgeText:'🔥 High Demand',variants:['Size 36','Size 37','Size 38','Size 39','Size 40','Size 41','Size 42'],img:'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=80',category:'fashion',active:true,sortOrder:11},
     {id:'F04',name:'Ladies Flats & Loafers',spec:'Leather loafers · Ballet flats · Sizes 36–42',price:38000,icon:'👟',badge:'',badgeText:'',variants:['Size 36','Size 37','Size 38','Size 39','Size 40','Size 41','Size 42'],img:'https://images.unsplash.com/photo-1603808033192-082d6919d3e1?w=600&q=80',category:'fashion',active:true,sortOrder:12},
     {id:'F05',name:"Men's Premium Oxfords",spec:'Genuine leather · Sizes 40–47 · Black & Brown',price:55000,icon:'👞',badge:'',badgeText:'',variants:['Size 40 – Black','Size 41 – Black','Size 42 – Black','Size 43 – Black','Size 40 – Brown','Size 41 – Brown','Size 42 – Brown'],img:'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&q=80',category:'fashion',active:true,sortOrder:13},
-    {id:'F06',name:'Evening Clutch / Mini Bag',spec:'Embellished · Plain leather · Chain strap · All colors',price:38000,icon:'💼',badge:'',badgeText:'',variants:['Black – Plain Leather','Gold – Embellished','Silver – Embellished','Nude – Plain','Red – Chain Strap'],img:'https://images.unsplash.com/photo-1566150905458-1bf1fb99e4b8?w=600&q=80',category:'fashion',active:true,sortOrder:14},
+    {id:'F06',name:'Evening Clutch / Mini Bag',spec:'Embellished · Plain leather · Chain strap',price:38000,icon:'💼',badge:'',badgeText:'',variants:['Black – Plain Leather','Gold – Embellished','Silver – Embellished','Nude – Plain','Red – Chain Strap'],img:'https://images.unsplash.com/photo-1566150905458-1bf1fb99e4b8?w=600&q=80',category:'fashion',active:true,sortOrder:14},
   ];
-  for(const p of defs){
-    const {id,...d}=p;d.createdAt=serverTimestamp();d.updatedAt=serverTimestamp();
-    await setDoc(doc(db,'products',id),d);
+  toast('🌱 Seeding 14 products to Firebase…','info');
+  try {
+    for (const p of defs) {
+      const {id,...d} = p;
+      d.createdAt = serverTimestamp();
+      d.updatedAt = serverTimestamp();
+      await setDoc(doc(db,'products',id),d);
+    }
+    toast('✅ 14 products seeded successfully!','success');
+    loadProds();
+  } catch(e) {
+    toast('Seed error: '+e.message,'error');
   }
-  toast('✅ 14 products seeded!','success');loadProds();
-}
+};
 </script>
 </body>
-</html>
+</html> 

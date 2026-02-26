@@ -14,7 +14,7 @@
 <!-- ═══ FIREBASE SDK ═══ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCGU14FHH82Ja5Bx9ZE3ImlePoyKvZLdYg",
@@ -32,22 +32,19 @@ const db = getFirestore(app);
 // ═══ LOAD PRODUCTS FROM FIRESTORE — FULLY DYNAMIC CATEGORIES ═══
 const productsRef = collection(db, "products");
 onSnapshot(productsRef, (snapshot) => {
-  // Group products by whatever category name exists in Firestore
-  const categoryMap = {}; // { 'tech': [...], 'fashion': [...], 'skincare': [...], etc }
-
+  // Group products by category
+  const categoryMap = {};
   snapshot.forEach((doc) => {
     const p = { id: doc.id, ...doc.data() };
-    if (p.active === false) return; // skip disabled products
+    if (p.active === false) return; // skip hidden products
     const cat = (p.category || 'general').toLowerCase().trim();
     if (!categoryMap[cat]) categoryMap[cat] = [];
     categoryMap[cat].push(p);
   });
-
   // Sort each category by order field
   Object.keys(categoryMap).forEach(cat => {
-    categoryMap[cat].sort((a,b) => (a.order||0) - (b.order||0));
+    categoryMap[cat].sort((a, b) => (a.sortOrder || a.order || 0) - (b.sortOrder || b.order || 0));
   });
-
   window.allProducts = categoryMap;
   renderCatalog();
 }, (error) => {
@@ -64,10 +61,14 @@ window.saveOrderToFirebase = async function(flwResponse, first, last, email, pho
       flutterwaveId: flwResponse.transaction_id || '',
       customer: { firstName: first, lastName: last, email, phone, state, address: addr },
       items: window.cart.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, variant: i.variant })),
+      totalPaid: total,
       total: total,
+      shippingMethod: shipping,
       shipping: shipping,
+      referralCode: ref || '',
       referral: ref || '',
       status: 'paid',
+      orderStatus: 'processing',
       createdAt: serverTimestamp()
     });
     console.log("✅ Order saved to Firestore");
@@ -250,22 +251,18 @@ nav a:hover{color:var(--white);background:rgba(255,255,255,.06)}
 .mobile-search-wrap .ms-icon{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--cream-sub);font-size:1.1rem;}
 
 /* ── CATALOG LOADING STATE ── */
-.catalog-loading{
-  grid-column:1/-1;text-align:center;padding:80px 24px;
-}
-.loading-spinner{
-  display:inline-block;width:48px;height:48px;
-  border:3px solid rgba(200,137,26,.15);
-  border-top-color:var(--gold-bright);
-  border-radius:50%;
-  animation:spin .8s linear infinite;
-  margin-bottom:20px;
-}
+.catalog-loading{grid-column:1/-1;text-align:center;padding:80px 24px;}
+.loading-spinner{display:inline-block;width:48px;height:48px;border:3px solid rgba(200,137,26,.15);border-top-color:var(--gold-bright);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:20px;}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{color:var(--muted2);font-size:.88rem}
 
-.cat-bar{display:flex;gap:6px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:6px;width:fit-content;margin:0 auto 20px;}
-.cat-tab{border:none;background:transparent;color:var(--muted2);font-family:'Plus Jakarta Sans';font-size:.83rem;font-weight:600;padding:10px 26px;border-radius:10px;cursor:pointer;transition:.28s;}
+/* ── CATEGORY TABS — scrollable on mobile ── */
+.cat-bar-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;margin-bottom:20px;}
+.cat-bar-wrap::-webkit-scrollbar{height:3px}
+.cat-bar-wrap::-webkit-scrollbar-thumb{background:rgba(200,137,26,.3);border-radius:3px}
+.cat-bar{display:flex;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:6px;width:fit-content;min-width:100%;}
+.cat-tab{border:none;background:transparent;color:var(--muted2);font-family:'Plus Jakarta Sans';font-size:.83rem;font-weight:600;padding:10px 26px;border-radius:10px;cursor:pointer;transition:.28s;white-space:nowrap;flex-shrink:0;}
+.cat-tab:hover{color:var(--white);background:rgba(255,255,255,.05)}
 .cat-tab.active{background:linear-gradient(135deg,var(--gold-deep),var(--gold-mid),var(--gold-bright));color:var(--ink);}
 
 .search-results-banner{display:none;background:rgba(200,137,26,.06);border:1px solid rgba(200,137,26,.15);border-radius:var(--r);padding:14px 20px;margin-bottom:28px;font-size:.84rem;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
@@ -310,6 +307,9 @@ nav a:hover{color:var(--white);background:rgba(255,255,255,.06)}
 .no-results{grid-column:1/-1;text-align:center;padding:64px 24px;color:var(--muted);}
 .no-results .nr-icon{font-size:3.5rem;display:block;margin-bottom:16px;opacity:.4}
 .no-results p{font-size:.9rem}
+
+/* SEARCH RESULTS PANEL */
+#panel-search .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px;}
 
 .ship-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:18px}
 .ship-card{background:#fff;border:1.5px solid var(--cream2);border-radius:var(--r3);padding:34px 28px;position:relative;overflow:hidden;transition:.35s;box-shadow:0 2px 24px rgba(0,0,0,.05);}
@@ -803,14 +803,19 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
       <h2 class="sec-h">Shop at <em>Factory Cost Price</em></h2>
       <p class="sec-p">Exact supplier cost prices — zero markup. Shipping is separate and paid on arrival by weight. Add to cart and pay securely via Flutterwave.</p>
     </div>
+
     <!-- DYNAMIC CATEGORY TABS — auto-built from Firebase -->
-    <div class="cat-bar reveal" id="catBar">
-      <div style="padding:8px 16px;color:var(--muted);font-size:.8rem">Loading...</div>
+    <div class="cat-bar-wrap reveal">
+      <div class="cat-bar" id="catBar">
+        <div style="padding:8px 16px;color:var(--muted);font-size:.8rem;white-space:nowrap">Loading categories…</div>
+      </div>
     </div>
+
     <div class="search-results-banner" id="searchBanner">
       <span class="srb-text" id="searchBannerText">Showing results for "..."</span>
       <button class="srb-clear" onclick="clearSearch()">✕ Clear Search</button>
     </div>
+
     <!-- DYNAMIC PANELS — auto-built from Firebase categories -->
     <div id="catalogPanels">
       <div class="catalog-loading">
@@ -818,6 +823,7 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
         <div class="loading-text">Loading products from Firebase…</div>
       </div>
     </div>
+
     <p style="text-align:center;margin-top:30px;font-size:.83rem;color:var(--muted2)">
       50+ more styles available. <a href="https://wa.me/2348142717585?text=Please%20send%20me%20the%20full%20catalog" target="_blank" style="color:var(--gold-bright);text-decoration:none;font-weight:700">Request full catalog on WhatsApp →</a>
     </p>
@@ -1158,77 +1164,81 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
 </div>
 
 <script>
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 // CONFIG
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 const FW_KEY = 'FLWPUBK-14a050e1c6e7309deb9d08c19c4e4013-X';
 const WA = '2348142717585';
 const BIZ = 'GGS Global Consult';
 
-// ═══════════════════════════════
-// GLOBAL STATE — products come from Firebase via module above
-// ═══════════════════════════════
-window.allProducts = {}; // dynamic — filled by Firebase onSnapshot
+// ═══════════════════════════════════════════
+// GLOBAL STATE
+// ═══════════════════════════════════════════
+window.allProducts = {};  // filled by Firebase onSnapshot in the module above
 window.cart = [];
+let activeCat = null;     // currently-active tab key
+let searchTimeout;
 
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 // UTILITIES
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 const fmt = n => '₦' + Number(n).toLocaleString('en-NG');
 
-// ═══════════════════════════════
-// CATEGORY DISPLAY NAMES & ICONS
-// Add any new category here to give it a pretty name/icon
-// If not listed, it auto-formats nicely anyway
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
+// CATEGORY META — icon + display label
+// Add any new category key here for a polished label.
+// Unknown categories get auto-formatted.
+// ═══════════════════════════════════════════
 const CAT_META = {
   tech:      { label: 'Tech & Gadgets',      icon: '📱' },
-  fashion:   { label: 'Fashion & Lifestyle', icon: '👜' },
+  fashion:   { label: 'Fashion',             icon: '👜' },
   skincare:  { label: 'Skincare & Beauty',   icon: '✨' },
   home:      { label: 'Home & Living',       icon: '🏠' },
   shoes:     { label: 'Shoes',               icon: '👟' },
   watches:   { label: 'Watches',             icon: '⌚' },
   bags:      { label: 'Bags',                icon: '👜' },
   gaming:    { label: 'Gaming',              icon: '🎮' },
+  perfume:   { label: 'Perfumes',            icon: '🌸' },
+  jewelry:   { label: 'Jewellery',           icon: '💍' },
   general:   { label: 'General',             icon: '📦' },
 };
 
 function getCatMeta(cat) {
-  if (CAT_META[cat]) return CAT_META[cat];
-  // Auto-format unknown categories: "home_living" → "Home Living"
-  const label = cat.replace(/[_-]/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+  if (!cat) return { label: 'General', icon: '📦' };
+  const key = cat.toLowerCase().trim();
+  if (CAT_META[key]) return CAT_META[key];
+  // Auto-format unknown categories nicely
+  const label = key.replace(/[_-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   return { label, icon: '🏷️' };
 }
 
-// ═══════════════════════════════
-// RENDER CATALOG — fully dynamic
-// ═══════════════════════════════
-let activeCat = null; // tracks which tab is open
-
+// ═══════════════════════════════════════════
+// RENDER CATALOG — called every time Firebase sends an update
+// ═══════════════════════════════════════════
 function renderCatalog() {
   const categoryMap = window.allProducts || {};
   const cats = Object.keys(categoryMap);
 
-  // ── Build Tab Bar ──
+  // ── 1. Maintain active tab ──────────────────
+  // Keep the current tab if it still exists; otherwise default to first or 'all'
+  if (!activeCat || (!categoryMap[activeCat] && activeCat !== 'all')) {
+    activeCat = cats.length ? cats[0] : 'all';
+  }
+
+  // ── 2. Build Tab Bar ────────────────────────
   const catBar = document.getElementById('catBar');
   if (!catBar) return;
-
-  // Decide active cat: keep current if still exists, else first cat
-  if (!activeCat || !categoryMap[activeCat]) {
-    activeCat = cats[0] || 'all';
-  }
 
   let tabsHTML = '';
   cats.forEach(cat => {
     const meta = getCatMeta(cat);
-    const isActive = cat === activeCat;
-    tabsHTML += `<button class="cat-tab${isActive ? ' active' : ''}" onclick="switchTab(this,'${cat}')">${meta.icon} ${meta.label}</button>`;
+    tabsHTML += `<button class="cat-tab${cat === activeCat ? ' active' : ''}" onclick="switchTab('${cat}')">${meta.icon} ${meta.label}</button>`;
   });
-  // Always add "All Products" tab at the end
-  tabsHTML += `<button class="cat-tab${activeCat === 'all' ? ' active' : ''}" onclick="switchTab(this,'all')">✨ All Products</button>`;
+  // "All Products" tab always last
+  tabsHTML += `<button class="cat-tab${activeCat === 'all' ? ' active' : ''}" onclick="switchTab('all')">✨ All Products</button>`;
   catBar.innerHTML = tabsHTML;
 
-  // ── Build Panels ──
+  // ── 3. Build Panels ─────────────────────────
   const panelsContainer = document.getElementById('catalogPanels');
   if (!panelsContainer) return;
 
@@ -1237,9 +1247,8 @@ function renderCatalog() {
   // One panel per category
   cats.forEach(cat => {
     const products = categoryMap[cat] || [];
-    const isActive = cat === activeCat;
     panelsHTML += `
-      <div class="panel${isActive ? ' active' : ''}" id="panel-${cat}">
+      <div class="panel${cat === activeCat ? ' active' : ''}" id="panel-${cat}">
         <div class="prod-grid">
           ${products.length
             ? products.map(p => buildProductCard(p, cat)).join('')
@@ -1249,49 +1258,62 @@ function renderCatalog() {
       </div>`;
   });
 
-  // All Products panel
-  const allProds = cats.flatMap(cat => (categoryMap[cat] || []).map(p => ({...p, cat})));
+  // "All Products" panel — flat list of every active product
+  const allProds = cats.flatMap(cat => (categoryMap[cat] || []).map(p => ({ ...p, _cat: cat })));
   panelsHTML += `
     <div class="panel${activeCat === 'all' ? ' active' : ''}" id="panel-all">
       <div class="prod-grid">
         ${allProds.length
-          ? allProds.map(p => buildProductCard(p, p.cat)).join('')
-          : '<div class="no-results"><span class="nr-icon">📭</span><p>No products yet.</p></div>'
+          ? allProds.map(p => buildProductCard(p, p._cat)).join('')
+          : '<div class="no-results"><span class="nr-icon">📭</span><p>No products yet. Check back soon!</p></div>'
         }
       </div>
     </div>`;
 
+  // Search results panel (always present, hidden by default)
+  panelsHTML += `<div class="panel" id="panel-search"><div class="prod-grid" id="searchGrid"></div></div>`;
+
   panelsContainer.innerHTML = panelsHTML;
 }
 
-// ═══════════════════════════════
-// SWITCH TAB — works for any category
-// ═══════════════════════════════
-function switchTab(el, cat) {
+// ═══════════════════════════════════════════
+// SWITCH TAB — single authoritative function
+// ═══════════════════════════════════════════
+function switchTab(cat) {
   activeCat = cat;
+  // Update tab styles
   document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  if (el) el.classList.add('active');
-  const panel = document.getElementById('panel-' + cat);
-  if (panel) panel.classList.add('active');
+  // Match by onclick text
+  document.querySelectorAll('.cat-tab').forEach(t => {
+    if (t.getAttribute('onclick') === `switchTab('${cat}')`) t.classList.add('active');
+  });
+  // Show the right panel
+  document.querySelectorAll('#catalogPanels .panel').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('panel-' + cat);
+  if (target) target.classList.add('active');
+  // Hide search banner
+  document.getElementById('searchBanner').classList.remove('show');
 }
 
-// ═══════════════════════════════
-// BUILD PRODUCT CARD — works for any category
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
+// BUILD PRODUCT CARD
+// ═══════════════════════════════════════════
 function buildProductCard(p, cat) {
-  const badgeClass = p.badge ? `b-${p.badge}` : '';
   const meta = getCatMeta(cat);
+  const badgeClass = p.badge ? `b-${p.badge}` : '';
+  const safeId = p.id.replace(/'/g, "\\'");
+  const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  const safeIcon = (p.icon || '📦').replace(/'/g, "\\'");
   return `
-    <div class="prod-card" data-id="${p.id}">
+    <div class="prod-card" data-id="${p.id}" data-cat="${cat}">
       ${p.badge ? `<div class="pc-badge ${badgeClass}">${p.badgeText || ''}</div>` : ''}
       <div class="pc-wish" title="Save to wishlist">🤍</div>
       <div class="pc-img">
-        ${p.img ? `<img src="${p.img}" alt="${p.name}" loading="lazy">` : `<span class="pc-emoji">${p.icon || '📦'}</span>`}
+        ${p.img ? `<img src="${p.img}" alt="${safeName}" loading="lazy">` : `<span class="pc-emoji">${p.icon || '📦'}</span>`}
       </div>
       <div class="pc-body">
         <div class="pc-category">${meta.icon} ${meta.label}</div>
-        <div class="pc-name">${p.name}</div>
+        <div class="pc-name">${p.name || ''}</div>
         <div class="pc-spec">${p.spec || ''}</div>
         <div class="pc-rating">
           <span class="pc-stars">★★★★★</span>
@@ -1302,41 +1324,41 @@ function buildProductCard(p, cat) {
           <div class="pc-price">${fmt(p.price)}</div>
           <div class="pc-shipping-note">🚢 + Shipping paid on arrival (weight-based)</div>
         </div>
+        ${(p.variants && p.variants.length) ? `
         <select class="var-select" id="v-${p.id}">
-          <option value="">Select option...</option>
-          ${(p.variants || []).map(v => `<option>${v}</option>`).join('')}
-        </select>
-        <button class="add-btn" id="abtn-${p.id}" onclick="addItem('${p.id}','${(p.name||'').replace(/'/g,"\\'")}','${p.icon||'📦'}',${p.price})">
+          <option value="">Select option…</option>
+          ${p.variants.map(v => `<option>${v}</option>`).join('')}
+        </select>` : `<input type="hidden" id="v-${p.id}" value="Standard">`}
+        <button class="add-btn" id="abtn-${p.id}"
+          onclick="addItem('${safeId}','${safeName}','${safeIcon}',${p.price})">
           🛒 Add to Cart
         </button>
       </div>
     </div>`;
 }
 
+// ═══════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════
 function getAllProdsFlat() {
-  const categoryMap = window.allProducts || {};
-  return Object.keys(categoryMap).flatMap(cat =>
-    (categoryMap[cat] || []).map(p => ({...p, cat}))
-  );
+  const cm = window.allProducts || {};
+  return Object.keys(cm).flatMap(cat => (cm[cat] || []).map(p => ({ ...p, _cat: cat })));
 }
 
 function searchProducts(query) {
   if (!query.trim()) return [];
   const q = query.toLowerCase();
   return getAllProdsFlat().filter(p =>
-    (p.name||'').toLowerCase().includes(q) ||
-    (p.spec||'').toLowerCase().includes(q) ||
-    (p.id||'').toLowerCase().includes(q) ||
-    (p.variants||[]).some(v => v.toLowerCase().includes(q))
+    (p.name || '').toLowerCase().includes(q) ||
+    (p.spec || '').toLowerCase().includes(q) ||
+    (p.id || '').toLowerCase().includes(q) ||
+    (p.variants || []).some(v => v.toLowerCase().includes(q))
   );
 }
 
 function handleSearch(val) {
   clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    const results = searchProducts(val);
-    renderSearchDropdown(val, results);
-  }, 180);
+  searchTimeout = setTimeout(() => renderSearchDropdown(val, searchProducts(val)), 180);
 }
 
 function renderSearchDropdown(query, results) {
@@ -1348,37 +1370,39 @@ function renderSearchDropdown(query, results) {
   }
   let html = `<div class="sd-section">Products Found (${results.length})</div>`;
   results.slice(0, 6).forEach(p => {
+    const meta = getCatMeta(p._cat);
     html += `
-      <div class="sd-item" onclick="gotoProduct('${p.id}','${p.cat}')">
-        <div class="sd-thumb">${p.img ? `<img src="${p.img}" alt="${p.name}">` : (p.icon||'📦')}</div>
+      <div class="sd-item" onclick="gotoProduct('${p.id}','${p._cat}')">
+        <div class="sd-thumb">${p.img ? `<img src="${p.img}" alt="${p.name}">` : (p.icon || '📦')}</div>
         <div>
           <div class="sd-name">${p.name}</div>
-          <div class="sd-cat">${getCatMeta(p.cat).icon} ${getCatMeta(p.cat).label}</div>
+          <div class="sd-cat">${meta.icon} ${meta.label}</div>
           <div class="sd-price">${fmt(p.price)}</div>
         </div>
       </div>`;
   });
-  if (results.length > 6) html += `<div class="sd-section" style="padding-bottom:10px;color:var(--gold)">+ ${results.length - 6} more results in catalog ↓</div>`;
+  if (results.length > 6) html += `<div class="sd-section" style="padding-bottom:10px;color:var(--gold)">+ ${results.length - 6} more in catalog ↓</div>`;
   dd.innerHTML = html;
   dd.classList.add('show');
 }
 
 function showSearchDrop() {
   const val = document.getElementById('headerSearch').value;
-  if (val.trim()) { renderSearchDropdown(val, searchProducts(val)); }
+  if (val.trim()) renderSearchDropdown(val, searchProducts(val));
 }
 function hideSearchDrop() { document.getElementById('searchDropdown').classList.remove('show'); }
 
 function gotoProduct(id, cat) {
   hideSearchDrop();
   document.getElementById('headerSearch').value = '';
-  document.getElementById('catalog').scrollIntoView({behavior:'smooth'});
-  const activeTab = document.querySelector(`.cat-tab[onclick*="'${cat}'"]`);
-  if (activeTab) switchTab(activeTab, cat);
+  document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
+  // Switch to the correct category tab
+  const catExists = !!(window.allProducts || {})[cat];
+  switchTab(catExists ? cat : 'all');
   setTimeout(() => {
     const card = document.querySelector(`[data-id="${id}"]`);
     if (card) {
-      card.scrollIntoView({behavior:'smooth', block:'center'});
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
       card.style.boxShadow = '0 0 0 3px rgba(18,184,150,.6), 0 28px 70px rgba(0,0,0,.5)';
       card.style.borderColor = 'rgba(18,184,150,.5)';
       setTimeout(() => { card.style.boxShadow = ''; card.style.borderColor = ''; }, 2500);
@@ -1392,9 +1416,9 @@ function handleMobileSearch(val) {
   if (!val.trim() || !results.length) { container.innerHTML = ''; return; }
   container.innerHTML = `
     <div style="margin-top:14px;display:grid;gap:10px">
-      ${results.slice(0,4).map(p => `
-        <div onclick="gotoProduct('${p.id}','${p.cat}')" style="background:#fff;border:1px solid var(--cream2);border-radius:10px;padding:12px;display:flex;gap:12px;cursor:pointer;align-items:center;box-shadow:0 2px 12px rgba(0,0,0,.06)">
-          <div style="font-size:1.8rem">${p.icon||'📦'}</div>
+      ${results.slice(0, 4).map(p => `
+        <div onclick="gotoProduct('${p.id}','${p._cat}')" style="background:#fff;border:1px solid var(--cream2);border-radius:10px;padding:12px;display:flex;gap:12px;cursor:pointer;align-items:center;box-shadow:0 2px 12px rgba(0,0,0,.06)">
+          <div style="font-size:1.8rem">${p.icon || '📦'}</div>
           <div>
             <div style="font-weight:800;font-size:.87rem;color:var(--cream-ink)">${p.name}</div>
             <div style="font-size:.78rem;color:var(--gold-deep);font-weight:700;margin-top:2px">${fmt(p.price)}</div>
@@ -1404,42 +1428,37 @@ function handleMobileSearch(val) {
 }
 
 function clearSearch() {
-  document.getElementById('headerSearch').value = '';
+  const hs = document.getElementById('headerSearch');
   const ms = document.getElementById('mobileSearch');
+  if (hs) hs.value = '';
   if (ms) ms.value = '';
+  document.getElementById('mobileSearchResults').innerHTML = '';
   document.getElementById('searchBanner').classList.remove('show');
+  // Re-render catalog (in case a search-results panel was injected) and go to first tab
   renderCatalog();
-  // Switch to first available tab
-  const firstTab = document.querySelector('.cat-tab');
-  if (firstTab) firstTab.click();
 }
 
-// ═══════════════════════════════
-// TABS
-// ═══════════════════════════════
-function switchTab(el, cat) {
-  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  if (el) el.classList.add('active');
-  const panel = document.getElementById('panel-' + cat);
-  if (panel) panel.classList.add('active');
-}
-
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 // CART
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 function addItem(id, name, icon, price) {
+  // Handle hidden input (no variants) vs select
   const sel = document.getElementById('v-' + id);
-  const variant = sel?.value || '';
+  const variant = sel ? sel.value : 'Standard';
   if (!variant) {
-    if (sel) { sel.style.borderColor = 'rgba(18,184,150,.7)'; sel.focus(); setTimeout(() => sel.style.borderColor = '', 2500); }
+    if (sel && sel.tagName === 'SELECT') {
+      sel.style.borderColor = 'rgba(18,184,150,.7)';
+      sel.focus();
+      setTimeout(() => sel.style.borderColor = '', 2500);
+    }
     showToast('⚠️ Please select an option first');
     return;
   }
   const ex = window.cart.find(i => i.id === id && i.variant === variant);
   if (ex) { ex.qty++; showToast('Quantity updated ✓'); }
-  else { window.cart.push({id, name, icon, price, variant, qty:1}); showToast('✅ Added to cart!'); }
-  renderCart(); updateDot();
+  else { window.cart.push({ id, name, icon, price, variant, qty: 1 }); showToast('✅ Added to cart!'); }
+  renderCart();
+  updateDot();
   const b = document.getElementById('abtn-' + id);
   if (b) {
     b.classList.add('added'); b.textContent = '✓ Added to Cart';
@@ -1499,9 +1518,9 @@ function openCart() {
   document.body.style.overflow = 'hidden';
 }
 
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 // CHECKOUT
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 let chosenShip = 'Express Air (3–7 days)';
 function pickShip(el) {
   document.querySelectorAll('.sopt').forEach(o => o.classList.remove('on'));
@@ -1522,9 +1541,9 @@ function closeCheckout() {
   document.body.style.overflow = '';
 }
 
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 // FLUTTERWAVE PAYMENT
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 function doPayment() {
   const first = document.getElementById('ckFirst').value.trim();
   const last  = document.getElementById('ckLast').value.trim();
@@ -1553,7 +1572,6 @@ function doPayment() {
     customizations: { title: BIZ, description: 'Import Order – ' + orderDesc.substring(0, 80) },
     callback(r) {
       if (r.status === 'successful' || r.status === 'completed') {
-        // Save to Firestore via module function
         if (typeof window.saveOrderToFirebase === 'function') {
           window.saveOrderToFirebase(r, first, last, email, phone, state, addr, ref, chosenShip, total, txRef);
         }
@@ -1573,9 +1591,9 @@ function doPayment() {
 
 function closeSuc() { document.getElementById('successModal').classList.remove('open'); document.body.style.overflow = ''; }
 
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 // CUSTOM REQUEST
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 function submitCustom() {
   const name = document.getElementById('rName').value.trim();
   const desc = document.getElementById('rDesc').value.trim();
@@ -1594,9 +1612,9 @@ function submitCustom() {
   window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(msg), '_blank');
 }
 
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 // COUNTDOWN
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 function getDeadline() {
   const d = new Date(); const diff = (7 - d.getDay()) % 7 || 7;
   d.setDate(d.getDate() + diff); d.setHours(23, 59, 59, 0); return d;
@@ -1606,16 +1624,16 @@ function tick() {
   const ms = DL - Date.now(); if (ms <= 0) return;
   const D = Math.floor(ms / 864e5), H = Math.floor(ms % 864e5 / 36e5),
         M = Math.floor(ms % 36e5 / 6e4), S = Math.floor(ms % 6e4 / 1e3);
-  document.getElementById('cdD').textContent = String(D).padStart(2,'0');
-  document.getElementById('cdH').textContent = String(H).padStart(2,'0');
-  document.getElementById('cdM').textContent = String(M).padStart(2,'0');
-  document.getElementById('cdS').textContent = String(S).padStart(2,'0');
+  document.getElementById('cdD').textContent = String(D).padStart(2, '0');
+  document.getElementById('cdH').textContent = String(H).padStart(2, '0');
+  document.getElementById('cdM').textContent = String(M).padStart(2, '0');
+  document.getElementById('cdS').textContent = String(S).padStart(2, '0');
 }
 tick(); setInterval(tick, 1000);
 
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 // SLIDER
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 let cur = 0, tot = 3, autoSlide = setInterval(nextSlide, 6000);
 function goSlide(n) {
   cur = n;
@@ -1626,18 +1644,18 @@ function goSlide(n) {
 function nextSlide() { goSlide((cur + 1) % tot); }
 function prevSlide() { goSlide((cur - 1 + tot) % tot); }
 
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 // FAQ
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 function faqToggle(el) {
   const item = el.parentElement; const was = item.classList.contains('open');
   document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
   if (!was) item.classList.add('open');
 }
 
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 // REFERRAL COPY
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 function copyRef() {
   navigator.clipboard.writeText(document.getElementById('refCode').textContent)
     .then(() => {
@@ -1646,9 +1664,9 @@ function copyRef() {
     });
 }
 
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 // TOAST
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 function showToast(msg) {
   let t = document.getElementById('siteToast');
   if (!t) {
@@ -1660,9 +1678,9 @@ function showToast(msg) {
   clearTimeout(t._t); t._t = setTimeout(() => { t.style.opacity = '0'; }, 2600);
 }
 
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 // REVEAL ON SCROLL
-// ═══════════════════════════════
+// ═══════════════════════════════════════════
 const obs = new IntersectionObserver(es => {
   es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
 }, { threshold: .07 });
