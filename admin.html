@@ -474,10 +474,10 @@ textarea.form-input{resize:vertical;min-height:80px;}
         </div>
         <div class="filter-tabs">
           <button class="filter-tab active" data-status="all" onclick="filterOrders('all',this)">All</button>
-          <button class="filter-tab" data-status="paid" onclick="filterOrders('paid',this)">Paid</button>
-          <button class="filter-tab" data-status="processing" onclick="filterOrders('processing',this)">Processing</button>
-          <button class="filter-tab" data-status="shipped" onclick="filterOrders('shipped',this)">Shipped</button>
-          <button class="filter-tab" data-status="delivered" onclick="filterOrders('delivered',this)">Delivered</button>
+          <button class="filter-tab" data-status="paid" onclick="filterOrders('paid',this)">💳 Paid (New)</button>
+          <button class="filter-tab" data-status="processing" onclick="filterOrders('processing',this)">⚙️ Processing</button>
+          <button class="filter-tab" data-status="shipped" onclick="filterOrders('shipped',this)">🚢 Shipped</button>
+          <button class="filter-tab" data-status="delivered" onclick="filterOrders('delivered',this)">✅ Delivered</button>
         </div>
         <div class="search-bar">
           <input class="search-input" id="order-search" placeholder="🔍 Search by name, email, ref, phone..." oninput="renderOrdersTable()"/>
@@ -687,7 +687,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <div class="form-group">
         <label class="form-label">Category * (free text)</label>
         <div class="cat-input-wrap">
-          <input type="text" class="form-input" id="pm-category" placeholder="Type category..." autocomplete="off" oninput="onCatInput()" onfocus="onCatInput()" onblur="setTimeout(()=>closeCatDropdown(),200)"/>
+          <input type="text" class="form-input" id="pm-category" placeholder="e.g. tech, shoes, bags — pick from dropdown" autocomplete="off" oninput="onCatInput()" onfocus="onCatInput()" onblur="setTimeout(()=>closeCatDropdown(),200)"/>
           <div class="cat-dropdown" id="cat-dropdown"></div>
         </div>
       </div>
@@ -941,14 +941,18 @@ function showOrderNotif(msg){
 // ── STATS ──
 function updateStats(){
   const activeProducts = allProducts.filter(p=>p.active!==false).length;
-  const revenue = allOrders.filter(o=>o.status==='paid'||o.status==='processing'||o.status==='shipped'||o.status==='delivered').reduce((a,o)=>a+(o.totalPaid||0),0);
-  const pending = allOrders.filter(o=>o.orderStatus==='processing'||o.status==='paid').length;
+  // index.html always writes status:"paid" on successful Flutterwave payment
+  // orderStatus starts as "processing" and admin updates it to shipped/delivered
+  const revenue = allOrders.filter(o=>o.status==='paid').reduce((a,o)=>a+(o.totalPaid||0),0);
+  // "Pending" = paid but not yet shipped or delivered (still processing)
+  const pending = allOrders.filter(o=>o.status==='paid' && (o.orderStatus==='processing'||!o.orderStatus)).length;
   document.getElementById('stat-revenue').textContent = '₦'+revenue.toLocaleString();
   document.getElementById('stat-orders').textContent = allOrders.length;
   document.getElementById('stat-products').textContent = activeProducts;
   document.getElementById('stat-pending').textContent = pending;
   const badge = document.getElementById('processing-badge');
-  const proc = allOrders.filter(o=>o.orderStatus==='processing').length;
+  // Badge shows orders needing action = paid + processing orderStatus
+  const proc = allOrders.filter(o=>o.status==='paid' && (o.orderStatus==='processing'||!o.orderStatus)).length;
   badge.style.display = proc>0?'':'none';
   badge.textContent = proc;
 }
@@ -1017,9 +1021,9 @@ window.renderProductsTable = function(){
   const q = (document.getElementById('product-search').value||'').toLowerCase();
   let prods = [...allProducts];
   if(currentProductFilter==='_hidden') prods=prods.filter(p=>p.active===false);
-  else if(currentProductFilter!=='all') prods=prods.filter(p=>p.category===currentProductFilter);
+  else if(currentProductFilter!=='all') prods=prods.filter(p=>p.category===currentProductFilter && p.active!==false);
   if(q) prods=prods.filter(p=>(p.name||'').toLowerCase().includes(q)||(p.spec||'').toLowerCase().includes(q)||(p.category||'').toLowerCase().includes(q));
-  prods.sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+  prods.sort((a,b)=>((a.sortOrder||a.order||0)-(b.sortOrder||b.order||0)));
   const tbody = document.getElementById('products-tbody');
   if(!prods.length){
     tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">📭</div><h3>No products found</h3><p>Try a different filter or add a product.</p></div></td></tr>`;
@@ -1221,7 +1225,17 @@ window.filterOrders = function(status, el){
 window.renderOrdersTable = function(){
   const q = (document.getElementById('order-search').value||'').toLowerCase();
   let orders = [...allOrders];
-  if(currentOrderFilter!=='all') orders=orders.filter(o=>(o.orderStatus||o.status||'')===currentOrderFilter);
+  // index.html schema: status="paid" (payment), orderStatus="processing|shipped|delivered" (fulfillment)
+  if(currentOrderFilter==='paid'){
+    // Show all payment-confirmed orders (regardless of fulfillment stage)
+    orders=orders.filter(o=>o.status==='paid');
+  } else if(currentOrderFilter==='processing'){
+    orders=orders.filter(o=>o.orderStatus==='processing'||(!o.orderStatus&&o.status==='paid'));
+  } else if(currentOrderFilter==='shipped'){
+    orders=orders.filter(o=>o.orderStatus==='shipped');
+  } else if(currentOrderFilter==='delivered'){
+    orders=orders.filter(o=>o.orderStatus==='delivered');
+  }
   if(q){
     orders = orders.filter(o=>{
       const c = o.customer||{};
@@ -1245,8 +1259,11 @@ window.renderOrdersTable = function(){
   tbody.innerHTML=orders.map(o=>{
     const c=o.customer||{};
     const name=escHtml((c.firstName||'')+(c.lastName?' '+c.lastName:''));
-    const st=o.orderStatus||o.status||'paid';
-    const stClass={'paid':'badge-teal','processing':'badge-gold','shipped':'badge-purple','delivered':'badge-green'}[st]||'badge-muted';
+    // Payment status (from Flutterwave - index.html always writes status:"paid")
+    const payStatus = o.status||'pending';
+    // Fulfillment status (admin-managed via orderStatus field)
+    const fulfillStatus = o.orderStatus||'processing';
+    const fulfillClass={'processing':'badge-gold','shipped':'badge-purple','delivered':'badge-green'}[fulfillStatus]||'badge-muted';
     const items=o.items||[];
     const date=o.createdAt?.toDate?o.createdAt.toDate().toLocaleDateString('en-NG',{day:'2-digit',month:'short',year:'numeric'}):'—';
     return `<tr>
@@ -1260,9 +1277,14 @@ window.renderOrdersTable = function(){
       </td>
       <td style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold-bright);">₦${(o.totalPaid||0).toLocaleString()}</td>
       <td>
-        <select class="status-select" onchange="updateOrderStatus('${escAttr(o._id)}',this.value)">
-          ${['paid','processing','shipped','delivered'].map(s=>`<option value="${s}"${s===st?' selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
-        </select>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <span class="badge badge-teal" style="font-size:10px;">💳 ${payStatus}</span>
+          <select class="status-select" onchange="updateOrderStatus('${escAttr(o._id)}',this.value)">
+            <option value="processing"${fulfillStatus==='processing'?' selected':''}>⚙️ Processing</option>
+            <option value="shipped"${fulfillStatus==='shipped'?' selected':''}>🚢 Shipped</option>
+            <option value="delivered"${fulfillStatus==='delivered'?' selected':''}>✅ Delivered</option>
+          </select>
+        </div>
       </td>
       <td style="font-size:12px;color:var(--muted2);">${date}</td>
       <td>
@@ -1277,6 +1299,7 @@ window.renderOrdersTable = function(){
 
 window.updateOrderStatus = async function(id, status){
   try{
+    // Only update orderStatus (fulfillment stage) — never touch status (payment confirmation)
     await updateDoc(doc(db,'orders',id),{orderStatus:status, updatedAt:serverTimestamp()});
     showToast('Order status updated.','success');
   }catch(e){ showToast('Error: '+e.message,'error'); }
@@ -1296,14 +1319,14 @@ function renderRecentOrders(){
   tbody.innerHTML=orders.map(o=>{
     const c=o.customer||{};
     const name=escHtml((c.firstName||'')+(c.lastName?' '+c.lastName:''));
-    const st=o.orderStatus||o.status||'paid';
-    const stClass={'paid':'badge-teal','processing':'badge-gold','shipped':'badge-purple','delivered':'badge-green'}[st]||'badge-muted';
+    const fulfillStatus=o.orderStatus||'processing';
+    const stClass={'processing':'badge-gold','shipped':'badge-purple','delivered':'badge-green'}[fulfillStatus]||'badge-muted';
     const date=o.createdAt?.toDate?o.createdAt.toDate().toLocaleDateString('en-NG',{day:'2-digit',month:'short'}):'—';
     return `<tr>
       <td>${name}</td>
       <td>${(o.items||[]).length} item(s)</td>
       <td style="font-family:'Bebas Neue',sans-serif;color:var(--gold-bright);">₦${(o.totalPaid||0).toLocaleString()}</td>
-      <td><span class="badge ${stClass}">${st}</span></td>
+      <td><span class="badge ${stClass}">${fulfillStatus}</span></td>
       <td>${date}</td>
     </tr>`;
   }).join('');
@@ -1316,7 +1339,8 @@ window.viewOrderDetail = function(id){
   const c=o.customer||{};
   const items=o.items||[];
   const date=o.createdAt?.toDate?o.createdAt.toDate().toLocaleString('en-NG'):'—';
-  const st=o.orderStatus||o.status||'paid';
+  const payStatus = o.status||'pending';
+  const fulfillStatus = o.orderStatus||'processing';
   document.getElementById('order-modal-body').innerHTML=`
     <h4 style="font-family:'Playfair Display',serif;margin-bottom:12px;color:var(--gold-bright);">Customer Info</h4>
     <div class="order-detail-row"><span class="order-detail-label">Name</span><span>${escHtml(c.firstName||'')} ${escHtml(c.lastName||'')}</span></div>
@@ -1327,12 +1351,19 @@ window.viewOrderDetail = function(id){
     <h4 style="font-family:'Playfair Display',serif;margin:16px 0 12px;color:var(--gold-bright);">Order Info</h4>
     <div class="order-detail-row"><span class="order-detail-label">Ref</span><span style="font-family:monospace;font-size:12px;">${escHtml(o.txRef||'—')}</span></div>
     <div class="order-detail-row"><span class="order-detail-label">Flutterwave ID</span><span style="font-family:monospace;font-size:12px;">${escHtml(String(o.flutterwaveId||'—'))}</span></div>
-    <div class="order-detail-row"><span class="order-detail-label">Shipping</span><span>${escHtml(o.shippingMethod||'Standard')}</span></div>
+    <div class="order-detail-row"><span class="order-detail-label">Shipping Method</span><span>${escHtml(o.shippingMethod||'Standard')}</span></div>
     <div class="order-detail-row"><span class="order-detail-label">Referral Code</span><span>${escHtml(o.referralCode||'—')}</span></div>
-    <div class="order-detail-row"><span class="order-detail-label">Date</span><span>${date}</span></div>
-    <div class="order-detail-row"><span class="order-detail-label">Status</span>
+    <div class="order-detail-row"><span class="order-detail-label">Order Date</span><span>${date}</span></div>
+    <div class="order-detail-row">
+      <span class="order-detail-label">💳 Payment Status</span>
+      <span class="badge badge-teal">${payStatus}</span>
+    </div>
+    <div class="order-detail-row">
+      <span class="order-detail-label">📦 Fulfillment Status</span>
       <select class="status-select" onchange="updateOrderStatus('${escAttr(o._id)}',this.value)">
-        ${['paid','processing','shipped','delivered'].map(s=>`<option value="${s}"${s===st?' selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
+        <option value="processing"${fulfillStatus==='processing'?' selected':''}>⚙️ Processing</option>
+        <option value="shipped"${fulfillStatus==='shipped'?' selected':''}>🚢 Shipped</option>
+        <option value="delivered"${fulfillStatus==='delivered'?' selected':''}>✅ Delivered</option>
       </select>
     </div>
     <h4 style="font-family:'Playfair Display',serif;margin:16px 0 12px;color:var(--gold-bright);">Items</h4>
@@ -1368,23 +1399,50 @@ window.openWhatsAppDirect = function(id){
 };
 function buildWhatsApp(o){
   const c=o.customer||{};
-  const phone=(c.phone||'').replace(/\D/g,'');
-  const msg=encodeURIComponent(`Hello ${c.firstName||'Customer'}, your GGS Global Consult order (Ref: ${o.txRef||'N/A'}) has been confirmed. Total: ₦${(o.totalPaid||0).toLocaleString()}. Thank you for shopping with us! 🛍️`);
+  const phone=(c.phone||'').replace(/[^0-9]/g,'');
+  const fulfillStatus=o.orderStatus||'processing';
+  const items=(o.items||[]).map(i=>`• ${i.name} ×${i.qty} (${i.variant||'Standard'}) = ₦${((i.price||0)*(i.qty||1)).toLocaleString()}`).join('\n');
+  const msg=encodeURIComponent(
+    `Hello ${c.firstName||'Customer'} 👋\n\nYour GGS Global Consult order update:\n\n` +
+    `📋 Ref: ${o.txRef||'N/A'}\n` +
+    `💳 Payment: ${o.status||'paid'} ✅\n` +
+    `📦 Fulfillment: ${fulfillStatus}\n` +
+    `🚚 Shipping: ${o.shippingMethod||'Standard'}\n\n` +
+    `Items:\n${items}\n\n` +
+    `💰 Total Paid: ₦${(o.totalPaid||0).toLocaleString()}\n\n` +
+    `Thank you for shopping with GGS Global Consult! 🛍️`
+  );
   window.open(`https://wa.me/${phone}?text=${msg}`,'_blank');
 }
 
 window.exportOrdersCSV = function(){
-  const rows=[['Ref','Name','Email','Phone','State','Items','Total','Shipping','Status','Date']];
+  const rows=[['Ref','Flutterwave ID','Name','Email','Phone','State','Address','Items','Total (₦)','Shipping Method','Payment Status','Fulfillment Status','Referral Code','Date']];
   allOrders.forEach(o=>{
     const c=o.customer||{};
     const date=o.createdAt?.toDate?o.createdAt.toDate().toLocaleDateString('en-NG'):'';
-    rows.push([o.txRef||'',`${c.firstName||''} ${c.lastName||''}`.trim(),c.email||'',c.phone||'',c.state||'',(o.items||[]).length,o.totalPaid||0,o.shippingMethod||'',o.orderStatus||o.status||'',date]);
+    const itemsSummary=(o.items||[]).map(i=>`${i.name}×${i.qty}(${i.variant||''})`).join(' | ');
+    rows.push([
+      o.txRef||'',
+      String(o.flutterwaveId||''),
+      `${c.firstName||''} ${c.lastName||''}`.trim(),
+      c.email||'',
+      c.phone||'',
+      c.state||'',
+      c.address||'',
+      itemsSummary,
+      o.totalPaid||0,
+      o.shippingMethod||'',
+      o.status||'',
+      o.orderStatus||'',
+      o.referralCode||'',
+      date
+    ]);
   });
   const csv=rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob=new Blob([csv],{type:'text/csv'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download=`ggs-orders-${Date.now()}.csv`;
+  a.download=`ggs-orders-${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   showToast('CSV exported!','success');
 };
