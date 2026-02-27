@@ -1734,7 +1734,7 @@ function openCart() {
 let chosenShip = 'Express Air (3–7 days)';
 function pickShip(el) { document.querySelectorAll('.sopt').forEach(o => o.classList.remove('on')); el.classList.add('on'); chosenShip = el.dataset.ship; }
 function openCheckout() {
-  if (!window.cart.length) return;
+  if (!window.cart.length) return;if (document.getElementById('checkoutCta').disabled) return;
   let items = '';
   window.cart.forEach(i => { items += `<div class="os-line"><span>${i.icon} ${escHtml(i.name)} × ${i.qty} (${escHtml(i.variant)})</span><span>${fmt(i.price * i.qty)}</span></div>`; });
   document.getElementById('obItems').innerHTML = items;
@@ -1762,8 +1762,23 @@ function doPayment() {
   const total = window.cart.reduce((s, i) => s + i.price * i.qty, 0);
   const txRef = 'GGS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
   const orderDesc = window.cart.map(i => `${i.name}×${i.qty}(${i.variant})`).join(', ');
-  const isRivers  = state.toLowerCase().includes('rivers');
-  const delivery  = isRivers ? 'Free (Port Harcourt)' : '₦' + (window.deliveryFeeOther || 5000).toLocaleString('en-NG');
+  const stateL = state.toLowerCase();
+let deliveryFee = 0;
+let deliveryLabel = '';
+if (stateL.includes('rivers')) {
+deliveryFee = 0;
+deliveryLabel = 'Free (Port Harcourt)';
+} else if (['delta','bayelsa','edo','cross river','akwa ibom','abia','imo','anambra','enugu','ebonyi'].some(s => stateL.includes(s))) {
+deliveryFee = 5000;
+deliveryLabel = '₦5,000 (South-South/South-East)';
+} else if (stateL.includes('lagos') || stateL.includes('abuja') || stateL.includes('fct') || stateL.includes('ogun')) {
+deliveryFee = 7500;
+deliveryLabel = '₦7,500 (Lagos/Abuja)';
+} else {
+deliveryFee = 9000;
+deliveryLabel = '₦9,000 (Other States)';
+}
+const delivery = deliveryLabel;
   const waMsg = `Hi GGS! I just paid for my order.\n\n👤 Name: ${first} ${last}\n📧 Email: ${email}\n📱 WhatsApp: ${phone}\n📍 State: ${state}\n🏠 Address: ${addr}\n\n📦 Shipping: ${chosenShip}\n🚚 Local Delivery: ${delivery}\n\n📋 Items:\n${window.cart.map(i => `• ${i.name} × ${i.qty} – ${i.variant} = ${fmt(i.price * i.qty)}`).join('\n')}\n\n💰 Total Paid: ${fmt(total)}\n🧾 Ref: ${txRef}${ref ? '\n🎁 Referral: ' + ref : ''}\n\nPlease confirm. Thank you!`;
   FlutterwaveCheckout({
     public_key: FW_KEY,
