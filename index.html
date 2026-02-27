@@ -625,7 +625,14 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
 .close-suc:hover{color:var(--white);border-color:rgba(255,255,255,.2)}
 
 .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
-.reveal.in{opacity:1;transform:translateY(0)}
+..reveal.in{opacity:1;transform:translateY(0)}
+
+@media(max-width:680px){
+.ref-info,
+.agent-grid{
+grid-template-columns:1fr!important
+}
+}
 </style>
 </head>
 <body>
@@ -1104,38 +1111,556 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
 <!-- REFERRAL -->
 <section class="dark-section" id="referral">
   <div class="container">
+
     <div class="sec-head reveal">
       <span class="sec-tag">🎁 Earn While You Share</span>
-      <h2 class="sec-h">GGS Referral Program<br><em>Real Cash. Real Rewards.</em></h2>
-      <p class="sec-p">Refer friends who place orders. Earn cash or store credit — no cap, credits never expire.</p>
+      <h2 class="sec-h">GGS Referral Program<br>
+        <em>Real Cash. Real Rewards.</em>
+      </h2>
+      <p class="sec-p">
+        Refer friends who place qualifying orders. 
+        Earn cash or store credit — no cap, 
+        credits never expire. Minimum order of 
+        <strong style="color:var(--gold-bright)">
+        ₦150,000</strong> required to qualify.
+      </p>
     </div>
-    <div class="ref-tiers reveal">
-      <div class="ref-card tier-bronze"><span class="ref-medal">🥉</span><div class="ref-tier-name">Bronze</div><div class="ref-count">1 <small>referral</small></div><div class="ref-reward">₦25,000 store credit</div><div class="ref-alt">Applied on next order</div></div>
-      <div class="ref-card tier-silver"><span class="ref-medal">🥈</span><div class="ref-tier-name">Silver</div><div class="ref-count">3 <small>referrals</small></div><div class="ref-reward">₦100,000 credit</div><div class="ref-alt">OR 15% off next order</div></div>
-      <div class="ref-card tier-gold"><span class="ref-medal">🥇</span><div class="ref-tier-name">Gold</div><div class="ref-count">5 <small>referrals</small></div><div class="ref-reward">₦200,000 CASH</div><div class="ref-alt">OR free product up to ₦300K</div></div>
-      <div class="ref-card tier-plat"><span class="ref-medal">💎</span><div class="ref-tier-name">Platinum</div><div class="ref-count">10 <small>referrals</small></div><div class="ref-reward">₦500,000 CASH</div><div class="ref-alt">OR a free iPhone</div></div>
-    </div>
-    <div class="ref-info reveal">
+
+    <!-- MINIMUM ORDER NOTICE -->
+    <div class="reveal" style="
+      background:rgba(200,137,26,.07);
+      border:1px solid rgba(200,137,26,.2);
+      border-left:4px solid var(--gold-bright);
+      border-radius:var(--r);
+      padding:20px 28px;
+      margin-bottom:44px;
+      display:flex;
+      align-items:flex-start;
+      gap:16px;">
+      <span style="font-size:1.8rem;flex-shrink:0">
+        ⚠️
+      </span>
       <div>
-        <div class="ri-label">Program Rules</div>
+        <div style="
+          font-size:.9rem;
+          font-weight:800;
+          color:var(--gold-bright);
+          margin-bottom:8px">
+          Important — Qualifying Order Rules
+        </div>
+        <div style="
+          font-size:.82rem;
+          color:rgba(240,237,231,.55);
+          line-height:1.8">
+          ✦ Referred customer must place a minimum 
+            order of <strong style="color:var(--white)">
+            ₦150,000</strong> to qualify 
+            (Bronze &amp; Silver tiers)<br>
+          ✦ Gold &amp; Platinum tiers require minimum 
+            order of <strong style="color:var(--white)">
+            ₦250,000</strong> per referral<br>
+          ✦ Referral code applies to 
+            <strong style="color:var(--white)">
+            first-time customers only</strong> — 
+            existing customers cannot use referral 
+            codes on repeat orders<br>
+          ✦ Commission released only after referred 
+            customer's goods are 
+            <strong style="color:var(--white)">
+            fully delivered</strong> and shipping 
+            fee paid<br>
+          ✦ Cash rewards paid via bank transfer. 
+            Store credit applied to your next order.
+        </div>
+      </div>
+    </div>
+
+    <!-- TIER CARDS -->
+    <div class="ref-tiers reveal">
+
+      <!-- BRONZE -->
+      <div class="ref-card tier-bronze">
+        <span class="ref-medal">🥉</span>
+        <div class="ref-tier-name">Bronze</div>
+        <div class="ref-count">
+          1 <small>referral</small>
+        </div>
+        <div class="ref-reward">
+          ₦25,000 store credit
+        </div>
+        <div class="ref-alt">
+          Applied on your next order
+        </div>
+        <div style="
+          margin-top:14px;
+          padding-top:14px;
+          border-top:1px solid rgba(255,255,255,.07);
+          font-size:.7rem;
+          color:rgba(240,237,231,.35);
+          line-height:1.7">
+          Min. order: 
+          <strong style="color:#D4894A">
+            ₦150,000
+          </strong><br>
+          Reward paid: After delivery
+        </div>
+      </div>
+
+      <!-- SILVER -->
+      <div class="ref-card tier-silver">
+        <span class="ref-medal">🥈</span>
+        <div class="ref-tier-name">Silver</div>
+        <div class="ref-count">
+          3 <small>referrals</small>
+        </div>
+        <div class="ref-reward">
+          ₦100,000 credit
+        </div>
+        <div class="ref-alt">
+          OR 15% off your next order
+        </div>
+        <div style="
+          margin-top:14px;
+          padding-top:14px;
+          border-top:1px solid rgba(255,255,255,.07);
+          font-size:.7rem;
+          color:rgba(240,237,231,.35);
+          line-height:1.7">
+          Min. order: 
+          <strong style="color:#C8C8C8">
+            ₦150,000
+          </strong> each<br>
+          Reward paid: After all 3 delivered
+        </div>
+      </div>
+
+      <!-- GOLD -->
+      <div class="ref-card tier-gold">
+        <span class="ref-medal">🥇</span>
+        <div class="ref-tier-name">Gold</div>
+        <div class="ref-count">
+          5 <small>referrals</small>
+        </div>
+        <div class="ref-reward">
+          ₦200,000 CASH
+        </div>
+        <div class="ref-alt">
+          OR free product up to ₦300,000
+        </div>
+        <div style="
+          margin-top:14px;
+          padding-top:14px;
+          border-top:1px solid rgba(255,255,255,.07);
+          font-size:.7rem;
+          color:rgba(240,237,231,.35);
+          line-height:1.7">
+          Min. order: 
+          <strong style="color:var(--gold-bright)">
+            ₦250,000
+          </strong> each<br>
+          Cash paid: After all 5 delivered
+        </div>
+      </div>
+
+      <!-- PLATINUM -->
+      <div class="ref-card tier-plat">
+        <span class="ref-medal">💎</span>
+        <div class="ref-tier-name">Platinum</div>
+        <div class="ref-count">
+          10 <small>referrals</small>
+        </div>
+        <div class="ref-reward">
+          ₦500,000 CASH
+        </div>
+        <div class="ref-alt">
+          OR a free iPhone 🎁
+        </div>
+        <div style="
+          margin-top:14px;
+          padding-top:14px;
+          border-top:1px solid rgba(255,255,255,.07);
+          font-size:.7rem;
+          color:rgba(240,237,231,.35);
+          line-height:1.7">
+          Min. order: 
+          <strong style="color:#A78BFA">
+            ₦250,000
+          </strong> each<br>
+          Cash paid: After all 10 delivered
+        </div>
+      </div>
+
+    </div>
+
+    <!-- HOW IT WORKS + REFERRAL LINK -->
+    <div class="ref-info reveal">
+
+      <div>
+        <div class="ri-label">How It Works</div>
         <ul class="ri-list">
-          <li>Referred friend must place an order to qualify</li>
-          <li>Credit applied after their payment clears</li>
-          <li>Credits never expire — use anytime</li>
-          <li>Cash paid after their delivery completes</li>
-          <li>Top 3 referrers each month win bonus prizes 🏆</li>
+          <li>
+            Share your referral link or name 
+            with friends
+          </li>
+          <li>
+            They mention your name when ordering 
+            on ggsglobal.store
+          </li>
+          <li>
+            Their order must meet the minimum 
+            qualifying amount for your tier
+          </li>
+          <li>
+            Once their goods are delivered and 
+            shipping paid — your reward is released
+          </li>
+          <li>
+            Credits never expire — use on 
+            any future order
+          </li>
+          <li>
+            Cash rewards paid monthly via 
+            bank transfer
+          </li>
+          <li>
+            Top 3 referrers each month win 
+            bonus prizes 🏆
+          </li>
         </ul>
       </div>
+
       <div>
         <div class="ri-label">Your Referral Link</div>
-        <p style="font-size:.8rem;color:var(--muted2);margin-bottom:12px">Share with friends. They mention your name when ordering.</p>
+        <p style="
+          font-size:.8rem;
+          color:var(--muted2);
+          margin-bottom:12px;
+          line-height:1.7">
+          Share your unique link. Your friend 
+          mentions your name when ordering. 
+          Simple as that.
+        </p>
         <div class="ref-link-box">
-          <code id="refCode">wa.me/2348142717585?text=Referred-by-[YourName]</code>
-          <button class="copy-btn" onclick="copyRef()">Copy</button>
+          <code id="refCode">
+            wa.me/2348142717585?text=
+            Referred-by-[YourName]
+          </code>
+          <button class="copy-btn" 
+            onclick="copyRef()">
+            Copy
+          </button>
         </div>
-        <a href="https://wa.me/2348142717585?text=I%20want%20to%20check%20my%20referral%20progress" target="_blank" style="display:inline-block;margin-top:14px;font-size:.8rem;color:var(--gold-bright);text-decoration:none;font-weight:700">📊 Check My Progress →</a>
+
+        <!-- EARNING EXAMPLES -->
+        <div style="
+          margin-top:20px;
+          background:rgba(200,137,26,.05);
+          border:1px solid rgba(200,137,26,.12);
+          border-radius:var(--r);
+          padding:18px 20px">
+          <div style="
+            font-size:.62rem;
+            letter-spacing:.18em;
+            text-transform:uppercase;
+            color:var(--gold);
+            font-weight:700;
+            margin-bottom:14px">
+            💰 Real Earning Examples
+          </div>
+          <div style="
+            display:flex;
+            flex-direction:column;
+            gap:10px">
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              font-size:.8rem;
+              padding-bottom:8px;
+              border-bottom:1px solid 
+              rgba(255,255,255,.05)">
+              <span style="color:rgba(240,237,231,.5)">
+                Friend buys iPhone (₦760,000)
+              </span>
+              <strong style="color:var(--gold-bright)">
+                You earn ₦25,000
+              </strong>
+            </div>
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              font-size:.8rem;
+              padding-bottom:8px;
+              border-bottom:1px solid 
+              rgba(255,255,255,.05)">
+              <span style="color:rgba(240,237,231,.5)">
+                3 friends buy MacBooks (₦600k each)
+              </span>
+              <strong style="color:#C8C8C8">
+                You earn ₦100,000
+              </strong>
+            </div>
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              font-size:.8rem;
+              padding-bottom:8px;
+              border-bottom:1px solid 
+              rgba(255,255,255,.05)">
+              <span style="color:rgba(240,237,231,.5)">
+                5 friends order (₦250k+ each)
+              </span>
+              <strong style="color:var(--gold-bright)">
+                You earn ₦200,000 CASH
+              </strong>
+            </div>
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              font-size:.8rem">
+              <span style="color:rgba(240,237,231,.5)">
+                10 friends order (₦250k+ each)
+              </span>
+              <strong style="color:#A78BFA">
+                You earn ₦500,000 CASH
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        <a href="https://wa.me/2348142717585?text=
+          I%20want%20to%20check%20my%20referral%20
+          progress%20and%20rewards"
+          target="_blank"
+          style="
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            margin-top:16px;
+            font-size:.82rem;
+            color:var(--gold-bright);
+            text-decoration:none;
+            font-weight:700;
+            background:rgba(200,137,26,.08);
+            border:1px solid rgba(200,137,26,.2);
+            padding:10px 18px;
+            border-radius:9px;
+            transition:.2s;
+            width:100%">
+          📊 Check My Referral Progress on WhatsApp →
+        </a>
+
       </div>
     </div>
+
+    <!-- BECOME AN AGENT SECTION -->
+    <div class="reveal" style="
+      margin-top:52px;
+      background:linear-gradient(135deg,
+        rgba(11,110,92,.12),
+        rgba(18,184,150,.06));
+      border:1px solid rgba(18,184,150,.2);
+      border-radius:var(--r3);
+      padding:40px;
+      position:relative;
+      overflow:hidden">
+
+      <div style="
+        position:absolute;
+        top:0;inset-inline:0;
+        height:3px;
+        background:linear-gradient(90deg,
+          transparent,
+          var(--teal-mid),
+          var(--teal-bright),
+          var(--teal-mid),
+          transparent)">
+      </div>
+
+      <div style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:40px;
+        align-items:center">
+
+        <div>
+          <span style="
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            background:rgba(18,184,150,.1);
+            border:1px solid rgba(18,184,150,.25);
+            border-radius:100px;
+            padding:6px 16px;
+            font-size:.62rem;
+            font-weight:700;
+            letter-spacing:.2em;
+            text-transform:uppercase;
+            color:var(--teal-bright);
+            margin-bottom:18px">
+            🤝 City Rep Program
+          </span>
+          <h3 style="
+            font-family:'Playfair Display';
+            font-size:1.8rem;
+            font-weight:900;
+            line-height:1.15;
+            margin-bottom:14px">
+            Become a GGS Agent.<br>
+            <em style="color:var(--teal-bright)">
+              Earn Every Month.
+            </em>
+          </h3>
+          <p style="
+            font-size:.85rem;
+            color:rgba(240,237,231,.5);
+            line-height:1.85;
+            margin-bottom:24px">
+            Represent GGS in your city. Share products 
+            with your network. Earn 
+            <strong style="color:var(--white)">
+            5% commission</strong> on every order 
+            placed through your code. Zero investment. 
+            Zero stock. Just share and earn.
+          </p>
+          <a href="https://wa.me/2348142717585?text=
+            I%20want%20to%20become%20a%20GGS%20
+            Agent%20in%20my%20city"
+            target="_blank"
+            style="
+              display:inline-flex;
+              align-items:center;
+              gap:9px;
+              background:linear-gradient(135deg,
+                var(--teal),
+                var(--teal-mid),
+                var(--teal-bright));
+              color:#fff;
+              font-weight:800;
+              font-size:.92rem;
+              padding:15px 30px;
+              border-radius:12px;
+              text-decoration:none;
+              transition:.3s;
+              box-shadow:0 6px 28px 
+              rgba(13,138,114,.3)">
+            💬 Apply to Become an Agent →
+          </a>
+        </div>
+
+        <div style="
+          display:flex;
+          flex-direction:column;
+          gap:14px">
+
+          <div style="
+            font-size:.62rem;
+            letter-spacing:.18em;
+            text-transform:uppercase;
+            color:var(--teal-bright);
+            font-weight:700;
+            margin-bottom:4px">
+            💰 Agent Earning Potential
+          </div>
+
+          <div style="
+            background:rgba(0,0,0,.25);
+            border:1px solid rgba(18,184,150,.15);
+            border-radius:var(--r);
+            padding:16px 20px">
+            <div style="
+              font-size:.72rem;
+              color:rgba(240,237,231,.4);
+              margin-bottom:6px">
+              2 orders/month × ₦500,000 avg
+            </div>
+            <div style="
+              font-family:'Bebas Neue';
+              font-size:1.8rem;
+              color:var(--teal-bright);
+              letter-spacing:.04em">
+              ₦50,000/month
+            </div>
+            <div style="
+              font-size:.68rem;
+              color:rgba(240,237,231,.3);
+              margin-top:2px">
+              Part-time. Zero investment.
+            </div>
+          </div>
+
+          <div style="
+            background:rgba(0,0,0,.25);
+            border:1px solid rgba(18,184,150,.15);
+            border-radius:var(--r);
+            padding:16px 20px">
+            <div style="
+              font-size:.72rem;
+              color:rgba(240,237,231,.4);
+              margin-bottom:6px">
+              4 orders/month × ₦500,000 avg
+            </div>
+            <div style="
+              font-family:'Bebas Neue';
+              font-size:1.8rem;
+              color:var(--gold-bright);
+              letter-spacing:.04em">
+              ₦100,000/month
+            </div>
+            <div style="
+              font-size:.68rem;
+              color:rgba(240,237,231,.3);
+              margin-top:2px">
+              Side income that grows with effort
+            </div>
+          </div>
+
+          <div style="
+            background:rgba(0,0,0,.25);
+            border:1px solid rgba(200,137,26,.2);
+            border-radius:var(--r);
+            padding:16px 20px">
+            <div style="
+              font-size:.72rem;
+              color:rgba(240,237,231,.4);
+              margin-bottom:6px">
+              10 orders/month × ₦500,000 avg
+            </div>
+            <div style="
+              font-family:'Bebas Neue';
+              font-size:1.8rem;
+              color:var(--gold-bright);
+              letter-spacing:.04em">
+              ₦250,000/month
+            </div>
+            <div style="
+              font-size:.68rem;
+              color:rgba(240,237,231,.3);
+              margin-top:2px">
+              Full-time income from sharing
+            </div>
+          </div>
+
+          <div style="
+            font-size:.72rem;
+            color:rgba(240,237,231,.3);
+            line-height:1.7;
+            padding:12px 16px;
+            background:rgba(0,0,0,.2);
+            border-radius:9px">
+            ✦ Min. qualifying order: 
+              <strong style="color:var(--white)">
+              ₦200,000</strong><br>
+            ✦ Commission paid: Monthly via 
+              bank transfer<br>
+            ✦ Paid after customer goods delivered<br>
+            ✦ Must have 200+ active WhatsApp contacts
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
   </div>
 </section>
 
