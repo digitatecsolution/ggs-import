@@ -7,6 +7,30 @@
 <meta name="description" content="Shop 100% authentic tech & fashion from China at factory cost prices. iPhones, MacBooks, Samsung, designer bags. Secure Flutterwave checkout. 200+ Nigerians trust GGS.">
 <meta property="og:title" content="GGS Global Consult — Authentic Imports at Cost Price">
 <meta property="og:description" content="Order authentic gadgets & fashion direct from China. You pay ONLY the factory cost price. 200+ happy customers. Flutterwave secure checkout.">
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YSF1QJ4N5G"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-YSF1QJ4N5G');
+</script>
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){
+if(f.fbq)return;n=f.fbq=function(){
+n.callMethod?n.callMethod.apply(n,arguments)
+:n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;
+n.version='2.0';n.queue=[];
+t=b.createElement(e);t.async=!0;t.src=v;
+s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}
+(window,document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', 'YOUR_PIXEL_ID');
+fbq('track', 'PageView');
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
 <script src="https://checkout.flutterwave.com/v3.js"></script>
@@ -642,7 +666,7 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
         🛒 Cart
         <span class="cart-dot" id="cartDot">0</span>
       </div>
-      <a href="https://wa.me/2348142717585" class="wa-btn" target="_blank">💬 WhatsApp</a>
+      <a href="https://wa.me/2348142717585" class="wa-btn"   onclick="gtag('event','whatsapp_click',   {event_category:'engagement',   event_label:'header_whatsapp'})" target="_blank">💬 WhatsApp</a>
     </div>
   </div>
 </header>
@@ -1116,6 +1140,139 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
   </div>
 </footer>
 
+<!-- LIVE ORDER NOTIFICATIONS -->
+<div id="liveNotif" style="
+  position:fixed;bottom:100px;left:20px;
+  z-index:399;background:var(--card);
+  border:1px solid rgba(200,137,26,.25);
+  border-radius:12px;padding:14px 18px;
+  max-width:280px;display:none;
+  animation:slideInLeft .4s ease;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);">
+  <div style="display:flex;align-items:
+    center;gap:10px;">
+    <span style="font-size:1.4rem" 
+      id="lnIcon">📱</span>
+    <div>
+      <div style="font-size:.78rem;
+        font-weight:700;color:var(--white)" 
+        id="lnName">Chukwudi O.</div>
+      <div style="font-size:.7rem;
+        color:var(--muted2)" 
+        id="lnProduct">
+        Just ordered iPhone 15 Pro Max</div>
+      <div style="font-size:.65rem;
+        color:var(--teal-bright);margin-top:2px" 
+        id="lnTime">2 minutes ago</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const LIVE_ORDERS = [
+  {icon:'📱',name:'Adaeze O. · Lagos',
+   product:'Ordered iPhone 15 Pro Max',
+   time:'3 min ago'},
+  {icon:'💻',name:'Chukwudi O. · Asaba',
+   product:'Ordered MacBook Air M3',
+   time:'12 min ago'},
+  {icon:'👜',name:'Funmi N. · Abuja',
+   product:'Ordered Designer Handbag',
+   time:'28 min ago'},
+  {icon:'🎧',name:'Tunde M. · Enugu',
+   product:'Ordered AirPods Pro',
+   time:'1 hr ago'},
+  {icon:'⌚',name:'Blessing U. · Warri',
+   product:'Ordered Apple Watch S9',
+   time:'2 hrs ago'},
+  {icon:'📱',name:'Emeka O. · Onitsha',
+   product:'Ordered Samsung S24 Ultra',
+   time:'3 hrs ago'},
+];
+let lnIdx = 0;
+function showLiveNotif(){
+  const n = LIVE_ORDERS[lnIdx % LIVE_ORDERS.length];
+  const el = document.getElementById('liveNotif');
+  document.getElementById('lnIcon').textContent 
+    = n.icon;
+  document.getElementById('lnName').textContent 
+    = n.name;
+  document.getElementById('lnProduct').textContent 
+    = n.product;
+  document.getElementById('lnTime').textContent 
+    = n.time;
+  el.style.display = 'block';
+  setTimeout(()=>{ el.style.display='none'; },5000);
+  lnIdx++;
+}
+setTimeout(()=>{
+  showLiveNotif();
+  setInterval(showLiveNotif,25000);
+},8000);
+</script>
+<!-- EXIT INTENT POPUP -->
+<div id="exitPopup" style="
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.85);z-index:800;
+  place-items:center;padding:20px;">
+  <div style="background:var(--card);
+    border:1px solid rgba(200,137,26,.3);
+    border-radius:20px;padding:40px;
+    max-width:460px;width:100%;
+    text-align:center;position:relative;">
+    <div style="font-size:3rem;
+      margin-bottom:16px">⚡</div>
+    <h3 style="font-family:'Playfair Display';
+      font-size:1.8rem;margin-bottom:12px;
+      color:var(--gold-bright)">
+      Wait — Before You Leave
+    </h3>
+    <p style="color:var(--muted2);
+      font-size:.88rem;margin-bottom:24px;
+      line-height:1.8">
+      Get our 
+      <strong style="color:var(--white)">
+      exclusive price list</strong> 
+      sent directly to your WhatsApp — 
+      including items 
+      <em style="color:var(--gold-bright)">
+      not on the website.</em>
+    </p>
+    <a href="https://wa.me/2348142717585?text=Send%20me%20the%20full%20GGS%20price%20list%20please"
+      target="_blank" style="display:block;
+      padding:16px;background:linear-gradient(
+      135deg,var(--teal),var(--teal-bright));
+      color:#fff;font-weight:800;
+      border-radius:12px;
+      text-decoration:none;font-size:1rem;
+      margin-bottom:12px">
+      💬 Send Me The Full Price List
+    </a>
+    <button onclick="
+      document.getElementById('exitPopup')
+      .style.display='none';
+      localStorage.setItem('exitSeen','1')"
+      style="background:none;border:none;
+      color:var(--muted);font-size:.8rem;
+      cursor:pointer;font-family:inherit">
+      No thanks, I'll pay full market price
+    </button>
+  </div>
+</div>
+
+<script>
+let exitShown = 
+  localStorage.getItem('exitSeen') === '1';
+document.addEventListener('mouseleave',
+  function(e){
+    if(e.clientY < 10 && !exitShown){
+      exitShown = true;
+      document.getElementById('exitPopup')
+        .style.display = 'grid';
+    }
+  }
+);
+</script>
 <!-- WA FAB -->
 <a href="https://wa.me/2348142717585?text=Hi%20GGS%2C%20I%20want%20to%20place%20a%20pre-order" class="wa-fab" target="_blank">💬</a>
 
@@ -1732,6 +1889,34 @@ function doPayment() {
     callback(r) {
       if (r.status === 'successful' || r.status === 'completed') {
         // saveOrderToFirebase is declared on window inside the Firebase ES module
+        // Track purchase in Google Analytics
+gtag('event', 'purchase', {
+  transaction_id: txRef,
+  value: total,
+  currency: 'NGN',
+  items: window.cart.map(i => ({
+    item_id: i.id,
+    item_name: i.name,
+    price: i.price,
+    quantity: i.qty
+  }))
+});
+
+// Track WhatsApp as lead
+gtag('event', 'generate_lead', {
+  currency: 'NGN',
+  value: total
+});
+// Meta Pixel purchase tracking
+if(typeof fbq !== 'undefined'){
+  fbq('track', 'Purchase', {
+    value: total,
+    currency: 'NGN',
+    content_type: 'product',
+    content_ids: window.cart.map(i => i.id)
+  });
+  fbq('track', 'Lead');
+}
         if (typeof window.saveOrderToFirebase === 'function') {
           window.saveOrderToFirebase(r, first, last, email, phone, state, addr, ref, chosenShip, total, txRef);
         }
