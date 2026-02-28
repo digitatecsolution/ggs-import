@@ -97,8 +97,10 @@ onSnapshot(doc(db, "settings", "site-config"), (snap) => {
   if (s.countdownDeadline?.toDate) {
     window.countdownDeadline = s.countdownDeadline.toDate();
   }
-  window.deliveryFeePH    = s.deliveryFeePH    ?? 0;
-  window.deliveryFeeOther = s.deliveryFeeOther ?? 5000;
+  window.deliveryFeePH = s.deliveryFeePH ?? 0;
+window.deliveryFeeOther = s.deliveryFeeOther ?? 5000;
+window.deliveryFeeLagos = s.deliveryFeeLagos ?? 7500;
+window.deliveryFeeNorth = s.deliveryFeeNorth ?? 9000;
   if (s.whatsappNumber) window.GGS_WA = s.whatsappNumber;
   if (s.maintenanceMode) {
     document.body.innerHTML = '<div style="display:grid;place-items:center;min-height:100vh;background:#08090C;color:#F0EDE7;font-family:sans-serif;text-align:center;padding:40px"><h1 style="font-size:2rem;margin-bottom:16px">🔧 We\'ll be right back</h1><p style="color:#8C8898">GGS Global Consult is briefly down for maintenance. Check back shortly.</p></div>';
@@ -1434,8 +1436,10 @@ document.addEventListener('mouseleave', function(e){
 const FW_KEY = 'FLWPUBK-14a050e1c6e7309deb9d08c19c4e4013-X';
 window.GGS_WA  = '2348142717585';
 const BIZ      = 'GGS Global Consult';
-window.deliveryFeePH    = 0;
+window.deliveryFeePH = 0;
 window.deliveryFeeOther = 5000;
+window.deliveryFeeLagos = 7500;
+window.deliveryFeeNorth = 9000;
 
 // CAT_META
 const CAT_META = {
@@ -1765,18 +1769,22 @@ function doPayment() {
   const stateL = state.toLowerCase();
 let deliveryFee = 0;
 let deliveryLabel = '';
+const feePH = window.deliveryFeePH ?? 0;
+const feeOther = window.deliveryFeeOther ?? 5000;
+const feeLagos = window.deliveryFeeLagos ?? 7500;
+const feeNorth = window.deliveryFeeNorth ?? 9000;
 if (stateL.includes('rivers')) {
-deliveryFee = 0;
-deliveryLabel = 'Free (Port Harcourt)';
+deliveryFee = feePH;
+deliveryLabel = feePH === 0 ? 'Free (Port Harcourt)' : `₦${feePH.toLocaleString()} (Port Harcourt)`;
 } else if (['delta','bayelsa','edo','cross river','akwa ibom','abia','imo','anambra','enugu','ebonyi'].some(s => stateL.includes(s))) {
-deliveryFee = 5000;
-deliveryLabel = '₦5,000 (South-South/South-East)';
+deliveryFee = feeOther;
+deliveryLabel = `₦${feeOther.toLocaleString()} (South-South/South-East)`;
 } else if (stateL.includes('lagos') || stateL.includes('abuja') || stateL.includes('fct') || stateL.includes('ogun')) {
-deliveryFee = 7500;
-deliveryLabel = '₦7,500 (Lagos/Abuja)';
+deliveryFee = feeLagos;
+deliveryLabel = `₦${feeLagos.toLocaleString()} (Lagos/Abuja)`;
 } else {
-deliveryFee = 9000;
-deliveryLabel = '₦9,000 (Other States)';
+deliveryFee = feeNorth;
+deliveryLabel = `₦${feeNorth.toLocaleString()} (Other States)`;
 }
 const delivery = deliveryLabel;
   const waMsg = `Hi GGS! I just paid for my order.\n\n👤 Name: ${first} ${last}\n📧 Email: ${email}\n📱 WhatsApp: ${phone}\n📍 State: ${state}\n🏠 Address: ${addr}\n\n📦 Shipping: ${chosenShip}\n🚚 Local Delivery: ${delivery}\n\n📋 Items:\n${window.cart.map(i => `• ${i.name} × ${i.qty} – ${i.variant} = ${fmt(i.price * i.qty)}`).join('\n')}\n\n💰 Total Paid: ${fmt(total)}\n🧾 Ref: ${txRef}${ref ? '\n🎁 Referral: ' + ref : ''}\n\nPlease confirm. Thank you!`;
