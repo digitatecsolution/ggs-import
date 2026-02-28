@@ -107,6 +107,17 @@ window.deliveryFeeNorth = s.deliveryFeeNorth ?? 9000;
   }
   const cta = document.getElementById("checkoutCta");
   if (cta) cta.disabled = s.acceptingOrders === false;
+  if(s.agentSection){
+    const ag = s.agentSection;
+    const agentEl = document.querySelector('#referral .reveal:last-child');
+    if(agentEl) agentEl.style.display = ag.visible === false ? 'none' : '';
+    document.querySelectorAll('#referral strong').forEach(el => {
+      if(el.textContent.includes('% commission')) el.textContent = ag.commission + '% commission';
+    });
+    document.querySelectorAll('#referral strong').forEach(el => {
+      if(el.textContent === '₦200,000') el.textContent = '₦' + (ag.minOrder||200000).toLocaleString();
+    });
+  }
 });
 
 // Save order to Firestore
