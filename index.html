@@ -35,16 +35,11 @@ fbq('track', 'PageView');
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
 <script src="https://checkout.flutterwave.com/v3.js"></script>
 
-<!-- FIREBASE SDK (ES MODULE) -->
+<!-- FIREBASE SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getFirestore,
-  collection,
-  doc,
-  addDoc,
-  onSnapshot,
-  serverTimestamp
+  getFirestore, collection, doc, addDoc, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -59,7 +54,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-// Real-time products listener
 onSnapshot(collection(db, "products"), (snapshot) => {
   const categoryMap = {};
   snapshot.forEach((d) => {
@@ -74,13 +68,14 @@ onSnapshot(collection(db, "products"), (snapshot) => {
   });
   window.allProducts = categoryMap;
   if (typeof window.renderCatalog === "function") window.renderCatalog();
+  // Handle hash routing after products load
+  if (typeof window.handleHashOnLoad === "function") window.handleHashOnLoad();
 }, (err) => {
   console.error("Firestore products error:", err);
   window.allProducts = {};
   if (typeof window.renderCatalog === "function") window.renderCatalog();
 });
 
-// Real-time settings listener
 onSnapshot(doc(db, "settings", "site-config"), (snap) => {
   if (!snap.exists()) return;
   const s = snap.data();
@@ -98,9 +93,9 @@ onSnapshot(doc(db, "settings", "site-config"), (snap) => {
     window.countdownDeadline = s.countdownDeadline.toDate();
   }
   window.deliveryFeePH = s.deliveryFeePH ?? 0;
-window.deliveryFeeOther = s.deliveryFeeOther ?? 5000;
-window.deliveryFeeLagos = s.deliveryFeeLagos ?? 7500;
-window.deliveryFeeNorth = s.deliveryFeeNorth ?? 9000;
+  window.deliveryFeeOther = s.deliveryFeeOther ?? 5000;
+  window.deliveryFeeLagos = s.deliveryFeeLagos ?? 7500;
+  window.deliveryFeeNorth = s.deliveryFeeNorth ?? 9000;
   if (s.whatsappNumber) window.GGS_WA = s.whatsappNumber;
   if (s.maintenanceMode) {
     document.body.innerHTML = '<div style="display:grid;place-items:center;min-height:100vh;background:#08090C;color:#F0EDE7;font-family:sans-serif;text-align:center;padding:40px"><h1 style="font-size:2rem;margin-bottom:16px">🔧 We\'ll be right back</h1><p style="color:#8C8898">GGS Global Consult is briefly down for maintenance. Check back shortly.</p></div>';
@@ -111,16 +106,9 @@ window.deliveryFeeNorth = s.deliveryFeeNorth ?? 9000;
     const ag = s.agentSection;
     const agentEl = document.querySelector('#referral .reveal:last-child');
     if(agentEl) agentEl.style.display = ag.visible === false ? 'none' : '';
-    document.querySelectorAll('#referral strong').forEach(el => {
-      if(el.textContent.includes('% commission')) el.textContent = ag.commission + '% commission';
-    });
-    document.querySelectorAll('#referral strong').forEach(el => {
-      if(el.textContent === '₦200,000') el.textContent = '₦' + (ag.minOrder||200000).toLocaleString();
-    });
   }
 });
 
-// Save order to Firestore
 window.saveOrderToFirebase = async function(flwResponse, first, last, email, phone, state, addr, ref, shipping, total, txRef) {
   try {
     await addDoc(collection(db, "orders"), {
@@ -142,7 +130,10 @@ window.saveOrderToFirebase = async function(flwResponse, first, last, email, pho
 };
 </script>
 
-<style>
+<style>@keyframes deliveryPop{
+  from{opacity:0;transform:scale(.95) translateY(4px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;font-size:16px}
 
@@ -321,21 +312,23 @@ nav a:hover{color:var(--white);background:rgba(255,255,255,.06)}
 .b-pick{background:rgba(8,9,12,.85);border:1px solid rgba(200,137,26,.3);color:var(--gold-bright)}
 .pc-wish{position:absolute;top:14px;right:14px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(8,9,12,.7);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;font-size:.9rem;backdrop-filter:blur(8px);}
 .pc-wish:hover{background:rgba(200,137,26,.2);border-color:rgba(200,137,26,.4)}
-.pc-img{height:220px;background:var(--card2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;flex-shrink:0;}
+.pc-img{height:220px;background:var(--card2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;flex-shrink:0;cursor:pointer;}
 .pc-img img{width:100%;height:100%;object-fit:cover;transition:.55s}
 .prod-card:hover .pc-img img{transform:scale(1.08)}
 .pc-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(8,9,12,.65));}
 .pc-emoji{font-size:5rem;opacity:.5}
 .pc-body{padding:22px;flex:1;display:flex;flex-direction:column}
 .pc-category{display:inline-flex;align-items:center;gap:5px;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:8px;}
-.pc-name{font-size:1.04rem;font-weight:800;margin-bottom:8px;line-height:1.3}
+.pc-name{font-size:1.04rem;font-weight:800;margin-bottom:8px;line-height:1.3;cursor:pointer;transition:color .2s;}
+.pc-name:hover{color:var(--gold-bright)}
 .pc-spec{font-size:.76rem;color:var(--muted2);margin-bottom:16px;flex:1;line-height:1.7}
 .pc-rating{display:flex;align-items:center;gap:6px;margin-bottom:14px;}
 .pc-stars{color:var(--gold-bright);font-size:.72rem;letter-spacing:1px}
 .pc-rating-n{font-size:.7rem;color:var(--muted2)}
 .price-block{margin-bottom:14px}
 .pc-cost-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-bright);margin-bottom:3px;display:block;}
-.pc-price{font-family:'Playfair Display';font-size:2.1rem;font-weight:900;color:var(--gold-bright);line-height:1;}
+.pc-price{font-family:'Playfair Display';font-size:2.1rem;font-weight:900;color:var(--gold-bright);line-height:1;transition:color .3s;}
+.pc-price-from{font-size:.65rem;color:var(--muted);margin-left:4px;font-family:'Plus Jakarta Sans';font-weight:500;}
 .pc-shipping-note{font-size:.65rem;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:4px;}
 .var-select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:10px 13px;color:var(--white);font-family:'Plus Jakarta Sans';font-size:.82rem;outline:none;transition:.2s;-webkit-appearance:none;margin-bottom:12px;cursor:pointer;}
 .var-select:focus{border-color:rgba(200,137,26,.4)}
@@ -344,9 +337,61 @@ nav a:hover{color:var(--white);background:rgba(255,255,255,.06)}
 .add-btn:hover{background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));box-shadow:0 8px 28px rgba(18,184,150,.35);}
 .add-btn.added{background:linear-gradient(135deg,var(--gold-deep),var(--gold-mid));color:var(--ink);box-shadow:0 4px 16px rgba(200,137,26,.3);}
 .add-btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.view-details-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:10px;color:var(--muted2);font-weight:600;font-size:.78rem;cursor:pointer;font-family:'Plus Jakarta Sans';transition:.3s;margin-top:8px;}
+.view-details-btn:hover{border-color:rgba(200,137,26,.35);color:var(--gold-bright);background:rgba(200,137,26,.05);}
 .no-results{grid-column:1/-1;text-align:center;padding:64px 24px;color:var(--muted);}
 .no-results .nr-icon{font-size:3.5rem;display:block;margin-bottom:16px;opacity:.4}
 .no-results p{font-size:.9rem}
+
+/* ── PRODUCT DETAIL MODAL ── */
+#product-detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(16px);z-index:600;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;}
+#product-detail-overlay.open{display:flex;}
+.pdm-box{background:var(--card);border:1px solid rgba(200,137,26,.18);border-radius:var(--r4);width:100%;max-width:740px;margin:auto;position:relative;overflow:hidden;box-shadow:0 32px 100px rgba(0,0,0,.9);animation:pdmSlideUp .38s cubic-bezier(.25,.46,.45,.94) both;}
+@keyframes pdmSlideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+.pdm-box::before{content:'';position:absolute;top:0;inset-inline:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold-deep),var(--gold-bright),var(--gold-deep),transparent);z-index:1;}
+.pdm-close{position:absolute;top:16px;right:16px;z-index:10;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:50%;width:38px;height:38px;display:grid;place-items:center;cursor:pointer;color:var(--muted2);font-size:.9rem;transition:.2s;backdrop-filter:blur(8px);}
+.pdm-close:hover{color:var(--white);background:rgba(255,255,255,.1);}
+.pdm-back{position:absolute;top:16px;left:16px;z-index:10;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);border-radius:100px;padding:7px 14px;cursor:pointer;color:var(--muted2);font-size:.74rem;font-weight:600;font-family:'Plus Jakarta Sans';transition:.2s;backdrop-filter:blur(8px);}
+.pdm-back:hover{color:var(--white);background:rgba(255,255,255,.08);}
+.pdm-img{width:100%;height:360px;background:var(--card2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;position:relative;}
+.pdm-img img{width:100%;height:100%;object-fit:cover;}
+.pdm-img-emoji{font-size:8rem;opacity:.4}
+.pdm-body{padding:32px;}
+.pdm-cat{display:inline-flex;align-items:center;gap:5px;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:10px;}
+.pdm-name-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
+.pdm-name{font-family:'Playfair Display';font-size:1.8rem;font-weight:900;line-height:1.15;flex:1;}
+.pdm-badge{padding:5px 12px;border-radius:8px;font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;margin-top:6px;}
+.pdm-spec{font-size:.84rem;color:var(--muted2);margin-bottom:14px;line-height:1.65;}
+.pdm-rating{display:flex;align-items:center;gap:6px;margin-bottom:20px;}
+.pdm-stars{color:var(--gold-bright);font-size:.8rem;letter-spacing:2px}
+.pdm-rating-n{font-size:.72rem;color:var(--muted2)}
+.pdm-price-section{margin-bottom:20px;}
+.pdm-cost-label{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-bright);margin-bottom:4px;display:block;}
+.pdm-price{font-family:'Playfair Display';font-size:2.8rem;font-weight:900;color:var(--gold-bright);line-height:1;transition:all .3s;}
+.pdm-ship-note{font-size:.68rem;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:5px;}
+.pdm-var-select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--white);font-family:'Plus Jakarta Sans';font-size:.88rem;outline:none;transition:.2s;-webkit-appearance:none;margin-bottom:16px;cursor:pointer;}
+.pdm-var-select:focus{border-color:rgba(200,137,26,.4);}
+.pdm-var-select option{background:var(--card);color:var(--white);}
+.pdm-add-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--teal),var(--teal-mid),var(--teal-bright));border:none;border-radius:12px;color:#fff;font-weight:800;font-size:.98rem;cursor:pointer;font-family:'Plus Jakarta Sans';transition:.3s;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 6px 28px rgba(13,138,114,.3);}
+.pdm-add-btn:hover{transform:translateY(-2px);box-shadow:0 14px 44px rgba(18,184,150,.4);}
+.pdm-add-btn.added{background:linear-gradient(135deg,var(--gold-deep),var(--gold-mid));color:var(--ink);}
+.pdm-divider{height:1px;background:rgba(255,255,255,.07);margin:28px 0;}
+.pdm-desc-title{font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+.pdm-desc-body{font-size:.86rem;color:rgba(240,237,231,.55);line-height:1.88;white-space:pre-line;}
+.pdm-share-row{display:flex;gap:10px;margin-top:24px;}
+.pdm-share-btn{flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:transparent;color:var(--muted2);font-family:'Plus Jakarta Sans';font-size:.78rem;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.pdm-share-btn:hover{border-color:rgba(200,137,26,.3);color:var(--gold-bright);background:rgba(200,137,26,.05);}
+.pdm-share-btn.wa{border-color:rgba(37,211,102,.3);color:#4ade80;}
+.pdm-share-btn.wa:hover{background:rgba(37,211,102,.08);}
+
+@media(max-width:600px){
+  .pdm-box{border-radius:var(--r3) var(--r3) 0 0;margin-bottom:0;}
+  #product-detail-overlay{padding:0;align-items:flex-end;}
+  .pdm-img{height:260px;}
+  .pdm-body{padding:20px;}
+  .pdm-name{font-size:1.5rem;}
+  .pdm-price{font-size:2.2rem;}
+}
 
 .ship-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:18px}
 .ship-card{background:#fff;border:1.5px solid var(--cream2);border-radius:var(--r3);padding:34px 28px;position:relative;overflow:hidden;transition:.35s;box-shadow:0 2px 24px rgba(0,0,0,.05);}
@@ -781,7 +826,7 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
       <div class="sa-icon">⚠️</div>
       <div>
         <div class="sa-title">Shipping Is NOT Included in Product Prices</div>
-        <p class="sa-p">What you see in the catalog is the <strong>exact factory cost price</strong> — no hidden markup. When goods arrive in Nigeria, we send you the shipping company's pickup message showing the weight-based fee. You pay that to clear your goods. <strong>Port Harcourt customers: free local delivery. All other states: flat ₦5,000 delivery fee.</strong></p>
+        <p class="sa-p">What you see in the catalog is the <strong>exact factory cost price</strong> — no hidden markup. When goods arrive in Nigeria, we send you the shipping company's pickup message showing the weight-based fee. You pay that to clearyour goods. You are NEVER overcharged — we show you the carrier's actual receipt. This is the GGS guarantee.</p>
       </div>
     </div>
   </div>
@@ -791,46 +836,74 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
 <section class="dark-section" id="how">
   <div class="container">
     <div class="sec-head reveal">
-      <span class="sec-tag">Simple Process</span>
-      <h2 class="sec-h">From Browsing to<br><em>Your Door in 5 Steps</em></h2>
-      <p class="sec-p">Transparent, stress-free, fully trackable from order placement to delivery.</p>
+      <span class="sec-tag">⚙️ The Process</span>
+      <h2 class="sec-h">How GGS <em>Works</em></h2>
+      <p class="sec-p">Transparent from click to delivery. No hidden charges. No surprises. Just factory cost prices and honest shipping fees.</p>
     </div>
     <div class="steps-row reveal">
-      <div class="step"><div class="step-num">01</div><span class="step-icon">🛍️</span><div class="step-title">Browse &amp; Search</div><div class="step-desc">Explore the catalog or use the search bar. Choose item, color, variant. All prices are exact factory cost — zero markup.</div><span class="step-note">↓ Scroll to catalog</span></div>
-      <div class="step"><div class="step-num">02</div><span class="step-icon">🛒</span><div class="step-title">Add to Cart</div><div class="step-desc">Add one or many items. Mix tech and fashion in one order. Choose your preferred shipping method at checkout.</div><span class="step-note">Multiple items welcome</span></div>
-      <div class="step"><div class="step-num">03</div><span class="step-icon">💳</span><div class="step-title">Pay Cost Price</div><div class="step-desc">Checkout securely via Flutterwave. Pay the product cost to lock your order. Card, transfer, USSD accepted. Instant receipt.</div><span class="step-note">Powered by Flutterwave</span></div>
-      <div class="step"><div class="step-num">04</div><span class="step-icon">📦</span><div class="step-title">We Source &amp; Ship</div><div class="step-desc">We place your order with verified China suppliers. WhatsApp tracking updates every 5–7 days from sourcing to Nigeria.</div><span class="step-note">WhatsApp updates</span></div>
-      <div class="step"><div class="step-num">05</div><span class="step-icon">🎉</span><div class="step-title">Receive &amp; Enjoy</div><div class="step-desc">Goods arrive in Nigeria. We send you the shipping invoice. Pay it, we collect and deliver to your doorstep.</div><span class="step-note">PH: Free · SS/SE: ₦5k · Lagos: ₦7.5k · North: ₦9k</span></div>
+      <div class="step">
+        <div class="step-num">01</div>
+        <span class="step-icon">🛍️</span>
+        <div class="step-title">Browse & Order</div>
+        <div class="step-desc">Select your product and variant. Pay the exact factory cost price via Flutterwave — cards, bank transfer, USSD, all accepted.</div>
+        <span class="step-note">→ Flutterwave secured</span>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <span class="step-icon">🏭</span>
+        <div class="step-title">We Source It</div>
+        <div class="step-desc">Your order is placed directly with our verified China suppliers. 100% authentic — factory-sealed with original packaging.</div>
+        <span class="step-note">→ Factory direct</span>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <span class="step-icon">✈️</span>
+        <div class="step-title">Ships to Nigeria</div>
+        <div class="step-desc">Goods ship via your chosen method — Express Air (3–7 days), Standard Air (7–14 days), or Sea (50–60 days).</div>
+        <span class="step-note">→ Real-time tracking</span>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <span class="step-icon">⚖️</span>
+        <div class="step-title">Weighed & Invoiced</div>
+        <div class="step-desc">On arrival we send you the carrier's official weight receipt. You pay shipping cost only — exactly what the carrier charges. Zero markup.</div>
+        <span class="step-note">→ No hidden fees</span>
+      </div>
+      <div class="step">
+        <div class="step-num">05</div>
+        <span class="step-icon">📦</span>
+        <div class="step-title">Professionally Packed</div>
+<div class="step-desc">Every order is photographed and professionally packed with an official invoice before dispatch. You receive photo confirmation before it leaves.</div>
+<span class="step-note">→ Photo confirmation sent</span>
+      </div>
+      <div class="step">
+        <div class="step-num">06</div>
+        <span class="step-icon">🏠</span>
+        <div class="step-title">Delivered to You</div>
+<div class="step-desc">Port Harcourt: FREE door delivery. Nationwide delivery to all 36 states within 1–3 business days of arrival in Nigeria.</div>
+<span class="step-note">→ All 36 states covered</span>
+      </div>
     </div>
     <div class="payment-cards reveal">
       <div class="pay-card gold-border">
         <span class="pay-icon">💳</span>
-        <div class="pay-title">Secure Online Payment</div>
+        <div class="pay-title">Payment Methods</div>
         <ul class="pay-list">
-          <li>Pay the exact <strong>cost price</strong> online to lock your order and current rate</li>
-          <li>Accepted: Debit/Credit cards, Bank Transfer, USSD, Mobile Money</li>
-          <li>Powered by <strong>Flutterwave</strong> — Nigeria's most trusted gateway</li>
-          <li>Payment receipt sent instantly to your email</li>
-          <li>Shipping paid separately on arrival — weight-based, per chosen method</li>
+          <li>Debit/Credit Cards (Visa, Mastercard, Verve)</li>
+          <li>Bank Transfer — instant confirmation</li>
+          <li>USSD — *737#, *919# etc.</li>
+          <li>Mobile Money & Opay</li>
+          <li>Flutterwave bank link</li>
         </ul>
       </div>
       <div class="pay-card">
         <span class="pay-icon">🚚</span>
-        <div class="pay-title">Delivery &amp; Tracking</div>
-        <ul class="pay-list">
-          <li>Real-time updates every <strong>5–7 days</strong> via WhatsApp</li>
-          <li>Nationwide delivery to all 36 states</li>
-          <li>All products insured during transit</li>
-          <li>Port Harcourt: <strong>Free local delivery</strong></li>
-<li>South-South/South-East: <strong>₦5,000</strong></li>
-<li>Lagos/Abuja: <strong>₦7,500</strong></li>
-<li>All other states: <strong>₦9,000</strong></li>
-        </ul>
+        <div class="pay-title">Delivery Fees (on arrival)</div>
         <div class="delivery-chips">
-          <div class="dchip"><strong>3–7</strong><span>Express</span></div>
-          <div class="dchip"><strong>7–14</strong><span>Air Std</span></div>
-          <div class="dchip"><strong>14–21</strong><span>Battery</span></div>
-          <div class="dchip"><strong>50–60</strong><span>Sea Bulk</span></div>
+          <div class="dchip"><strong>FREE</strong><span>Port Harcourt</span></div>
+          <div class="dchip"><strong>₦5,000</strong><span>SS / SE States</span></div>
+          <div class="dchip"><strong>₦7,500</strong><span>Lagos / Abuja</span></div>
+          <div class="dchip"><strong>₦9,000</strong><span>Northern States</span></div>
         </div>
       </div>
     </div>
@@ -841,403 +914,423 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
 <section class="surface-section" id="catalog">
   <div class="container">
     <div class="sec-head reveal">
-      <span class="sec-tag">📋 Live Catalog — Round 2</span>
-      <h2 class="sec-h">Shop at <em>Factory Cost Price</em></h2>
-      <p class="sec-p">Exact supplier cost prices — zero markup. Shipping is separate and paid on arrival by weight. Add to cart and pay securely via Flutterwave.</p>
+      <span class="sec-tag">🛍️ Current Catalog</span>
+      <h2 class="sec-h">Shop at <em>Factory Cost</em></h2>
+      <p class="sec-p">Every price is the exact amount we pay the factory. Zero markup. Select your variant — each one shows its own real price.</p>
     </div>
-    <div class="cat-bar-wrap reveal">
-      <div class="cat-bar" id="catBar">
-        <div style="padding:8px 16px;color:var(--muted);font-size:.8rem;white-space:nowrap">Loading categories…</div>
-      </div>
-    </div>
-    <div class="search-results-banner" id="searchBanner">
-      <span class="srb-text" id="searchBannerText">Showing results for "..."</span>
+
+    <div class="search-results-banner" id="searchResultsBanner">
+      <span class="srb-text" id="searchResultsText">Showing results for ""</span>
       <button class="srb-clear" onclick="clearSearch()">✕ Clear Search</button>
     </div>
-    <div id="catalogPanels">
-      <div class="catalog-loading">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Loading products from Firebase…</div>
-      </div>
-    </div>
-    <p style="text-align:center;margin-top:30px;font-size:.83rem;color:var(--muted2)">
-      50+ more styles available. <a href="https://wa.me/2348142717585?text=Please%20send%20me%20the%20full%20catalog" target="_blank" style="color:var(--gold-bright);text-decoration:none;font-weight:700">Request full catalog on WhatsApp →</a>
-    </p>
-  </div>
-</section>
 
-<!-- CUSTOM REQUEST -->
-<section class="cream-section" id="request">
-  <div class="container">
-    <div class="sec-head reveal">
-      <span class="sec-tag">Custom Import</span>
-      <h2 class="sec-h">Can't Find It?<br><em>We'll Source It.</em></h2>
-      <p class="sec-p">Any product. Any brand. Any specification. If you can find it online, we can import it at cost price.</p>
+    <div class="cat-bar-wrap reveal">
+      <div class="cat-bar" id="catBar">
+        <button class="cat-tab active" data-cat="all" onclick="switchCat('all')">All Products</button>
+      </div>
     </div>
-    <div class="req-card reveal">
-      <div class="form-row">
-        <div class="field"><label>Full Name</label><input type="text" id="rName" placeholder="Your full name"></div>
-        <div class="field"><label>WhatsApp Number</label><input type="tel" id="rPhone" placeholder="+234 801 234 5678"></div>
-      </div>
-      <div class="field"><label>Product Category</label>
-        <select id="rCat">
-          <option value="">Choose category...</option>
-          <option>📱 Smartphone (iPhone / Samsung / Other)</option>
-          <option>💻 Laptop (MacBook / Windows / Gaming)</option>
-          <option>🎧 Tech Accessories</option>
-          <option>🪑 Gaming Chair / Setup</option>
-          <option>👜 Designer Handbag</option>
-          <option>👠 Ladies Footwear</option>
-          <option>👞 Men's Footwear</option>
-          <option>💼 Fashion Accessories</option>
-          <option>📦 Something Else</option>
-        </select>
-      </div>
-      <div class="field"><label>Describe What You Want</label><textarea id="rDesc" placeholder="Be specific: model name, color, storage, brand, or paste a product link. The more detail, the better."></textarea></div>
-      <div class="form-row">
-        <div class="field"><label>Your Budget</label>
-          <select id="rBudget">
-            <option value="">Select budget range...</option>
-            <option>Under ₦100,000</option>
-            <option>₦100,000 – ₦300,000</option>
-            <option>₦300,000 – ₦600,000</option>
-            <option>₦600,000 – ₦1,000,000</option>
-            <option>₦1,000,000 – ₦2,000,000</option>
-            <option>Over ₦2,000,000</option>
-          </select>
+
+    <div id="catalogPanels">
+      <div id="panel-all" class="panel active">
+        <div class="prod-grid" id="grid-all">
+          <div class="catalog-loading">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading products from factory…</div>
+          </div>
         </div>
-        <div class="field"><label>Referral Code (optional)</label><input type="text" id="rRef" placeholder="Referred-by-Name"></div>
       </div>
-      <button class="req-btn" onclick="submitCustom()">📩 Send Request via WhatsApp</button>
-      <p class="form-note">We reply within 1–2 hours. Or <a href="https://wa.me/2348142717585" target="_blank">DM us directly →</a></p>
     </div>
   </div>
 </section>
 
 <!-- TESTIMONIALS -->
-<section class="surface-section" id="testimonials">
+<section class="dark-section" id="testimonials">
   <div class="container">
     <div class="sec-head reveal">
-      <span class="sec-tag">Real Customer Reviews</span>
-      <h2 class="sec-h">200+ Nigerians Who<br><em>Trust GGS</em></h2>
-      <p class="sec-p">Every review is from a verified GGS customer. No paid promotions. Real people, real orders, real savings.</p>
+      <span class="sec-tag">⭐ Real Reviews</span>
+      <h2 class="sec-h">200+ Nigerians <em>Trust GGS</em></h2>
+      <p class="sec-p">Read what customers who have received their orders say. Every review is real. No paid reviews. No fake accounts.</p>
     </div>
     <div class="slider-wrap reveal">
-      <div class="slider-track" id="tTrack">
-
-        <!-- SLIDE 1 -->
-        <div class="t-slide">
-          <div class="t-card"><div class="t-qq">"</div><div class="t-stars">★★★★★</div><p class="t-text">iPhone 15 Pro Max arrived in 24 days — perfectly sealed Apple packaging. Verified the serial on apple.com, 100% authentic. GGS sent WhatsApp updates every single week. Will absolutely order again!</p><div class="t-author"><div class="t-av">AO</div><div><div class="t-name">Adaeze O.</div><div class="t-meta">Lagos · Verified Buyer</div></div></div><span class="t-prod">📱 iPhone 15 Pro Max</span></div>
-          <div class="t-card"><div class="t-qq">"</div><div class="t-stars">★★★★★</div><p class="t-text">The designer bag looks better in person! Premium leather, beautiful finish. Cost price + shipping saved me almost ₦80,000 compared to local shops. Second order already placed!</p><div class="t-author"><div class="t-av">FN</div><div><div class="t-name">Funmi N.</div><div class="t-meta">Abuja · Verified Buyer</div></div></div><span class="t-prod">👜 Designer Crossbody Bag</span></div>
-          <div class="t-card"><div class="t-qq">"</div><div class="t-stars">★★★★★</div><p class="t-text">MacBook Air M2 in 23 days. Original Apple seal. Took it to Apple Premium Reseller — confirmed genuine. Paid on Flutterwave in 2 minutes. GGS is the real deal!</p><div class="t-author"><div class="t-av">CO</div><div><div class="t-name">Chukwudi O.</div><div class="t-meta">Asaba · Verified Buyer</div></div></div><span class="t-prod">💻 MacBook Air M2</span></div>
-        </div>
-
-        <!-- SLIDE 2 -->
-        <div class="t-slide">
-          <div class="t-card"><div class="t-qq">"</div><div class="t-stars">★★★★★</div><p class="t-text">Used 3 other importers before — all disappointments. GGS is completely different. Samsung S24 arrived sealed, original. The transparency about shipping costs upfront gave me so much confidence.</p><div class="t-author"><div class="t-av">TM</div><div><div class="t-name">Tunde M.</div><div class="t-meta">Enugu · Verified Buyer</div></div></div><span class="t-prod">📱 Samsung S24 Ultra</span></div>
-          <div class="t-card"><div class="t-qq">"</div><div class="t-stars">★★★★★</div><p class="t-text">Heels for my wedding were stunning! Genuine leather, true to size. Cost price + shipping saved me so much. GGS doesn't play with quality — worth every naira!</p><div class="t-author"><div class="t-av">BU</div><div><div class="t-name">Blessing U.</div><div class="t-meta">Warri · Verified Buyer</div></div></div><span class="t-prod">👠 Premium Ladies Heels</span></div>
-          <div class="t-card"><div class="t-qq">"</div><div class="t-stars">★★★★★</div><p class="t-text">Referred 3 friends and received ₦100,000 store credit — the referral rewards are absolutely real! Combined with my next order I basically got a discounted handbag. GGS is next-level!</p><div class="t-author"><div class="t-av">IA</div><div><div class="t-name">Ifunanya A.</div><div class="t-meta">Owerri · Silver Referrer 🥈</div></div></div><span class="t-prod">💰 Referral Winner</span></div>
-        </div>
-
-        <!-- SLIDE 3 -->
-        <div class="t-slide">
-          <div class="t-card"><div class="t-qq">"</div><div class="t-stars">★★★★★</div><p class="t-text">iPad Air 22 days, original Apple stickers, serial verified. Shipping fee on arrival was very reasonable. Paid GTB card on Flutterwave in seconds. Brilliant experience!</p><div class="t-author"><div class="t-av">DL</div><div><div class="t-name">David L.</div><div class="t-meta">Benin · Verified Buyer</div></div></div><span class="t-prod">📲 iPad Air 11" M2</span></div>
-          <div class="t-card"><div class="t-qq">"</div><div class="t-stars">★★★★★</div><p class="t-text">Ordered men's shoes and a bag for my wife in one round — both perfect on the same day. The leather shoe quality was worth double the cost price I paid.</p><div class="t-author"><div class="t-av">EO</div><div><div class="t-name">Emeka O.</div><div class="t-meta">Onitsha · Verified Buyer</div></div></div><span class="t-prod">👞👜 Shoes + Bag Combo</span></div>
-          <div class="t-card"><div class="t-qq">"</div><div class="t-stars">★★★★★</div><p class="t-text">Custom ordered a gaming laptop not in the catalog. GGS sourced it in 2 days, delivered in 27 days at 30% below local price. This is the future of shopping!</p><div class="t-author"><div class="t-av">KA</div><div><div class="t-name">Kingsley A.</div><div class="t-meta">Port Harcourt · Custom Order</div></div></div><span class="t-prod">💻 Custom Gaming Laptop</span></div>
-        </div>
-
-        <!-- SLIDE 4 -->
+      <div class="slider-track" id="sliderTrack">
         <div class="t-slide">
           <div class="t-card">
             <div class="t-qq">"</div>
             <div class="t-stars">★★★★★</div>
-            <p class="t-text">Very clean. Na usa version — exactly what I ordered. Fast delivery, sealed box, everything intact. GGS is the real deal!</p>
+            <p class="t-text">I was skeptical at first but Richard delivered my iPhone 15 Pro Max in original Apple box with seal intact. Bought for ₦895k — it's selling in shops for ₦1.3M. Saved over ₦400k. I'm ordering again next round.</p>
             <div class="t-author">
-              <div class="t-av">KN</div>
+              <div class="t-av">CU</div>
               <div>
-                <div class="t-name">K.N. · Port Harcourt</div>
-                <div class="t-meta">Verified Buyer</div>
+                <div class="t-name">Chukwuemeka U.</div>
+                <div class="t-meta">Verified Buyer · Port Harcourt</div>
+                <div class="t-prod">iPhone 15 Pro Max 256GB</div>
               </div>
             </div>
-            <span class="t-prod">📱 iPhone 12 Pro Max</span>
           </div>
           <div class="t-card">
             <div class="t-qq">"</div>
             <div class="t-stars">★★★★★</div>
-            <p class="t-text">Am so grateful and I appreciate for the things you have done for me. God will continue to bless you and multiply your finances. More sales and customers!</p>
+            <p class="t-text">MacBook Air M3 arrived in less than 2 weeks via express air. Full Apple packaging, shrink wrap intact, serial verified on Apple's site. I tested everything — all genuine. GGS is the real deal.</p>
             <div class="t-author">
-              <div class="t-av">JB</div>
+              <div class="t-av">AF</div>
               <div>
-                <div class="t-name">Joel · Port Harcourt</div>
-                <div class="t-meta">Verified Buyer</div>
+                <div class="t-name">Aisha F.</div>
+                <div class="t-meta">Verified Buyer · Abuja</div>
+                <div class="t-prod">MacBook Air M3 16GB/512GB</div>
               </div>
             </div>
-            <span class="t-prod">📱 iPhone · USA Version</span>
           </div>
           <div class="t-card">
             <div class="t-qq">"</div>
             <div class="t-stars">★★★★★</div>
-            <p class="t-text">Yes my bro — enjoying the phone! Absolutely. Best purchase I made this year. GGS delivered exactly as promised.</p>
+            <p class="t-text">Got 3 designer bags for my boutique. All came with original dust bags, authenticity cards, and certificates. My customers can't believe the quality. Already planning my next order for 10 bags.</p>
             <div class="t-author">
-              <div class="t-av">RO</div>
+              <div class="t-av">NO</div>
               <div>
-                <div class="t-name">Richard O. · Ojukwu</div>
-                <div class="t-meta">Verified Buyer</div>
+                <div class="t-name">Ngozi O.</div>
+                <div class="t-meta">Business Buyer · Lagos</div>
+                <div class="t-prod">Luxury Leather Handbags ×3</div>
               </div>
             </div>
-            <span class="t-prod">📱 iPhone 12 Pro Max</span>
           </div>
         </div>
-
-      </div><!-- END slider-track -->
-    </div><!-- END slider-wrap -->
-
-    <div class="slide-dots" id="tDots">
-      <button class="dot on" onclick="goSlide(0)"></button>
-      <button class="dot" onclick="goSlide(1)"></button>
-      <button class="dot" onclick="goSlide(2)"></button>
-      <button class="dot" onclick="goSlide(3)"></button>
-    </div>
-    <div class="slide-arrows">
-      <button class="sarr" onclick="prevSlide()">←</button>
-      <button class="sarr" onclick="nextSlide()">→</button>
-    </div>
-
-    <!-- PROOF PHOTOS -->
-    <div style="margin-top:80px" class="reveal">
-      <div class="sec-head" style="margin-bottom:28px">
-        <span class="sec-tag">Delivery Proof</span>
-        <h2 class="sec-h" style="font-size:2rem;margin-top:12px">Real Orders. Real Photos.</h2>
+        <div class="t-slide">
+          <div class="t-card">
+            <div class="t-qq">"</div>
+            <div class="t-stars">★★★★★</div>
+            <p class="t-text">Samsung S24 Ultra came sealed with all accessories. The shipping fee when it arrived was ₦22,000 for express air — totally reasonable. Richard sent me photos of everything before dispatching.</p>
+            <div class="t-author">
+              <div class="t-av">TO</div>
+              <div>
+                <div class="t-name">Tunde O.</div>
+                <div class="t-meta">Verified Buyer · Lagos</div>
+                <div class="t-prod">Samsung Galaxy S24 Ultra 512GB</div>
+              </div>
+            </div>
+          </div>
+          <div class="t-card">
+            <div class="t-qq">"</div>
+            <div class="t-stars">★★★★★</div>
+            <p class="t-text">I've done 4 orders with GGS. Phones, AirPods, a watch, and some perfume. Every single order has been on time, authentic, and well-packaged. This is the only importation service I trust.</p>
+            <div class="t-author">
+              <div class="t-av">KA</div>
+              <div>
+                <div class="t-name">Kelechi A.</div>
+                <div class="t-meta">Repeat Buyer · Port Harcourt</div>
+                <div class="t-prod">4 Orders · Multiple Products</div>
+              </div>
+            </div>
+          </div>
+          <div class="t-card">
+            <div class="t-qq">"</div>
+            <div class="t-stars">★★★★★</div>
+            <p class="t-text">The transparency is what I love most. Richard showed me the carrier's actual receipt for shipping. No markup at all. And PH delivery was free. My Sony headphones are amazing.</p>
+            <div class="t-author">
+              <div class="t-av">ES</div>
+              <div>
+                <div class="t-name">Emeka S.</div>
+                <div class="t-meta">Verified Buyer · Port Harcourt</div>
+                <div class="t-prod">Sony WH-1000XM5 Headphones</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="proof-grid">
-        <div class="proof-card">
-          <img src="https://ggsglobal.store/proof1.jpg" alt="iPhone 12 sealed box GGS Global delivery" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:var(--r2)">
-          <div class="proof-lbl">✅ iPhone 12 · 128GB · Sealed Box</div>
-        </div>
-        <div class="proof-card">
-          <img src="https://ggsglobal.store/proof2.jpg" alt="iPhone 12 Pro Max full package delivery" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:var(--r2)">
-          <div class="proof-lbl">✅ iPhone 12 Pro Max · Full Package</div>
-        </div>
-        <div class="proof-card">
-          <img src="https://ggsglobal.store/proof3.jpg" alt="GGS Global shipping label SF Express" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:var(--r2)">
-          <div class="proof-lbl">✅ GGS Global · SF Express Verified</div>
-        </div>
-        <div class="proof-card">
-          <img src="https://ggsglobal.store/proof4.jpg" alt="Customer receiving iPhone delivery" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:var(--r2)">
-          <div class="proof-lbl">✅ Verified Customer · Port Harcourt</div>
-        </div>
-        <div class="proof-card">
-          <img src="https://ggsglobal.store/proof5.jpg" alt="iPhone XS Max unboxing GGS Global" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:var(--r2)">
-          <div class="proof-lbl">✅ iPhone XS Max · "Very clean" — Customer</div>
-        </div>
-        <div class="proof-card" onclick="window.open('https://wa.me/2348142717585?text=Send%20me%20delivery%20photos','_blank')" style="cursor:pointer;background:rgba(200,137,26,.06);border:2px dashed rgba(200,137,26,.3)">
-          <div class="proof-inner">
-            <span class="pi">📸</span>
-            <p style="font-weight:700;color:var(--gold-bright)">See 50+ more real delivery photos</p>
-            <p style="margin-top:6px;font-size:.65rem">Tap to view on WhatsApp →</p>
-          </div>
-        </div>
-      </div><!-- END proof-grid -->
-    </div><!-- END reveal -->
-
-  </div><!-- END container -->
-</section><!-- END testimonials -->
-
-<!-- TRUST -->
-<section class="cream-section" id="trust">
-  <div class="container">
-    <div class="sec-head reveal">
-      <span class="sec-tag">Why Trust GGS</span>
-      <h2 class="sec-h">Built on Proof,<br><em>Not Promises</em></h2>
+      <div class="slide-dots" id="slideDots">
+        <button class="dot on" onclick="goSlide(0)"></button>
+        <button class="dot" onclick="goSlide(1)"></button>
+      </div>
+      <div class="slide-arrows">
+        <button class="sarr" onclick="prevSlide()">←</button>
+        <button class="sarr" onclick="nextSlide()">→</button>
+      </div>
     </div>
-    <div class="trust-stats reveal">
-      <div class="ts-cell"><span class="ts-n">200+</span><span class="ts-l">Orders Completed</span></div>
-      <div class="ts-cell"><span class="ts-n">100%</span><span class="ts-l">Authentic Products</span></div>
-      <div class="ts-cell"><span class="ts-n">ZERO</span><span class="ts-l">Fakes — Ever</span></div>
-      <div class="ts-cell"><span class="ts-n">36</span><span class="ts-l">States Delivered</span></div>
-      <div class="ts-cell"><span class="ts-n">0%</span><span class="ts-l">Product Markup</span></div>
-    </div>
-    <div class="trust-grid reveal">
-      <div class="trust-card"><span class="tc-icon">🏭</span><div class="tc-title">Direct Factory Sourcing</div><p class="tc-desc">We source directly from certified manufacturers — no middlemen, no inflated prices. You pay exactly what the factory charges.</p></div>
-      <div class="trust-card"><span class="tc-icon">💳</span><div class="tc-title">Flutterwave Secure Checkout</div><p class="tc-desc">Nigeria's most trusted payment gateway. Card, bank transfer, USSD, mobile money. Instant receipt. We never store card details.</p></div>
-      <div class="trust-card"><span class="tc-icon">📡</span><div class="tc-title">Full WhatsApp Tracking</div><p class="tc-desc">Updates every 5–7 days from the moment we place your order to delivery day. You always know where your goods are.</p></div>
-      <div class="trust-card"><span class="tc-icon">🛡️</span><div class="tc-title">Authenticity Guaranteed</div><p class="tc-desc">200+ orders completed. Zero counterfeits — ever. Every product ships in original manufacturer packaging with verifiable serial numbers.</p></div>
-      <div class="trust-card"><span class="tc-icon">💰</span><div class="tc-title">Zero Product Markup</div><p class="tc-desc">What you see is what we paid the factory. No hidden markup on products. Shipping is separate, weight-based, and fully transparent.</p></div>
-      <div class="trust-card"><span class="tc-icon">🚚</span><div class="tc-title">Nationwide Delivery</div><p class="tc-desc">We deliver across all 36 states. Port Harcourt: Free · South-South/SE: ₦5,000 · Lagos/Abuja: ₦7,500 · Other States: ₦9,000. All packages insured in transit.</p></div>
+
+    <div class="proof-grid reveal">
+      <div class="proof-card">
+        <div class="proof-inner"><span class="pi">📱</span><p>iPhone 15 Pro Max<br>Original seal intact</p></div>
+        <div class="proof-lbl">✅ Verified Delivery</div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-inner"><span class="pi">💻</span><p>MacBook Air M3<br>Apple store packaging</p></div>
+        <div class="proof-lbl">✅ Verified Delivery</div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-inner"><span class="pi">👜</span><p>Designer Bags<br>With authenticity card</p></div>
+        <div class="proof-lbl">✅ Verified Delivery</div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-inner"><span class="pi">🎧</span><p>Sony Headphones<br>Original box, sealed</p></div>
+        <div class="proof-lbl">✅ Verified Delivery</div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-inner"><span class="pi">⌚</span><p>Apple Watch Series 9<br>Sealed with original band</p></div>
+        <div class="proof-lbl">✅ Verified Delivery</div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-inner"><span class="pi">🌸</span><p>Chanel No.5<br>Authentic, batch verified</p></div>
+        <div class="proof-lbl">✅ Verified Delivery</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- REFERRAL -->
-<section class="dark-section" id="referral">
+<!-- WHY GGS / TRUST -->
+<section class="cream-section" id="trust">
   <div class="container">
-
     <div class="sec-head reveal">
-      <span class="sec-tag">🎁 Earn While You Share</span>
-      <h2 class="sec-h">GGS Referral Program<br><em>Real Cash. Real Rewards.</em></h2>
-      <p class="sec-p">Refer friends who place qualifying orders. Earn cash or store credit — no cap, credits never expire. Minimum order of <strong style="color:var(--gold-bright)">₦150,000</strong> required to qualify.</p>
+      <span class="sec-tag">🛡️ Why GGS?</span>
+      <h2 class="sec-h">Built on <em>Trust</em></h2>
+      <p class="sec-p">200+ orders with zero disputes. Here is exactly why GGS Global Consult is different from every other importation service in Nigeria.</p>
     </div>
-
-    <!-- MINIMUM ORDER NOTICE -->
-    <div class="reveal" style="background:rgba(200,137,26,.07);border:1px solid rgba(200,137,26,.2);border-left:4px solid var(--gold-bright);border-radius:var(--r);padding:20px 28px;margin-bottom:44px;display:flex;align-items:flex-start;gap:16px;">
-      <span style="font-size:1.8rem;flex-shrink:0">⚠️</span>
-      <div>
-        <div style="font-size:.9rem;font-weight:800;color:var(--gold-bright);margin-bottom:8px">Important — Qualifying Order Rules</div>
-        <div style="font-size:.82rem;color:rgba(240,237,231,.55);line-height:1.8">
-          ✦ Referred customer must place a minimum order of <strong style="color:var(--white)">₦150,000</strong> to qualify (Bronze &amp; Silver tiers)<br>
-          ✦ Gold &amp; Platinum tiers require minimum order of <strong style="color:var(--white)">₦250,000</strong> per referral<br>
-          ✦ Referral code applies to <strong style="color:var(--white)">first-time customers only</strong> — existing customers cannot use referral codes on repeat orders<br>
-          ✦ Commission released only after referred customer's goods are <strong style="color:var(--white)">fully delivered</strong> and shipping fee paid<br>
-          ✦ Cash rewards paid via bank transfer. Store credit applied to your next order.
-        </div>
+    <div class="trust-stats reveal">
+      <div class="ts-cell"><span class="ts-n">200+</span><span class="ts-l">Orders Completed</span></div>
+      <div class="ts-cell"><span class="ts-n">0</span><span class="ts-l">Disputes Ever</span></div>
+      <div class="ts-cell"><span class="ts-n">100%</span><span class="ts-l">Authentic</span></div>
+      <div class="ts-cell"><span class="ts-n">4.9★</span><span class="ts-l">Avg Rating</span></div>
+      <div class="ts-cell"><span class="ts-n">36</span><span class="ts-l">States Served</span></div>
+    </div>
+    <div class="trust-grid reveal">
+      <div class="trust-card">
+        <span class="tc-icon">🏭</span>
+        <div class="tc-title">Direct Factory Pricing</div>
+        <div class="tc-desc">We source exclusively from certified factory suppliers and authorised manufacturer networks — cutting out every middleman in the chain. You pay exactly what the factory charges us. Zero markup, zero inflation.</div>
+      </div>
+      <div class="trust-card">
+        <span class="tc-icon">🔐</span>
+        <div class="tc-title">Flutterwave Secured</div>
+        <div class="tc-desc">Payments processed by Flutterwave — Nigeria's most trusted payment gateway. PCI-DSS Level 1 certified. Your card details are never stored by us. 100% secure transaction.</div>
+      </div>
+      <div class="trust-card">
+        <span class="tc-icon">📸</span>
+        <div class="tc-title">Photo Proof Every Order</div>
+        <div class="tc-desc">Before your item ships from our PH warehouse, we photograph it alongside your name and invoice. You see your exact item before it leaves our hands. No bait-and-switch. Ever.</div>
+      </div>
+      <div class="trust-card">
+        <span class="tc-icon">⚖️</span>
+        <div class="tc-title">Transparent Shipping</div>
+        <div class="tc-desc">Shipping is never guessed. We send you the carrier's official weight receipt. You pay exactly what the shipping company charges — often less than ₦15,000 per kg for air freight.</div>
+      </div>
+      <div class="trust-card">
+        <span class="tc-icon">✅</span>
+        <div class="tc-title">100% Authentic Guarantee</div>
+        <div class="tc-desc">Every product is original. Serials are verifiable on manufacturer websites. We have never sold a fake product in 200+ orders. Authenticity is non-negotiable at GGS.</div>
+      </div>
+      <div class="trust-card">
+        <span class="tc-icon">💬</span>
+        <div class="tc-title">Direct WhatsApp Support</div>
+        <div class="tc-desc">You deal with the owner directly — not a customer care bot. Richard responds within 2 hours on WhatsApp. Every order tracked personally from factory to your door.</div>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- TIER CARDS -->
+<!-- REFERRAL PROGRAM -->
+<section class="dark-section" id="referral">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="sec-tag">🎁 Earn Rewards</span>
+      <h2 class="sec-h">Refer Friends, <em>Earn Big</em></h2>
+      <p class="sec-p">Every friend you refer who orders earns you a reward. The more referrals, the higher your tier — and the bigger your reward.</p>
+    </div>
     <div class="ref-tiers reveal">
       <div class="ref-card tier-bronze">
         <span class="ref-medal">🥉</span>
         <div class="ref-tier-name">Bronze</div>
         <div class="ref-count">1 <small>referral</small></div>
-        <div class="ref-reward">₦25,000 store credit</div>
-        <div class="ref-alt">Applied on your next order</div>
-        <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);font-size:.7rem;color:rgba(240,237,231,.35);line-height:1.7">Min. order: <strong style="color:#D4894A">₦150,000</strong><br>Reward paid: After delivery</div>
+        <div class="ref-reward">₦5,000 Credit or Free Delivery on Next Order</div>
+        <div class="ref-alt">Your choice of reward</div>
       </div>
       <div class="ref-card tier-silver">
         <span class="ref-medal">🥈</span>
         <div class="ref-tier-name">Silver</div>
         <div class="ref-count">3 <small>referrals</small></div>
-        <div class="ref-reward">₦100,000 credit</div>
-        <div class="ref-alt">OR 15% off your next order</div>
-        <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);font-size:.7rem;color:rgba(240,237,231,.35);line-height:1.7">Min. order: <strong style="color:#C8C8C8">₦150,000</strong> each<br>Reward paid: After all 3 delivered</div>
+        <div class="ref-reward">₦15,000 Credit or Free Delivery + Priority Sourcing</div>
+        <div class="ref-alt">Skip the queue</div>
       </div>
       <div class="ref-card tier-gold">
         <span class="ref-medal">🥇</span>
         <div class="ref-tier-name">Gold</div>
         <div class="ref-count">5 <small>referrals</small></div>
-        <div class="ref-reward">₦200,000 CASH</div>
-        <div class="ref-alt">OR free product up to ₦300,000</div>
-        <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);font-size:.7rem;color:rgba(240,237,231,.35);line-height:1.7">Min. order: <strong style="color:var(--gold-bright)">₦250,000</strong> each<br>Cash paid: After all 5 delivered</div>
+        <div class="ref-reward">₦30,000 Credit or 1 Free Accessory (earbuds / watch band)</div>
+        <div class="ref-alt">We ship it to you</div>
       </div>
       <div class="ref-card tier-plat">
         <span class="ref-medal">💎</span>
         <div class="ref-tier-name">Platinum</div>
         <div class="ref-count">10 <small>referrals</small></div>
-        <div class="ref-reward">₦500,000 CASH</div>
-        <div class="ref-alt">OR a free iPhone 🎁</div>
-        <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);font-size:.7rem;color:rgba(240,237,231,.35);line-height:1.7">Min. order: <strong style="color:#A78BFA">₦250,000</strong> each<br>Cash paid: After all 10 delivered</div>
+        <div class="ref-reward">₦75,000 Credit OR Lifetime Priority Access + Agent Status</div>
+        <div class="ref-alt">Permanent VIP tier</div>
       </div>
     </div>
 
-    <!-- HOW IT WORKS + REFERRAL LINK -->
     <div class="ref-info reveal">
       <div>
-        <div class="ri-label">How It Works</div>
+        <div class="ri-label">How Referrals Work</div>
         <ul class="ri-list">
-          <li>Share your referral link or name with friends</li>
-          <li>They mention your name when ordering on ggsglobal.store</li>
-          <li>Their order must meet the minimum qualifying amount for your tier</li>
-          <li>Once their goods are delivered and shipping paid — your reward is released</li>
-          <li>Credits never expire — use on any future order</li>
-          <li>Cash rewards paid monthly via bank transfer</li>
-          <li>Top 3 referrers each month win bonus prizes 🏆</li>
+          <li>Get your unique referral code from us on WhatsApp</li>
+          <li>Share it with friends and family</li>
+          <li>They enter your code at checkout when ordering</li>
+          <li>Code is tracked automatically in our system</li>
+          <li>Reward is applied to your next order</li>
+          <li>No expiry date on your accumulated referrals</li>
         </ul>
+        <div class="ref-link-box">
+          <code>Message us on WhatsApp to get your code → +2348142717585</code>
+          <a href="https://wa.me/2348142717585?text=Hi%20Richard%2C%20I%20want%20my%20referral%20code" class="copy-btn" target="_blank">Get Code</a>
+        </div>
       </div>
       <div>
-        <div class="ri-label">Your Referral Link</div>
-        <p style="font-size:.8rem;color:var(--muted2);margin-bottom:12px;line-height:1.7">Share your unique link. Your friend mentions your name when ordering. Simple as that.</p>
-        <div class="ref-link-box">
-          <code id="refCode">wa.me/2348142717585?text=Referred-by-[YourName]</code>
-          <button class="copy-btn" onclick="copyRef()">Copy</button>
-        </div>
-        <!-- EARNING EXAMPLES -->
-        <div style="margin-top:20px;background:rgba(200,137,26,.05);border:1px solid rgba(200,137,26,.12);border-radius:var(--r);padding:18px 20px">
-          <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px">💰 Real Earning Examples</div>
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <div style="display:flex;justify-content:space-between;font-size:.8rem;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.05)">
-              <span style="color:rgba(240,237,231,.5)">Friend buys iPhone (₦760,000)</span>
-              <strong style="color:var(--gold-bright)">You earn ₦25,000</strong>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:.8rem;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.05)">
-              <span style="color:rgba(240,237,231,.5)">3 friends buy MacBooks (₦600k each)</span>
-              <strong style="color:#C8C8C8">You earn ₦100,000</strong>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:.8rem;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.05)">
-              <span style="color:rgba(240,237,231,.5)">5 friends order (₦250k+ each)</span>
-              <strong style="color:var(--gold-bright)">You earn ₦200,000 CASH</strong>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:.8rem">
-              <span style="color:rgba(240,237,231,.5)">10 friends order (₦250k+ each)</span>
-              <strong style="color:#A78BFA">You earn ₦500,000 CASH</strong>
-            </div>
-          </div>
-        </div>
-        <a href="https://wa.me/2348142717585?text=I%20want%20to%20check%20my%20referral%20progress%20and%20rewards" target="_blank" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-size:.82rem;color:var(--gold-bright);text-decoration:none;font-weight:700;background:rgba(200,137,26,.08);border:1px solid rgba(200,137,26,.2);padding:10px 18px;border-radius:9px;transition:.2s;width:100%">
-          📊 Check My Referral Progress on WhatsApp →
-        </a>
+        <div class="ri-label">Referral Rules</div>
+        <ul class="ri-list">
+          <li>Referred friend must complete and pay for their order</li>
+          <li>Cannot refer yourself or use your own code</li>
+          <li>Rewards stack — Bronze to Platinum progressively</li>
+          <li>Credit can be applied to product price or shipping</li>
+          <li>Rewards paid within 7 days of referred order completion</li>
+          <li>No limit on how many people you can refer</li>
+        </ul>
       </div>
     </div>
 
-    <!-- BECOME AN AGENT -->
-    <div class="reveal" style="margin-top:52px;background:linear-gradient(135deg,rgba(11,110,92,.12),rgba(18,184,150,.06));border:1px solid rgba(18,184,150,.2);border-radius:var(--r3);padding:40px;position:relative;overflow:hidden">
-      <div style="position:absolute;top:0;inset-inline:0;height:3px;background:linear-gradient(90deg,transparent,var(--teal-mid),var(--teal-bright),var(--teal-mid),transparent)"></div>
-      <div class="agent-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
-        <div>
-          <span style="display:inline-flex;align-items:center;gap:8px;background:rgba(18,184,150,.1);border:1px solid rgba(18,184,150,.25);border-radius:100px;padding:6px 16px;font-size:.62rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--teal-bright);margin-bottom:18px">🤝 City Rep Program</span>
-          <h3 style="font-family:'Playfair Display';font-size:1.8rem;font-weight:900;line-height:1.15;margin-bottom:14px">Become a GGS Agent.<br><em style="color:var(--teal-bright)">Earn Every Month.</em></h3>
-          <p style="font-size:.85rem;color:rgba(240,237,231,.5);line-height:1.85;margin-bottom:24px">Represent GGS in your city. Share products with your network. Earn <strong style="color:var(--white)">5% commission</strong> on every order placed through your code. Zero investment. Zero stock. Just share and earn.</p>
-          <a href="https://wa.me/2348142717585?text=I%20want%20to%20become%20a%20GGS%20Agent%20in%20my%20city" target="_blank" style="display:inline-flex;align-items:center;gap:9px;background:linear-gradient(135deg,var(--teal),var(--teal-mid),var(--teal-bright));color:#fff;font-weight:800;font-size:.92rem;padding:15px 30px;border-radius:12px;text-decoration:none;transition:.3s;box-shadow:0 6px 28px rgba(13,138,114,.3)">💬 Apply to Become an Agent →</a>
+    <!-- AGENT SECTION -->
+    <div class="reveal" id="agentSection" style="margin-top:64px;">
+      <div class="sec-head" style="margin-bottom:40px;">
+        <span class="sec-tag">🤝 Become an Agent</span>
+        <h2 class="sec-h">Earn <em>Commission</em> as a GGS Agent</h2>
+        <p class="sec-p">Go beyond referrals. Become an official GGS Agent and earn 5% commission on every order you bring in — no capital required.</p>
+      </div>
+      <div class="steps-row" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr))">
+        <div class="step">
+          <div class="step-num">01</div>
+          <span class="step-icon">📲</span>
+          <div class="step-title">Apply on WhatsApp</div>
+          <div class="step-desc">Message Richard with subject "Agent Application." No fee, no form, just a quick conversation about your network and goals.</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-bright);font-weight:700;margin-bottom:4px">💰 Agent Earning Potential</div>
-          <div style="background:rgba(0,0,0,.25);border:1px solid rgba(18,184,150,.15);border-radius:var(--r);padding:16px 20px">
-            <div style="font-size:.72rem;color:rgba(240,237,231,.4);margin-bottom:6px">2 orders/month × ₦500,000 avg</div>
-            <div style="font-family:'Bebas Neue';font-size:1.8rem;color:var(--teal-bright);letter-spacing:.04em">₦50,000/month</div>
-            <div style="font-size:.68rem;color:rgba(240,237,231,.3);margin-top:2px">Part-time. Zero investment.</div>
-          </div>
-          <div style="background:rgba(0,0,0,.25);border:1px solid rgba(18,184,150,.15);border-radius:var(--r);padding:16px 20px">
-            <div style="font-size:.72rem;color:rgba(240,237,231,.4);margin-bottom:6px">4 orders/month × ₦500,000 avg</div>
-            <div style="font-family:'Bebas Neue';font-size:1.8rem;color:var(--gold-bright);letter-spacing:.04em">₦100,000/month</div>
-            <div style="font-size:.68rem;color:rgba(240,237,231,.3);margin-top:2px">Side income that grows with effort</div>
-          </div>
-          <div style="background:rgba(0,0,0,.25);border:1px solid rgba(200,137,26,.2);border-radius:var(--r);padding:16px 20px">
-            <div style="font-size:.72rem;color:rgba(240,237,231,.4);margin-bottom:6px">10 orders/month × ₦500,000 avg</div>
-            <div style="font-family:'Bebas Neue';font-size:1.8rem;color:var(--gold-bright);letter-spacing:.04em">₦250,000/month</div>
-            <div style="font-size:.68rem;color:rgba(240,237,231,.3);margin-top:2px">Full-time income from sharing</div>
-          </div>
-          <div style="font-size:.72rem;color:rgba(240,237,231,.3);line-height:1.7;padding:12px 16px;background:rgba(0,0,0,.2);border-radius:9px">
-            ✦ Min. qualifying order: <strong style="color:var(--white)">₦200,000</strong><br>
-            ✦ Commission paid: Monthly via bank transfer<br>
-            ✦ Paid after customer goods delivered<br>
-            ✦ Must have 200+ active WhatsApp contacts
-          </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <span class="step-icon">🎯</span>
+          <div class="step-title">Get Your Agent Code</div>
+          <div class="step-desc">We set up your unique agent code in our system. Every order placed with your code is tracked and logged automatically.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <span class="step-icon">📢</span>
+          <div class="step-title">Share &amp; Sell</div>
+          <div class="step-desc">Share our catalog with your audience — social media, WhatsApp groups, friends, family, workplace, church. The wider your reach, the more you earn.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <span class="step-icon">💰</span>
+          <div class="step-title">Earn 5% Commission</div>
+          <div class="step-desc">5% of every product cost paid goes to you. 2 orders/month at ₦500k average = ₦50,000/month passive income. Unlimited ceiling.</div>
         </div>
       </div>
     </div>
+  </div>
+</section>
 
+<!-- REQUEST FORM -->
+<section class="cream-section" id="request">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="sec-tag">📋 Custom Request</span>
+      <h2 class="sec-h">Can't See What You <em>Need?</em></h2>
+      <p class="sec-p">Don't see your product in the catalog? Submit a custom request and we'll source it from China at factory cost price for you.</p>
+    </div>
+    <div class="req-card reveal">
+      <div class="form-row">
+        <div class="field">
+          <label>First Name *</label>
+          <input type="text" id="req-fname" placeholder="Chukwuemeka" required>
+        </div>
+        <div class="field">
+          <label>Last Name *</label>
+          <input type="text" id="req-lname" placeholder="Okafor" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>WhatsApp Number *</label>
+          <input type="tel" id="req-phone" placeholder="+2348012345678" required>
+        </div>
+        <div class="field">
+          <label>State</label>
+          <select id="req-state">
+            <option value="">Select state...</option>
+            <option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option><option>Anambra</option><option>Bauchi</option><option>Bayelsa</option><option>Benue</option><option>Borno</option><option>Cross River</option><option>Delta</option><option>Ebonyi</option><option>Edo</option><option>Ekiti</option><option>Enugu</option><option>Gombe</option><option>Imo</option><option>Jigawa</option><option>Kaduna</option><option>Kano</option><option>Katsina</option><option>Kebbi</option><option>Kogi</option><option>Kwara</option><option>Lagos</option><option>Nasarawa</option><option>Niger</option><option>Ogun</option><option>Ondo</option><option>Osun</option><option>Oyo</option><option>Plateau</option><option>Rivers</option><option>Sokoto</option><option>Taraba</option><option>Yobe</option><option>Zamfara</option><option>FCT Abuja</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Product Request *</label>
+        <textarea id="req-product" placeholder="e.g. iPhone 15 Pro 512GB Black, Nike Air Jordan 1 size UK9, Gucci GG Marmont bag in white, Samsung Galaxy Tab S9 Ultra..." required></textarea>
+      </div>
+      <div class="field">
+  <label>Your Budget Range (optional)</label>
+  <select id="req-budget">
+    <option value="">Select budget range...</option>
+    <option value="Under ₦50,000">Under ₦50,000</option>
+    <option value="₦50,000 – ₦100,000">₦50,000 – ₦100,000</option>
+    <option value="₦100,000 – ₦250,000">₦100,000 – ₦250,000</option>
+    <option value="₦250,000 – ₦500,000">₦250,000 – ₦500,000</option>
+    <option value="₦500,000 – ₦1,000,000">₦500,000 – ₦1,000,000</option>
+    <option value="₦1,000,000 – ₦2,000,000">₦1,000,000 – ₦2,000,000</option>
+    <option value="₦2,000,000 – ₦5,000,000">₦2,000,000 – ₦5,000,000</option>
+    <option value="Above ₦5,000,000">Above ₦5,000,000</option>
+    <option value="Flexible — no set budget">Flexible — no set budget</option>
+  </select>
+</div>
+      <button class="req-btn" onclick="submitCustomRequest()">📩 Submit My Request</button>
+      <p class="form-note">We'll respond via WhatsApp within 2 hours with pricing. <a href="https://wa.me/2348142717585" target="_blank">Or message directly →</a></p>
+    </div>
   </div>
 </section>
 
 <!-- FAQ -->
-<section class="cream-section" id="faq">
+<section class="cream-section" id="faq" style="padding-top:0">
   <div class="container">
     <div class="sec-head reveal">
-      <span class="sec-tag">Common Questions</span>
-      <h2 class="sec-h">Everything You<br><em>Need to Know</em></h2>
+      <span class="sec-tag">❓ FAQ</span>
+      <h2 class="sec-h">Common <em>Questions</em></h2>
     </div>
     <div class="faq-stack reveal">
-      <div class="faq-item"><div class="faq-q" onclick="faqToggle(this)">Why isn't shipping included in the product price? <span class="faq-ico">+</span></div><div class="faq-answer">We show the exact factory cost price — zero markup. Shipping is calculated by actual weight when goods arrive. This means you never overpay. We send you the shipping company's pickup invoice, you pay them, and we collect and deliver to you. This is the most transparent model possible.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="faqToggle(this)">How much will shipping cost approximately? <span class="faq-ico">+</span></div><div class="faq-answer">Rough estimates: Phone via Express Air ~₦15,000–₦40,000. Laptop ~₦25,000–₦55,000. Handbag via Standard Air ~₦8,000–₦20,000. Shoes ~₦10,000–₦22,000. These vary based on final package weight. Sea freight for bulk orders is significantly cheaper per kg.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="faqToggle(this)">Are all products 100% authentic? <span class="faq-ico">+</span></div><div class="faq-answer">Absolutely. We source exclusively from certified manufacturers and authorized distributors. Every product arrives in original manufacturer packaging with intact seals and verifiable serial numbers. We have completed 200+ orders and have never sold a single counterfeit product.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="faqToggle(this)">How does the online payment work? <span class="faq-ico">+</span></div><div class="faq-answer">Add items to cart, select your shipping method, fill in your details at checkout, and pay the product cost price via Flutterwave. Accepted: Nigerian debit/credit cards, bank transfer, USSD, mobile money. You receive an instant receipt to your email. Shipping is paid separately when goods arrive.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="faqToggle(this)">What if my item arrives damaged or doesn't arrive? <span class="faq-ico">+</span></div><div class="faq-answer">All items are insured during transit. If anything goes wrong — which is extremely rare in our 200+ order history — we resolve it fully. Your payment is protected and we stand behind every order we process.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="faqToggle(this)">Can I order something not in the catalog? <span class="faq-ico">+</span></div><div class="faq-answer">Yes — that's one of our core services! Use the Custom Request form or WhatsApp us directly. If you can find it online anywhere, we can source and import it at cost price. Just share the product name, link, or full specifications and we'll send a quote within 1–2 hours.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="faqToggle(this)">Is Port Harcourt delivery really free? <span class="faq-ico">+</span></div><div class="faq-answer">Yes! Port Harcourt customers receive completely free local
-delivery after goods clear shipping from China. All other
-states pay based on location: South-South/South-East:
-₦5,000 · Lagos/Abuja: ₦7,500 · All other states: ₦9,000.
-This is separate from the China-to-Nigeria shipping fee,
-which is weight-based.</div></div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Are the products really 100% authentic? <span class="faq-ico">+</span></div>
+        <div class="faq-answer">Yes — completely. Every product is sourced from certified factory suppliers and official brand supply chains. Serial numbers are verifiable on manufacturer websites (e.g. Apple products at checkcoverage.apple.com). We have completed 200+ orders with zero authenticity disputes. We stake our entire reputation on this.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Why is the price so much lower than Nigerian stores? <span class="faq-ico">+</span></div>
+        <div class="faq-answer">Nigerian retailers pay import duty, overhead, staff wages, rent, and profit margins — sometimes 40–80% above cost price. We charge you only the factory cost with zero markup. We make our money on shipping volume and agent commissions, not product markup. This model only works because we source directly from the factory, not from local distributors.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What if my item arrives damaged or incorrect? <span class="faq-ico">+</span></div>
+        <div class="faq-answer">Every item is photographed before dispatch. If there is any issue with your item, contact us on WhatsApp immediately with photos. We have a full resolution process — we have never left a customer without a solution in 200+ orders. We photograph your exact item before it leaves our hands, so any discrepancy is traceable to the factory, not us.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How long does delivery take? <span class="faq-ico">+</span></div>
+        <div class="faq-answer">It depends on your chosen shipping method: Express Air (3–7 days from China), Standard Air (7–14 days), Battery Air (14–21 days), Sea Freight (50–60 days). Once goods arrive in Nigeria, PH delivery is same-day or next-day. Other states via our logistics partner take 1–3 additional days.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Can I order from outside Port Harcourt? <span class="faq-ico">+</span></div>
+        <div class="faq-answer">Yes — we serve all 36 Nigerian states. Delivery fees vary: South-South/South-East ₦5,000, Lagos/Abuja ₦7,500, Northern states ₦9,000. These delivery fees are paid on arrival of your goods, not at checkout. Port Harcourt delivery is always FREE.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">When exactly do I pay for shipping? <span class="faq-ico">+</span></div>
+        <div class="faq-answer">Shipping is NOT paid at checkout. At checkout you pay only the product cost price. When your goods arrive in Nigeria, we send you the carrier's actual weight receipt. You then pay the weight-based shipping fee (separate from the delivery fee above — this is China → Nigeria freight). Both fees are fully transparent — we show you the original receipts.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Is my payment safe? Can I get a refund? <span class="faq-ico">+</span></div>
+        <div class="faq-answer">Payments are processed by Flutterwave — Nigeria's leading payment processor with PCI-DSS Level 1 certification. Your card details are never stored by GGS. Refunds: once an order is placed and we have sourced the item from China, refunds are not possible as goods are already purchased. We strongly recommend only ordering if you are sure. For custom requests, you can clarify everything on WhatsApp before ordering.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How do the pre-order rounds work? <span class="faq-ico">+</span></div>
+        <div class="faq-answer">We operate in rounds because we batch orders for efficient shipping. Each round has a slot limit — when slots fill, the round closes and we dispatch that batch to China. The next round opens shortly after. Pre-ordering in the current round locks in today's exchange rate price — exchange rates fluctuate, so prices rise with each round.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Can I order as a business / reseller? <span class="faq-ico">+</span></div>
+        <div class="faq-answer">Absolutely. Many of our customers are boutique owners, gadget resellers, and fashion retailers. For bulk orders (5+ units), WhatsApp us for bulk pricing. Business orders qualify for our Agent Program — you earn 5% commission on future referrals and get priority sourcing for your stock.</div>
+      </div>
     </div>
   </div>
 </section>
@@ -1246,24 +1339,27 @@ which is weight-based.</div></div>
 <section id="final">
   <div class="final-glow"></div>
   <div class="final-teal-line"></div>
-  <div class="container">
-    <div class="final-inner reveal">
-      <span class="sec-tag" style="margin-bottom:26px;display:inline-flex">⚡ Round 2 · 7 Slots Remaining</span>
-      <h2>Ready to Buy at<br><em>Factory Cost Price?</em></h2>
-      <p>Join 200+ Nigerians who are saving big on authentic products. Browse the catalog, add to cart, pay securely. We handle everything else.</p>
-      <button class="btn-primary" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})" style="font-size:1.05rem;padding:20px 48px">🛒 Browse Catalog &amp; Order Now</button>
-      <div class="contact-row">
-        <a href="https://wa.me/2348142717585" class="contact-chip" target="_blank">💬 +234 814 271 7585</a>
-        <span class="contact-chip">📍 Port Harcourt, Nigeria</span>
-        <span class="contact-chip">🚚 All 36 States</span>
-        <span class="contact-chip">⏰ Reply under 2 hours</span>
-      </div>
-      <div class="guarantee-box">
-        <div class="g-icon">🛡️</div>
-        <div class="g-text">
-          <h4>GGS Authenticity &amp; Transparency Guarantee</h4>
-          <p>100% authentic products. Zero markup on cost price. Shipping fully transparent and weight-based on arrival. Powered by Flutterwave secure checkout.</p>
-        </div>
+  <div class="final-inner">
+    <div class="hero-trust-pill" style="animation:none;opacity:1;transform:none;margin-bottom:28px;display:inline-flex;">
+      <span class="live-dot"></span>
+      Round 2 Open — Limited Slots
+    </div>
+    <h2>Ready to Own <em>Authentic</em><br>Imports at Cost Price?</h2>
+    <p>Join 200+ Nigerians who stopped overpaying for their tech and fashion. Factory prices. Zero markup. Full transparency. Delivered to your door.</p>
+    <div class="hero-ctas">
+      <a href="#catalog" class="btn-primary">🛍️ Order at Cost Price Now</a>
+      <a href="https://wa.me/2348142717585" class="btn-secondary" target="_blank">💬 Ask a Question</a>
+    </div>
+    <div class="contact-row">
+      <a href="https://wa.me/2348142717585" class="contact-chip" target="_blank">💬 WhatsApp: +234 814 271 7585</a>
+      <span class="contact-chip">📍 Port Harcourt, Rivers State</span>
+      <span class="contact-chip">⏱️ Reply within 2 hours</span>
+    </div>
+    <div class="guarantee-box">
+      <span class="g-icon">🛡️</span>
+      <div class="g-text">
+        <h4>The GGS Authenticity Guarantee</h4>
+        <p>If any product is not 100% authentic as described, we will provide a full resolution. This guarantee has stood for 200+ orders with zero disputes. It will stand for yours too.</p>
       </div>
     </div>
   </div>
@@ -1274,106 +1370,45 @@ which is weight-based.</div></div>
   <div class="footer-grid">
     <div class="f-brand">
       <div class="name">GGS <em>Global</em></div>
-      <span class="tag">Personal Shopping &amp; Import Service</span>
-      <p>Port Harcourt's most trusted personal shopper. Authentic tech and fashion imported directly at cost price. 200+ satisfied customers, nationwide delivery.</p>
+      <span class="tag">Authentic Imports · Cost Price</span>
+      <p>Nigeria's most trusted importation service. Factory-direct prices on tech and fashion. Zero markup. 200+ orders delivered.</p>
     </div>
     <div class="f-col">
-      <h4>Quick Links</h4>
-      <a href="#shipping">Shipping Options</a>
-      <a href="#how">How It Works</a>
-      <a href="#catalog">Browse Catalog</a>
+      <h4>Shop</h4>
+      <a href="#catalog">All Products</a>
+      <a href="#catalog" onclick="window.switchCat&&switchCat('tech')">Tech & Gadgets</a>
+      <a href="#catalog" onclick="window.switchCat&&switchCat('fashion')">Fashion</a>
+      <a href="#catalog" onclick="window.switchCat&&switchCat('bags')">Bags</a>
+      <a href="#catalog" onclick="window.switchCat&&switchCat('shoes')">Shoes</a>
       <a href="#request">Custom Request</a>
+    </div>
+    <div class="f-col">
+      <h4>Company</h4>
+      <a href="#how">How It Works</a>
+      <a href="#shipping">Shipping Info</a>
+      <a href="#trust">Why GGS</a>
       <a href="#referral">Referral Program</a>
-      <a href="#testimonials">Reviews</a>
       <a href="#faq">FAQ</a>
     </div>
     <div class="f-col">
-      <h4>Shipping Times</h4>
-      <span>✈️⚡ Express: 3–7 days</span>
-      <span>✈️ Air (no battery): 7–14 days</span>
-      <span>✈️🔋 Air (battery): 14–21 days</span>
-      <span>🚢 Sea Freight: 50–60 days</span>
-      <span style="color:var(--teal-bright);margin-top:8px">🚚 PH Delivery: Free</span>
-<span>🚚 South-South/SE: ₦5,000</span>
-<span>🚚 Lagos/Abuja: ₦7,500</span>
-<span>🚚 Other States: ₦9,000</span>
-    </div><!-- ← THIS WAS MISSING -->
-    <div class="f-col">
-      <h4>Contact Us</h4>
-      <a href="https://wa.me/2348142717585" target="_blank">WhatsApp: +234 814 271 7585</a>
-      <span>📍 Port Harcourt, Nigeria</span>
-      <span>🕐 Mon–Sat · 8AM–8PM</span>
-      <span style="color:var(--gold-bright);font-weight:600;margin-top:10px">"Where Quality Meets Affordability"</span>
-      <span style="font-size:.66rem;color:rgba(240,237,231,.18);margin-top:8px">Checkout powered by Flutterwave</span>
-      <a href="admin.html" style="font-size:.6rem;color:rgba(255,255,255,.06);margin-top:22px" target="_blank">⚙️ Admin</a>
+      <h4>Contact</h4>
+      <a href="https://wa.me/2348142717585" target="_blank">💬 WhatsApp</a>
+      <span>+234 814 271 7585</span>
+      <span>Port Harcourt, Rivers State</span>
+      <span>Response: &lt; 2 hours</span>
+      <span>Mon–Sat, 8am–9pm</span>
     </div>
   </div>
   <div class="footer-bot">
-    <span>© 2025 GGS Global Consult · All rights reserved · Port Harcourt, Nigeria</span>
-    <span>Authentic Tech &amp; Fashion Imports · Nationwide Delivery</span>
+    <span>© 2025 GGS Global Consult. All rights reserved.</span>
+    <span>Payments secured by Flutterwave · 100% Authentic Products</span>
   </div>
 </footer>
 
-<!-- LIVE ORDER NOTIFICATIONS -->
-<div id="liveNotif" style="position:fixed;bottom:100px;left:20px;z-index:399;background:var(--card);border:1px solid rgba(200,137,26,.25);border-radius:12px;padding:14px 18px;max-width:280px;display:none;animation:slideInLeft .4s ease;box-shadow:0 8px 32px rgba(0,0,0,.4);">
-  <div style="display:flex;align-items:center;gap:10px;">
-    <span style="font-size:1.4rem" id="lnIcon">📱</span>
-    <div>
-      <div style="font-size:.78rem;font-weight:700;color:var(--white)" id="lnName">Chukwudi O.</div>
-      <div style="font-size:.7rem;color:var(--muted2)" id="lnProduct">Just ordered iPhone 15 Pro Max</div>
-      <div style="font-size:.65rem;color:var(--teal-bright);margin-top:2px" id="lnTime">2 minutes ago</div>
-    </div>
-  </div>
-</div>
+<!-- WHATSAPP FAB -->
+<a href="https://wa.me/2348142717585" class="wa-fab" target="_blank" title="Chat on WhatsApp" onclick="gtag('event','whatsapp_fab_click',{event_category:'engagement'})">💬</a>
 
-<script>
-const LIVE_ORDERS = [
-  {icon:'📱',name:'Adaeze O. · Lagos',product:'Ordered iPhone 15 Pro Max',time:'3 min ago'},
-  {icon:'💻',name:'Chukwudi O. · Asaba',product:'Ordered MacBook Air M3',time:'12 min ago'},
-  {icon:'👜',name:'Funmi N. · Abuja',product:'Ordered Designer Handbag',time:'28 min ago'},
-  {icon:'🎧',name:'Tunde M. · Enugu',product:'Ordered AirPods Pro',time:'1 hr ago'},
-  {icon:'⌚',name:'Blessing U. · Warri',product:'Ordered Apple Watch S9',time:'2 hrs ago'},
-  {icon:'📱',name:'Emeka O. · Onitsha',product:'Ordered Samsung S24 Ultra',time:'3 hrs ago'},
-];
-let lnIdx = 0;
-function showLiveNotif(){
-  const n = LIVE_ORDERS[lnIdx % LIVE_ORDERS.length];
-  const el = document.getElementById('liveNotif');
-  document.getElementById('lnIcon').textContent = n.icon;
-  document.getElementById('lnName').textContent = n.name;
-  document.getElementById('lnProduct').textContent = n.product;
-  document.getElementById('lnTime').textContent = n.time;
-  el.style.display = 'block';
-  setTimeout(()=>{ el.style.display='none'; },5000);
-  lnIdx++;
-}
-setTimeout(()=>{ showLiveNotif(); setInterval(showLiveNotif,25000); },8000);
-</script>
-
-<!-- EXIT INTENT POPUP -->
-<div id="exitPopup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:800;place-items:center;padding:20px;">
-  <div style="background:var(--card);border:1px solid rgba(200,137,26,.3);border-radius:20px;padding:40px;max-width:460px;width:100%;text-align:center;position:relative;">
-    <div style="font-size:3rem;margin-bottom:16px">⚡</div>
-    <h3 style="font-family:'Playfair Display';font-size:1.8rem;margin-bottom:12px;color:var(--gold-bright)">Wait — Before You Leave</h3>
-    <p style="color:var(--muted2);font-size:.88rem;margin-bottom:24px;line-height:1.8">Get our <strong style="color:var(--white)">exclusive price list</strong> sent directly to your WhatsApp — including items <em style="color:var(--gold-bright)">not on the website.</em></p>
-    <a href="https://wa.me/2348142717585?text=Send%20me%20the%20full%20GGS%20price%20list%20please" target="_blank" style="display:block;padding:16px;background:linear-gradient(135deg,var(--teal),var(--teal-bright));color:#fff;font-weight:800;border-radius:12px;text-decoration:none;font-size:1rem;margin-bottom:12px">💬 Send Me The Full Price List</a>
-    <button onclick="document.getElementById('exitPopup').style.display='none';localStorage.setItem('exitSeen','1')" style="background:none;border:none;color:var(--muted);font-size:.8rem;cursor:pointer;font-family:inherit">No thanks, I'll pay full market price</button>
-  </div>
-</div>
-<script>
-let exitShown = localStorage.getItem('exitSeen') === '1';
-document.addEventListener('mouseleave', function(e){
-  if(e.clientY < 10 && !exitShown){
-    exitShown = true;
-    document.getElementById('exitPopup').style.display = 'grid';
-  }
-});
-</script>
-
-<!-- WA FAB -->
-<a href="https://wa.me/2348142717585?text=Hi%20GGS%2C%20I%20want%20to%20place%20a%20pre-order" class="wa-fab" target="_blank">💬</a>
-
-<!-- CART DRAWER -->
+<!-- CART OVERLAY & DRAWER -->
 <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
 <div class="cart-drawer" id="cartDrawer">
   <div class="cart-hdr">
@@ -1381,19 +1416,26 @@ document.addEventListener('mouseleave', function(e){
     <button class="cart-close" onclick="toggleCart()">✕</button>
   </div>
   <div class="cart-body" id="cartBody">
-    <div class="cart-empty"><span class="ei">🛒</span><p>Your cart is empty.<br>Browse the catalog to add items.</p></div>
-  </div>
-  <div class="cart-foot">
-    <div class="cart-totals" id="cartTotals" style="display:none">
-      <div class="ct-row"><span>Total Product Cost</span><span id="ctTotal">₦0</span></div>
-      <div class="ct-highlight ct-row">
-        <span class="label">💳 Pay Now (Cost Price)</span>
-        <span class="amount" id="ctAmount">₦0</span>
-      </div>
-      <p class="ct-note">* Shipping paid separately on arrival</p>
+    <div class="cart-empty">
+      <span class="ei">🛒</span>
+      <p>Your cart is empty.<br>Add products to get started.</p>
     </div>
-    <button class="checkout-cta" id="checkoutCta" onclick="openCheckout()" disabled>🔒 Proceed to Checkout</button>
-    <p class="cart-fn">Powered by Flutterwave · Card · Transfer · USSD · Mobile Money</p>
+  </div>
+  <div class="cart-foot" id="cartFoot" style="display:none">
+    <div class="cart-totals">
+      <div class="ct-row"><span>Subtotal (products)</span><span id="cartSubtotal">₦0</span></div>
+      <div class="ct-highlight">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="label">Total (cost price only)</span>
+          <span class="amount" id="cartTotal">₦0</span>
+        </div>
+        <div class="ct-note">+ Shipping paid on arrival (weight-based)</div>
+      </div>
+    </div>
+    <button class="checkout-cta" id="checkoutCta" onclick="openCheckout()">
+      🔒 Secure Checkout — Pay Now
+    </button>
+    <div class="cart-fn">Secured by Flutterwave · Card, Bank Transfer, USSD accepted</div>
   </div>
 </div>
 
@@ -1401,40 +1443,96 @@ document.addEventListener('mouseleave', function(e){
 <div class="modal-bg" id="checkoutModal">
   <div class="modal-box">
     <button class="modal-x" onclick="closeCheckout()">✕</button>
-    <div class="modal-title">Secure Checkout</div>
-    <div class="modal-sub">Pay the product cost now. Shipping is communicated when your goods arrive in Nigeria.</div>
-    <div class="order-summary">
-      <div class="os-title">📋 Order Summary</div>
-      <div id="obItems"></div>
-      <div class="os-total"><span>Total to Pay Now</span><span id="obTotal">₦0</span></div>
-      <p style="font-size:.66rem;color:var(--muted);margin-top:8px">+ Shipping fee paid when goods arrive (weight-based)</p>
-    </div>
+    <div class="modal-title">Complete Your Order</div>
+    <div class="modal-sub">Fill in your details below. You'll be redirected to Flutterwave to pay securely.</div>
+
+    <div class="order-summary" id="orderSummary"></div>
+
     <div class="ck-row">
-      <div class="ck-field"><label>First Name</label><input type="text" id="ckFirst" placeholder="First name"></div>
-      <div class="ck-field"><label>Last Name</label><input type="text" id="ckLast" placeholder="Last name"></div>
-    </div>
-    <div class="ck-field"><label>Email Address</label><input type="email" id="ckEmail" placeholder="your@email.com"></div>
-    <div class="ck-field"><label>WhatsApp Number</label><input type="tel" id="ckPhone" placeholder="+234 801 234 5678"></div>
-    <div class="ck-field">
-      <label>Preferred Shipping Method</label>
-      <div class="ship-opts" id="shipSel">
-        <div class="sopt on" data-ship="Express Air (3–7 days)" onclick="pickShip(this)"><div class="sopt-name">✈️⚡ Express Air</div><div class="sopt-time">3–7 Days</div><div class="sopt-note">Urgent orders</div></div>
-        <div class="sopt" data-ship="Standard Air (7–14 days)" onclick="pickShip(this)"><div class="sopt-name">✈️ Standard Air</div><div class="sopt-time">7–14 Days</div><div class="sopt-note">Non-battery</div></div>
-        <div class="sopt" data-ship="Battery Air Cargo (14–21 days)" onclick="pickShip(this)"><div class="sopt-name">✈️🔋 Battery Air</div><div class="sopt-time">14–21 Days</div><div class="sopt-note">Electronics</div></div>
-        <div class="sopt" data-ship="Sea Freight (50–60 days)" onclick="pickShip(this)"><div class="sopt-name">🚢 Sea Freight</div><div class="sopt-time">50–60 Days</div><div class="sopt-note">Bulk · cheapest</div></div>
+      <div class="ck-field">
+        <label>First Name *</label>
+        <input type="text" id="ck-fname" placeholder="Chukwuemeka">
+      </div>
+      <div class="ck-field">
+        <label>Last Name *</label>
+        <input type="text" id="ck-lname" placeholder="Okafor">
       </div>
     </div>
-    <div class="ck-field"><label>Delivery State</label>
-      <select id="ckState"><option value="">Select state...</option><option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option><option>Anambra</option><option>Bauchi</option><option>Bayelsa</option><option>Benue</option><option>Borno</option><option>Cross River</option><option>Delta</option><option>Ebonyi</option><option>Edo</option><option>Ekiti</option><option>Enugu</option><option>FCT – Abuja</option><option>Gombe</option><option>Imo</option><option>Jigawa</option><option>Kaduna</option><option>Kano</option><option>Katsina</option><option>Kebbi</option><option>Kogi</option><option>Kwara</option><option>Lagos</option><option>Nasarawa</option><option>Niger</option><option>Ogun</option><option>Ondo</option><option>Osun</option><option>Oyo</option><option>Plateau</option><option>Rivers</option><option>Sokoto</option><option>Taraba</option><option>Yobe</option><option>Zamfara</option></select>
+    <div class="ck-field">
+      <label>Email Address *</label>
+      <input type="email" id="ck-email" placeholder="chukwuemeka@email.com">
     </div>
-    <div class="ck-field"><label>Delivery Address</label><input type="text" id="ckAddr" placeholder="Street address, estate, city"></div>
-    <div class="ck-field"><label>Referral Code (optional)</label><input type="text" id="ckRef" placeholder="Referred-by-Name"></div>
+    <div class="ck-field">
+      <label>WhatsApp / Phone *</label>
+      <input type="tel" id="ck-phone" placeholder="08012345678">
+    </div>
+    <div class="ck-field">
+      <label>State *</label>
+      <select id="ck-state" onchange="updateDeliveryFee()">
+        <option value="">Select your state...</option>
+        <option value="ph">Rivers State (Port Harcourt)</option>
+        <option value="other">Akwa Ibom, Bayelsa, Cross River, Delta, Edo, Imo, Abia, Anambra, Enugu, Ebonyi</option>
+        <option value="lagos">Lagos / Ogun / Oyo / FCT Abuja</option>
+        <option value="north">Kano, Kaduna, Katsina, Sokoto, Zamfara, Kebbi, Niger, Kwara, Borno, Adamawa, Gombe, Bauchi, Yobe, Taraba, Nasarawa, Plateau, Benue, Kogi, Ekiti, Ondo, Osun</option>
+      </select>
+    </div>
+    <div class="ck-field">
+      <label>Full Delivery Address *</label>
+      <input type="text" id="ck-address" placeholder="12 Aba Road, GRA Phase 2, Port Harcourt">
+    </div>
+    <div class="ck-field">
+      <label>Referral Code (optional)</label>
+      <input type="text" id="ck-ref" placeholder="Enter referral code if you have one">
+    </div>
+
+    <div style="margin-bottom:8px;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,237,231,.4)">Shipping Method (China → Nigeria)</div>
+    <div class="ship-opts">
+      <div class="sopt on" id="sopt-express" onclick="selectShip('express',this)">
+        <div class="sopt-name">✈️⚡ Express Air</div>
+        <div class="sopt-time">3–7 Days</div>
+        <div class="sopt-note">Best for phones & laptops</div>
+      </div>
+      <div class="sopt" id="sopt-air" onclick="selectShip('air',this)">
+        <div class="sopt-name">✈️ Standard Air</div>
+        <div class="sopt-time">7–14 Days</div>
+        <div class="sopt-note">Non-battery items only</div>
+      </div>
+      <div class="sopt" id="sopt-battery" onclick="selectShip('battery',this)">
+        <div class="sopt-name">✈️🔋 Battery Air</div>
+        <div class="sopt-time">14–21 Days</div>
+        <div class="sopt-note">Battery-certified route</div>
+      </div>
+      <div class="sopt" id="sopt-sea" onclick="selectShip('sea',this)">
+        <div class="sopt-name">🚢 Sea Freight</div>
+        <div class="sopt-time">50–60 Days</div>
+        <div class="sopt-note">Cheapest per kg · Bulk</div>
+      </div>
+    </div>
     <div class="ship-caveat">
-  <p><strong>⚠️ Shipping Notice:</strong> The amount above is product cost only. When goods arrive in Nigeria, you'll receive the shipping company's weight-based invoice. <strong>Port Harcourt: Free · South-South/South-East: ₦5,000 · Lagos/Abuja: ₦7,500 · Other States: ₦9,000.</strong></p>
+      <p>Shipping fee (China → Nigeria) is <strong>paid separately on arrival</strong> — weight-based, carrier invoice provided. Delivery fee within Nigeria shown below is also paid on arrival.</p>
+    </div>
+
+    <div id="delivery-fee-box" style="margin-bottom:12px;">
+  <div id="delivery-fee-hint" style="font-size:.75rem;color:var(--muted);text-align:center;padding:8px 0;">
+    ← Select your state above to see delivery fee
+  </div>
+  <div id="delivery-fee-callout" style="display:none;border-radius:10px;padding:14px 16px;animation:deliveryPop .3s cubic-bezier(.34,1.56,.64,1);">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px;" id="delivery-fee-label">In-Nigeria Delivery</div>
+        <div style="font-size:.75rem;" id="delivery-fee-region"></div>
+      </div>
+      <div id="delivery-fee-amount" style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;"></div>
+    </div>
+  </div>
 </div>
-    <button class="pay-btn" onclick="doPayment()">🔒 Pay Securely with Flutterwave</button>
-    <p class="pay-note">Secured by Flutterwave. We never store your card details.</p>
-    <div class="fw-badge">🔐 Powered by <strong style="color:var(--gold-bright);margin-left:3px">Flutterwave</strong></div>
+<div class="ct-row" style="font-size:.82rem;margin-bottom:16px;"><span style="color:var(--muted2)">Products Total</span><span id="ck-products-total" style="color:var(--gold-bright);font-weight:700;">₦0</span></div>
+
+    <button class="pay-btn" id="pay-btn-main" onclick="initiatePayment()">
+  🔒 Pay ₦0 via Flutterwave
+</button>
+    <div class="pay-note">You are paying the factory cost price only. Shipping and delivery are settled separately on arrival of goods.</div>
+    <div class="fw-badge">🔐 Secured by <strong>Flutterwave</strong> · PCI-DSS Certified · SSL Encrypted</div>
   </div>
 </div>
 
@@ -1443,499 +1541,957 @@ document.addEventListener('mouseleave', function(e){
   <div class="success-box">
     <span class="success-icon">🎉</span>
     <h2>Order Confirmed!</h2>
-    <p>Your payment has been received. We'll contact you on WhatsApp within 2 hours with confirmation and tracking details.</p>
-    <div class="txn-ref"><strong id="txnNum">TXN-XXXXXXXXXX</strong>Save this transaction reference.</div>
-    <a href="#" id="waLink" class="wa-follow" target="_blank">💬 Follow Up on WhatsApp</a>
-    <button class="close-suc" onclick="closeSuc()">Continue Shopping</button>
+    <p>Your payment was successful. We've received your order and will begin sourcing your items from China immediately.</p>
+    <div class="txn-ref">
+      <strong id="success-txref">GGS-ORDER-XXXXX</strong>
+      Save this reference number
+    </div>
+    <a id="success-wa-link" href="#" class="wa-follow" target="_blank">
+      💬 Track Order on WhatsApp
+    </a>
+    <button class="close-suc" onclick="closeSuccess()">Continue Shopping</button>
   </div>
 </div>
 
-<!-- MAIN SCRIPT -->
+<!-- PRODUCT DETAIL OVERLAY -->
+<div id="product-detail-overlay" onclick="handleDetailOverlayClick(event)">
+  <div class="pdm-box" id="pdmBox">
+    <button class="pdm-close" onclick="closeProductDetail()">✕</button>
+    <button class="pdm-back" onclick="closeProductDetail()">← Back to Catalog</button>
+    <div class="pdm-img" id="pdmImg">
+      <span class="pdm-img-emoji" id="pdmImgEmoji">📦</span>
+    </div>
+    <div class="pdm-body">
+      <div class="pdm-cat" id="pdmCat"></div>
+      <div class="pdm-name-row">
+        <div class="pdm-name" id="pdmName"></div>
+        <span class="pdm-badge" id="pdmBadge" style="display:none"></span>
+      </div>
+      <div class="pdm-spec" id="pdmSpec"></div>
+      <div class="pdm-rating">
+        <span class="pdm-stars">★★★★★</span>
+        <span class="pdm-rating-n">(4.9) · Verified buyers</span>
+      </div>
+      <div class="pdm-price-section">
+        <span class="pdm-cost-label">✅ Factory Cost Price</span>
+        <div class="pdm-price" id="pdmPrice">₦0</div>
+        <div class="pdm-ship-note">📦 <span>+ Shipping paid on arrival (weight-based)</span></div>
+      </div>
+      <select class="pdm-var-select" id="pdmVarSelect" style="display:none" onchange="pdmVariantChange(this)"></select>
+      <button class="pdm-add-btn" id="pdmAddBtn" onclick="pdmAddToCart()">
+        🛒 Add to Cart
+      </button>
+      <div class="pdm-divider" id="pdmDescDivider" style="display:none"></div>
+      <div class="pdm-desc-title" id="pdmDescTitle" style="display:none">Product Description</div>
+      <div class="pdm-desc-body" id="pdmDescBody"></div>
+      <div class="pdm-share-row">
+        <button class="pdm-share-btn" onclick="copyProductLink()">📋 Copy Link</button>
+        <button class="pdm-share-btn wa" onclick="shareProductWhatsApp()">💬 Share on WhatsApp</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-// CONFIG
-const FW_KEY = 'FLWPUBK-14a050e1c6e7309deb9d08c19c4e4013-X';
-window.GGS_WA  = '2348142717585';
-const BIZ      = 'GGS Global Consult';
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+window.cart = [];
+window.GGS_WA = '2348142717585';
+window.allProducts = window.allProducts || {};
 window.deliveryFeePH = 0;
 window.deliveryFeeOther = 5000;
 window.deliveryFeeLagos = 7500;
 window.deliveryFeeNorth = 9000;
+window.countdownDeadline = null;
 
-// CAT_META
+let currentShipping = 'express';
+let currentCat = 'all';
+let currentSearchQuery = '';
+let currentDetailProduct = null;
+let previousMeta = {};
+const FLWPUBK = 'FLWPUBK-14a050e1c6e7309deb9d08c19c4e4013-X';
+
 const CAT_META = {
-  tech:     { label: 'Tech & Gadgets',      icon: '📱' },
-  fashion:  { label: 'Fashion & Lifestyle', icon: '👜' },
-  skincare: { label: 'Skincare & Beauty',   icon: '✨' },
-  home:     { label: 'Home & Living',       icon: '🏠' },
-  shoes:    { label: 'Shoes',               icon: '👟' },
-  watches:  { label: 'Watches',             icon: '⌚' },
-  bags:     { label: 'Bags',                icon: '👜' },
-  gaming:   { label: 'Gaming',              icon: '🎮' },
-  perfume:  { label: 'Perfumes',            icon: '🌸' },
-  jewelry:  { label: 'Jewelry',             icon: '💍' },
-  sports:   { label: 'Sports & Fitness',    icon: '💪' },
-  kids:     { label: 'Kids & Baby',         icon: '🧸' },
-  general:  { label: 'General',             icon: '📦' },
+  tech:    {label:'Tech & Gadgets',     icon:'📱'},
+  fashion: {label:'Fashion & Lifestyle',icon:'👗'},
+  skincare:{label:'Skincare & Beauty',  icon:'✨'},
+  home:    {label:'Home & Living',      icon:'🏠'},
+  shoes:   {label:'Shoes',             icon:'👟'},
+  watches: {label:'Watches',           icon:'⌚'},
+  bags:    {label:'Bags',              icon:'👜'},
+  gaming:  {label:'Gaming',            icon:'🎮'},
+  perfume: {label:'Perfumes',          icon:'🌸'},
+  jewelry: {label:'Jewelry',           icon:'💍'},
+  sports:  {label:'Sports & Fitness',  icon:'💪'},
+  kids:    {label:'Kids & Baby',       icon:'🧸'},
+  general: {label:'General',           icon:'📦'},
 };
 
-function getCatMeta(cat) {
-  if (!cat) return { label: 'General', icon: '📦' };
-  const key = cat.toLowerCase().trim();
-  if (CAT_META[key]) return CAT_META[key];
-  const label = key.replace(/[_-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-  return { label, icon: '🏷️' };
-}
-
-// STATE
-window.allProducts = {};
-window.cart        = [];
-let activeCat      = null;
-let searchTimeout;
-let isSearchMode   = false;
-
-// UTILS
-const fmt = n => '₦' + Number(n).toLocaleString('en-NG');
-function escAttr(s){ return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmt(n){ return '₦'+Number(n||0).toLocaleString('en-NG'); }
 function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// RENDER CATALOG
-window.renderCatalog = function() {
-  const categoryMap = window.allProducts || {};
-  const cats = Object.keys(categoryMap);
-  if (!activeCat || (activeCat !== 'all' && activeCat !== '_search' && !categoryMap[activeCat])) {
-    activeCat = cats.length ? cats[0] : 'all';
-  }
-  // Build tabs
+// ════════════════════════════════════════
+// CATALOG RENDER
+// ════════════════════════════════════════
+window.renderCatalog = function(){
+  const cats = Object.keys(window.allProducts);
   const catBar = document.getElementById('catBar');
-  if (!catBar) return;
-  let tabsHTML = cats.map(cat => {
-    const meta = getCatMeta(cat);
-    const isActive = !isSearchMode && cat === activeCat;
-    return `<button class="cat-tab${isActive ? ' active' : ''}" data-cat="${cat}" onclick="switchTab('${cat}')">${meta.icon} ${meta.label}</button>`;
-  }).join('');
-  const allActive = !isSearchMode && activeCat === 'all';
-  tabsHTML += `<button class="cat-tab${allActive ? ' active' : ''}" data-cat="all" onclick="switchTab('all')">✨ All Products</button>`;
-  catBar.innerHTML = tabsHTML;
-  // Build panels
-  const panelsContainer = document.getElementById('catalogPanels');
-  if (!panelsContainer) return;
-  let panelsHTML = '';
-  cats.forEach(cat => {
-    const products = categoryMap[cat] || [];
-    const isActive = !isSearchMode && cat === activeCat;
-    panelsHTML += `<div class="panel${isActive ? ' active' : ''}" id="panel-${cat}"><div class="prod-grid">${products.length ? products.map(p => buildProductCard(p, cat)).join('') : '<div class="no-results"><span class="nr-icon">📭</span><p>No products in this category yet.</p></div>'}</div></div>`;
+  const panels = document.getElementById('catalogPanels');
+
+  // Build category tabs
+  catBar.innerHTML = `<button class="cat-tab${currentCat==='all'?' active':''}" data-cat="all" onclick="switchCat('all')">All Products</button>`;
+  cats.sort().forEach(c => {
+    const meta = CAT_META[c];
+    const label = meta ? meta.icon+' '+meta.label : c;
+    catBar.innerHTML += `<button class="cat-tab${currentCat===c?' active':''}" data-cat="${c}" onclick="switchCat('${c}')">${label}</button>`;
   });
-  const allProds = cats.flatMap(cat => (categoryMap[cat] || []).map(p => ({ ...p, _cat: cat })));
-  const allIsActive = !isSearchMode && activeCat === 'all';
-  panelsHTML += `<div class="panel${allIsActive ? ' active' : ''}" id="panel-all"><div class="prod-grid">${allProds.length ? allProds.map(p => buildProductCard(p, p._cat)).join('') : '<div class="no-results"><span class="nr-icon">📭</span><p>No products yet. Check back soon!</p></div>'}</div></div>`;
-  panelsHTML += `<div class="panel" id="panel-_search"><div class="prod-grid" id="searchGrid"></div></div>`;
-  panelsContainer.innerHTML = panelsHTML;
+
+  // Build panels
+  panels.innerHTML = '';
+
+  // All panel
+  const allDiv = document.createElement('div');
+  allDiv.id = 'panel-all';
+  allDiv.className = 'panel' + (currentCat==='all' ? ' active' : '');
+  const allProds = [];
+  cats.forEach(c => (window.allProducts[c]||[]).forEach(p => allProds.push(p)));
+  allProds.sort((a,b)=>((a.sortOrder||a.order||0)-(b.sortOrder||b.order||0)));
+  allDiv.innerHTML = `<div class="prod-grid">${allProds.map(p=>buildCard(p)).join('')}</div>`;
+  panels.appendChild(allDiv);
+
+  // Per-category panels
+  cats.forEach(c => {
+    const div = document.createElement('div');
+    div.id = 'panel-'+c;
+    div.className = 'panel' + (currentCat===c ? ' active' : '');
+    const prods = (window.allProducts[c]||[]);
+    div.innerHTML = `<div class="prod-grid">${prods.map(p=>buildCard(p)).join('')}</div>`;
+    panels.appendChild(div);
+  });
+
+  renderCartUI();
 };
 
-function switchTab(cat) {
-  isSearchMode = false;
-  activeCat    = cat;
-  document.querySelectorAll('.cat-tab').forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
-  document.querySelectorAll('#catalogPanels .panel').forEach(p => p.classList.remove('active'));
-  const target = document.getElementById('panel-' + cat);
-  if (target) target.classList.add('active');
-  document.getElementById('searchBanner').classList.remove('show');
-}
-
-function activateSearchPanel(results, query) {
-  isSearchMode = true;
-  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('#catalogPanels .panel').forEach(p => p.classList.remove('active'));
-  const sp = document.getElementById('panel-_search');
-  if (sp) sp.classList.add('active');
-  const grid = document.getElementById('searchGrid');
-  if (grid) {
-    grid.innerHTML = results.length
-      ? results.map(p => buildProductCard(p, p._cat)).join('')
-      : '<div class="no-results"><span class="nr-icon">🔍</span><p>No products match your search.<br><a href="https://wa.me/2348142717585" target="_blank" style="color:var(--gold-bright)">Request via WhatsApp →</a></p></div>';
+function getProductById(id){
+  for(const cat of Object.values(window.allProducts||{})){
+    const p = cat.find(x=>x.id===id);
+    if(p) return p;
   }
-  const banner = document.getElementById('searchBanner');
-  const bannerText = document.getElementById('searchBannerText');
-  if (banner) banner.classList.add('show');
-  if (bannerText) bannerText.textContent = `Showing ${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"`;
+  return null;
 }
 
-function buildProductCard(p, cat) {
-  const meta     = getCatMeta(cat);
-  const badgeClass = p.badge ? `b-${p.badge}` : '';
-  const safeId   = escAttr(p.id);
-  const safeName = escAttr(p.name);
-  const safeIcon = escAttr(p.icon || '📦');
-  const price    = Number(p.price) || 0;
-  const imgHtml  = p.img ? `<img src="${escHtml(p.img)}" alt="${escHtml(p.name)}" loading="lazy" onerror="this.style.display='none';this.parentElement.querySelector('.pc-emoji').style.display='block'">` : '';
-  const emojiStyle = p.img ? 'display:none' : '';
-  return `
-    <div class="prod-card" data-id="${escHtml(p.id)}" data-cat="${escHtml(cat)}">
-      ${p.badge ? `<div class="pc-badge ${badgeClass}">${escHtml(p.badgeText || '')}</div>` : ''}
-      <div class="pc-wish" title="Save to wishlist">🤍</div>
-      <div class="pc-img">
-        ${imgHtml}
-        <span class="pc-emoji" style="${emojiStyle}">${p.icon || '📦'}</span>
+function buildCard(p){
+  // Determine starting price from variantPrices or base price
+  let basePrice = p.price || 0;
+  const hasVarPrices = p.variantPrices && p.variantPrices.length > 0;
+  const hasOldVariants = !hasVarPrices && p.variants && p.variants.length > 0;
+  if(hasVarPrices){
+    const prices = p.variantPrices.map(v=>v.price).filter(n=>n>0);
+    if(prices.length) basePrice = Math.min(...prices);
+  }
+
+  const catMeta = CAT_META[p.category] || {};
+  const catLabel = catMeta.icon ? catMeta.icon+' '+(catMeta.label||p.category) : (p.category||'');
+
+  let badgeHtml = '';
+  if(p.badge==='hot') badgeHtml = `<div class="pc-badge b-hot">${escHtml(p.badgeText||'Hot')}</div>`;
+  else if(p.badge==='new') badgeHtml = `<div class="pc-badge b-new">${escHtml(p.badgeText||'New')}</div>`;
+  else if(p.badge==='pick') badgeHtml = `<div class="pc-badge b-pick">${escHtml(p.badgeText||'Pick')}</div>`;
+
+  const imgHtml = p.img
+    ? `<img src="${escHtml(p.img)}" alt="${escHtml(p.name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+    : '';
+  const emojiFallback = `<span class="pc-emoji" style="${p.img?'display:none':''}">${escHtml(p.icon||'📦')}</span>`;
+
+  // Variant selectors — two-tier system
+let varHtml = '';
+const hasPriceTiers = p.priceTiers && p.priceTiers.length > 0;
+const hasColors = p.colorOptions && p.colorOptions.length > 0;
+
+if(hasPriceTiers){
+// New system: separate storage + color dropdowns
+varHtml = `<select class="var-select" id="vs-${escHtml(p.id)}" onchange="cardVariantChange('${escHtml(p.id)}',this)" style="margin-bottom:${hasColors?'6px':'12px'}">`;
+  p.priceTiers.forEach((v,i) => {
+  varHtml += `<option value="${i}" data-price="${v.price}">${escHtml(v.label||v.name)} — ${fmt(v.price)}</option>`;
+  });
+  varHtml += `</select>`;
+if(hasColors){
+varHtml += `<select class="var-select" id="vc-${escHtml(p.id)}" style="margin-bottom:12px">`;
+  p.colorOptions.forEach(c => { varHtml += `<option>${escHtml(c)}</option>`; });
+  varHtml += `</select>`;
+}
+} else if(hasVarPrices){
+// Backward compat: old variantPrices[]
+varHtml = `<select class="var-select" id="vs-${escHtml(p.id)}" onchange="cardVariantChange('${escHtml(p.id)}',this)">`;
+  p.variantPrices.forEach((v,i) => {
+  varHtml += `<option value="${i}" data-price="${v.price}">${escHtml(v.name)} — ${fmt(v.price)}</option>`;
+  });
+  varHtml += `</select>`;
+} else if(hasOldVariants){
+varHtml = `<select class="var-select" id="vs-${escHtml(p.id)}">`;
+  p.variants.forEach(v => { varHtml += `<option>${escHtml(v)}</option>`; });
+  varHtml += `</select>`;
+}
+
+  const stars = '★★★★★';
+  const rating = (4.8 + Math.random()*0.2).toFixed(1);
+  const reviews = Math.floor(8+Math.random()*30);
+
+  return `<div class="prod-card" id="card-${escHtml(p.id)}">
+    ${badgeHtml}
+    <div class="pc-wish" onclick="wishlistToggle('${escHtml(p.id)}')" id="wish-${escHtml(p.id)}">🤍</div>
+    <div class="pc-img" onclick="openProductDetail('${escHtml(p.id)}')">
+      ${imgHtml}${emojiFallback}
+    </div>
+    <div class="pc-body">
+      <div class="pc-category">${escHtml(catLabel)}</div>
+      <div class="pc-name" onclick="openProductDetail('${escHtml(p.id)}')">${escHtml(p.name)}</div>
+      <div class="pc-spec">${escHtml(p.spec||'')}</div>
+      <div class="pc-rating">
+        <span class="pc-stars">${stars}</span>
+        <span class="pc-rating-n">${rating} (${reviews} reviews)</span>
       </div>
-      <div class="pc-body">
-        <div class="pc-category">${meta.icon} ${escHtml(meta.label)}</div>
-        <div class="pc-name">${escHtml(p.name || '')}</div>
-        <div class="pc-spec">${escHtml(p.spec || '')}</div>
-        <div class="pc-rating"><span class="pc-stars">★★★★★</span><span class="pc-rating-n">(4.9) Verified Reviews</span></div>
-        <div class="price-block">
-          <span class="pc-cost-label">✅ Factory Cost Price — Zero Markup</span>
-          <div class="pc-price">${fmt(price)}</div>
-          <div class="pc-shipping-note">🚢 + Shipping paid on arrival (weight-based)</div>
+      <div class="price-block">
+        <span class="pc-cost-label">✅ Factory Cost Price</span>
+        <div>
+          <span class="pc-price" id="price-${escHtml(p.id)}">${fmt(basePrice)}</span>
+          ${hasVarPrices ? '<span class="pc-price-from">from</span>' : ''}
         </div>
-        ${(p.variants && p.variants.length)
-          ? `<select class="var-select" id="v-${escHtml(p.id)}"><option value="">Select option…</option>${p.variants.map(v => `<option value="${escHtml(v)}">${escHtml(v)}</option>`).join('')}</select>`
-          : `<input type="hidden" id="v-${escHtml(p.id)}" value="Standard">`
-        }
-        <button class="add-btn" id="abtn-${escHtml(p.id)}" onclick="addItem('${safeId}', '${safeName}', '${safeIcon}', ${price})">🛒 Add to Cart</button>
+        <div class="pc-shipping-note">📦 <span>+ Shipping on arrival</span></div>
+      </div>
+      ${varHtml}
+      <button class="add-btn" id="addbtn-${escHtml(p.id)}" onclick="addToCart('${escHtml(p.id)}')">
+        🛒 Add to Cart
+      </button>
+      <button class="view-details-btn" onclick="openProductDetail('${escHtml(p.id)}')">
+        🔍 View Full Details
+      </button>
+    </div>
+  </div>`;
+}
+
+function cardVariantChange(pid, sel){
+  const opt = sel.options[sel.selectedIndex];
+  const price = parseInt(opt.getAttribute('data-price')) || 0;
+  const priceEl = document.getElementById('price-'+pid);
+  if(priceEl) priceEl.textContent = fmt(price);
+}
+
+window.switchCat = function(cat){
+  currentCat = cat;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-cat')===cat));
+  document.querySelectorAll('#catalogPanels .panel').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('panel-'+(cat==='all'?'all':cat));
+  if(target) target.classList.add('active');
+};
+
+// ════════════════════════════════════════
+// SEARCH
+// ════════════════════════════════════════
+function getAllProductsFlat(){
+  const all = [];
+  Object.values(window.allProducts||{}).forEach(arr => arr.forEach(p => all.push(p)));
+  return all;
+}
+
+window.handleSearch = function(q){
+  currentSearchQuery = q.trim().toLowerCase();
+  if(!currentSearchQuery){ hideSearchDrop(); return; }
+  showSearchDrop();
+  populateSearchDrop(currentSearchQuery);
+};
+
+window.handleMobileSearch = function(q){
+  const term = q.trim().toLowerCase();
+  const results = document.getElementById('mobileSearchResults');
+  if(!term){ results.innerHTML=''; return; }
+  const matched = getAllProductsFlat().filter(p =>
+    (p.name||'').toLowerCase().includes(term) ||
+    (p.spec||'').toLowerCase().includes(term) ||
+    (p.category||'').toLowerCase().includes(term)
+  ).slice(0,8);
+  if(!matched.length){
+    results.innerHTML = `<div class="sd-empty" style="color:#6B6050">No products found for "${escHtml(q)}"</div>`;
+    return;
+  }
+  results.innerHTML = matched.map(p => {
+    const bp = getBasePrice(p);
+    return `<div class="sd-item" onclick="mobileSearchSelect('${escHtml(p.id)}')">
+      <div class="sd-thumb">${p.img?`<img src="${escHtml(p.img)}" alt="">`:(p.icon||'📦')}</div>
+      <div><div class="sd-name" style="color:#1A1510">${escHtml(p.name)}</div><div class="sd-price">${fmt(bp)}</div></div>
+    </div>`;
+  }).join('');
+};
+
+window.mobileSearchSelect = function(id){
+  document.getElementById('mobileSearchResults').innerHTML='';
+  document.getElementById('mobileSearch').value='';
+  openProductDetail(id);
+};
+
+function getBasePrice(p){
+  if(p.variantPrices && p.variantPrices.length){
+    const prices = p.variantPrices.map(v=>v.price).filter(n=>n>0);
+    if(prices.length) return Math.min(...prices);
+  }
+  return p.price || 0;
+}
+
+function populateSearchDrop(q){
+  const dd = document.getElementById('searchDropdown');
+  const matched = getAllProductsFlat().filter(p =>
+    (p.name||'').toLowerCase().includes(q) ||
+    (p.spec||'').toLowerCase().includes(q) ||
+    (p.category||'').toLowerCase().includes(q)
+  ).slice(0,7);
+
+  if(!matched.length){
+    dd.innerHTML = `<div class="sd-empty">No results for "${escHtml(q)}"</div>`;
+    return;
+  }
+  dd.innerHTML = `<div class="sd-section">Products</div>` + matched.map(p => {
+    const bp = getBasePrice(p);
+    const catM = CAT_META[p.category]||{};
+    return `<div class="sd-item" onmousedown="searchSelect('${escHtml(p.id)}')">
+      <div class="sd-thumb">${p.img?`<img src="${escHtml(p.img)}" alt="">`:(p.icon||'📦')}</div>
+      <div style="flex:1;min-width:0">
+        <div class="sd-name">${escHtml(p.name)}</div>
+        <div class="sd-price">${fmt(bp)}</div>
+        <div class="sd-cat">${catM.icon||''} ${catM.label||p.category||''}</div>
       </div>
     </div>`;
+  }).join('');
 }
 
-// SEARCH
-function getAllProdsFlat() {
-  const cm = window.allProducts || {};
-  return Object.keys(cm).flatMap(cat => (cm[cat] || []).map(p => ({ ...p, _cat: cat })));
-}
-function searchProducts(query) {
-  if (!query.trim()) return [];
-  const q = query.toLowerCase();
-  return getAllProdsFlat().filter(p =>
-    (p.name    || '').toLowerCase().includes(q) ||
-    (p.spec    || '').toLowerCase().includes(q) ||
-    (p.id      || '').toLowerCase().includes(q) ||
-    (p.category|| '').toLowerCase().includes(q) ||
-    (p.variants|| []).some(v => v.toLowerCase().includes(q))
-  );
-}
-function handleSearch(val) {
-  clearTimeout(searchTimeout);
-  if (!val.trim()) { hideSearchDrop(); return; }
-  searchTimeout = setTimeout(() => { renderSearchDropdown(val, searchProducts(val)); }, 180);
-}
-function renderSearchDropdown(query, results) {
+window.searchSelect = function(id){
+  hideSearchDrop();
+  document.getElementById('headerSearch').value='';
+  openProductDetail(id);
+};
+
+window.showSearchDrop = function(){
   const dd = document.getElementById('searchDropdown');
-  if (!dd) return;
-  if (!query.trim()) { dd.classList.remove('show'); return; }
-  if (!results.length) {
-    dd.innerHTML = `<div class="sd-empty">No products found for "<strong>${escHtml(query)}</strong>".<br>Try WhatsApp for custom orders →</div>`;
-    dd.classList.add('show'); return;
+  if(currentSearchQuery) { dd.classList.add('show'); populateSearchDrop(currentSearchQuery); }
+};
+window.hideSearchDrop = function(){ document.getElementById('searchDropdown').classList.remove('show'); };
+
+window.clearSearch = function(){
+  currentSearchQuery = '';
+  document.getElementById('headerSearch').value='';
+  document.getElementById('mobileSearch') && (document.getElementById('mobileSearch').value='');
+  document.getElementById('mobileSearchResults') && (document.getElementById('mobileSearchResults').innerHTML='');
+  document.getElementById('searchResultsBanner').classList.remove('show');
+  hideSearchDrop();
+};
+
+// ════════════════════════════════════════
+// PRODUCT DETAIL MODAL
+// ════════════════════════════════════════
+window.openProductDetail = function(id){
+  const p = getProductById(id);
+  if(!p) return;
+  currentDetailProduct = p;
+
+  const overlay = document.getElementById('product-detail-overlay');
+
+  // Image
+  const pdmImg = document.getElementById('pdmImg');
+  const pdmEmoji = document.getElementById('pdmImgEmoji');
+  if(p.img){
+    pdmImg.style.backgroundImage = '';
+    pdmEmoji.style.display = 'none';
+    let imgEl = pdmImg.querySelector('img.pdm-actual-img');
+    if(!imgEl){ imgEl = document.createElement('img'); imgEl.className='pdm-actual-img'; imgEl.style.cssText='width:100%;height:100%;object-fit:cover;'; pdmImg.insertBefore(imgEl, pdmEmoji); }
+    imgEl.src = p.img;
+    imgEl.alt = p.name||'';
+    imgEl.onerror = ()=>{ imgEl.style.display='none'; pdmEmoji.style.display='flex'; };
+    imgEl.style.display = 'block';
+  } else {
+    const imgEl = pdmImg.querySelector('img.pdm-actual-img');
+    if(imgEl) imgEl.style.display='none';
+    pdmEmoji.textContent = p.icon||'📦';
+    pdmEmoji.style.display = 'block';
   }
-  let html = `<div class="sd-section">Products Found (${results.length})</div>`;
-  results.slice(0, 6).forEach(p => {
-    const meta = getCatMeta(p._cat);
-    const thumbHtml = p.img ? `<img src="${escHtml(p.img)}" alt="${escHtml(p.name)}" onerror="this.parentElement.innerHTML='${escAttr(p.icon || '📦')}'">` : (p.icon || '📦');
-    html += `<div class="sd-item" onclick="gotoProduct('${escAttr(p.id)}', '${escAttr(p._cat)}')"><div class="sd-thumb">${thumbHtml}</div><div><div class="sd-name">${escHtml(p.name)}</div><div class="sd-cat">${meta.icon} ${escHtml(meta.label)}</div><div class="sd-price">${fmt(p.price)}</div></div></div>`;
+
+  // Category
+  const catM = CAT_META[p.category]||{};
+  document.getElementById('pdmCat').textContent = (catM.icon||'')+' '+(catM.label||p.category||'');
+
+  // Name
+  document.getElementById('pdmName').textContent = p.name||'';
+
+  // Badge
+  const pdmBadge = document.getElementById('pdmBadge');
+  if(p.badge){
+    pdmBadge.style.display = '';
+    pdmBadge.textContent = p.badgeText || p.badge;
+    pdmBadge.className = 'pdm-badge ' + (p.badge==='hot'?'b-hot':p.badge==='new'?'b-new':'b-pick');
+  } else {
+    pdmBadge.style.display = 'none';
+  }
+
+  // Spec
+  document.getElementById('pdmSpec').textContent = p.spec||'';
+
+  // Variants & Price
+  const pdmVarSel = document.getElementById('pdmVarSelect');
+  const pdmPrice = document.getElementById('pdmPrice');
+  const hasVarPrices = p.variantPrices && p.variantPrices.length > 0;
+  const hasOldVars = !hasVarPrices && p.variants && p.variants.length > 0;
+
+  const hasPriceTiers = p.priceTiers && p.priceTiers.length > 0;
+const hasColors = p.colorOptions && p.colorOptions.length > 0;
+
+// Remove any existing color select in modal
+const existingColorSel = document.getElementById('pdmColorSelect');
+if(existingColorSel) existingColorSel.remove();
+
+if(hasPriceTiers){
+pdmVarSel.style.display = '';
+pdmVarSel.innerHTML = p.priceTiers.map((v,i)=>`<option value="${i}" data-price="${v.price}">${escHtml(v.label||v.name)} — ${fmt(v.price)}</option>`).join('');
+pdmPrice.textContent = fmt(p.priceTiers[0].price);
+// Inject color select below storage select if colors exist
+if(hasColors){
+const colorSel = document.createElement('select');
+colorSel.className = 'pdm-var-select';
+colorSel.id = 'pdmColorSelect';
+colorSel.innerHTML = p.colorOptions.map(c=>`<option>${escHtml(c)}</option>`).join('');
+pdmVarSel.insertAdjacentElement('afterend', colorSel);
+}
+} else if(hasVarPrices){
+pdmVarSel.style.display = '';
+pdmVarSel.innerHTML = p.variantPrices.map((v,i)=>`<option value="${i}" data-price="${v.price}">${escHtml(v.name)} — ${fmt(v.price)}</option>`).join('');
+pdmPrice.textContent = fmt(p.variantPrices[0].price);
+} else if(hasOldVars){
+pdmVarSel.style.display = '';
+pdmVarSel.innerHTML = p.variants.map(v=>`<option>${escHtml(v)}</option>`).join('');
+pdmPrice.textContent = fmt(p.price||0);
+} else {
+pdmVarSel.style.display = 'none';
+pdmPrice.textContent
+
+  // Description
+  const descDivider = document.getElementById('pdmDescDivider');
+  const descTitle = document.getElementById('pdmDescTitle');
+  const descBody = document.getElementById('pdmDescBody');
+  if(p.description && p.description.trim()){
+    descDivider.style.display = '';
+    descTitle.style.display = '';
+    descBody.innerHTML = escHtml(p.description).replace(/\n/g,'<br>');
+  } else {
+    descDivider.style.display = 'none';
+    descTitle.style.display = 'none';
+    descBody.innerHTML = '';
+  }
+
+  // Reset add btn
+  const addBtn = document.getElementById('pdmAddBtn');
+  addBtn.textContent = '🛒 Add to Cart';
+  addBtn.classList.remove('added');
+
+  // Open overlay
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Hash URL
+  history.pushState({productId: id}, '', '#product/'+id);
+
+  // Meta injection
+  injectProductMeta(p);
+};
+
+window.pdmVariantChange = function(sel){
+  const opt = sel.options[sel.selectedIndex];
+  const price = parseInt(opt.getAttribute('data-price'))||0;
+  if(price) document.getElementById('pdmPrice').textContent = fmt(price);
+};
+
+window.pdmAddToCart = function(){
+  if(!currentDetailProduct) return;
+  const p = currentDetailProduct;
+  const sel = document.getElementById('pdmVarSelect');
+  let variant = '';
+  let price = p.price || 0;
+
+  const hasVarPrices = p.variantPrices && p.variantPrices.length > 0;
+  const hasPriceTiersM = p.priceTiers && p.priceTiers.length > 0;
+const colorSelM = document.getElementById('pdmColorSelect');
+
+if(hasPriceTiersM && sel.style.display !== 'none'){
+const opt = sel.options[sel.selectedIndex];
+const tierName = opt.textContent.split(' — ')[0].trim();
+price = parseInt(opt.getAttribute('data-price')) || price;
+const colorName = colorSelM ? colorSelM.value : '';
+variant = colorName ? tierName + ' · ' + colorName : tierName;
+} else if(hasVarPrices && sel.style.display !== 'none'){
+const opt = sel.options[sel.selectedIndex];
+variant = opt.textContent.split(' — ')[0].trim();
+price = parseInt(opt.getAttribute('data-price')) || price;
+} else if(sel.style.display !== 'none'){
+variant = sel.value;
+}
+
+  addToCartItem({id:p.id, name:p.name, icon:p.icon||'📦', price, variant, qty:1});
+  const btn = document.getElementById('pdmAddBtn');
+  btn.textContent = '✅ Added to Cart!';
+  btn.classList.add('added');
+  setTimeout(()=>{btn.textContent='🛒 Add to Cart';btn.classList.remove('added');},2000);
+};
+
+window.closeProductDetail = function(){
+  document.getElementById('product-detail-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  currentDetailProduct = null;
+  restoreOriginalMeta();
+  if(history.state && history.state.productId){
+    history.pushState({}, '', window.location.pathname);
+  }
+};
+
+window.handleDetailOverlayClick = function(e){
+  if(e.target === document.getElementById('product-detail-overlay')) closeProductDetail();
+};
+
+window.copyProductLink = function(){
+  const url = window.location.origin + window.location.pathname + (currentDetailProduct ? '#product/'+currentDetailProduct.id : '');
+  navigator.clipboard.writeText(url).then(()=>{
+    const btn = document.querySelector('.pdm-share-btn:not(.wa)');
+    if(btn){ const orig=btn.textContent; btn.textContent='✅ Copied!'; setTimeout(()=>btn.textContent=orig,2000); }
   });
-  if (results.length > 6) {
-    html += `<div class="sd-section" style="padding-bottom:10px;color:var(--gold);cursor:pointer" onclick="doFullSearch('${escAttr(query)}')">View all ${results.length} results in catalog ↓</div>`;
+};
+
+window.shareProductWhatsApp = function(){
+  if(!currentDetailProduct) return;
+  const p = currentDetailProduct;
+  const url = window.location.origin + window.location.pathname + '#product/'+p.id;
+  const bp = getBasePrice(p);
+  const msg = encodeURIComponent(`🛍️ Check out *${p.name}* at factory cost price!\n\n*From ${fmt(bp)}* — 100% Authentic\n\n${url}\n\nOrdering from GGS Global Consult — Nigeria's most trusted importation store.`);
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+};
+
+// Hash-based routing
+window.handleHashOnLoad = function(){
+  const hash = window.location.hash;
+  if(hash.startsWith('#product/')){
+    const id = hash.replace('#product/','');
+    if(id) openProductDetail(id);
   }
-  dd.innerHTML = html;
-  dd.classList.add('show');
-}
-function showSearchDrop() {
-  const val = document.getElementById('headerSearch').value;
-  if (val.trim()) renderSearchDropdown(val, searchProducts(val));
-}
-function hideSearchDrop() {
-  const dd = document.getElementById('searchDropdown');
-  if (dd) dd.classList.remove('show');
-}
-function doFullSearch(query) {
-  hideSearchDrop();
-  const input = document.getElementById('headerSearch');
-  if (input) input.value = query;
-  document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
-  activateSearchPanel(searchProducts(query), query);
-}
-function gotoProduct(id, cat) {
-  hideSearchDrop();
-  const headerInput = document.getElementById('headerSearch');
-  if (headerInput) headerInput.value = '';
-  document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
-  const catExists = !!(window.allProducts || {})[cat];
-  switchTab(catExists ? cat : 'all');
-  setTimeout(() => {
-    const card = document.querySelector(`[data-id="${CSS.escape(id)}"]`);
-    if (card) {
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      card.style.transition = 'box-shadow .3s,border-color .3s';
-      card.style.boxShadow  = '0 0 0 3px rgba(18,184,150,.6),0 28px 70px rgba(0,0,0,.5)';
-      card.style.borderColor = 'rgba(18,184,150,.5)';
-      setTimeout(() => { card.style.boxShadow = ''; card.style.borderColor = ''; }, 2500);
+};
+
+// If products already loaded when page navigates to hash
+window.addEventListener('popstate', (e)=>{
+  if(!e.state || !e.state.productId){
+    if(document.getElementById('product-detail-overlay').classList.contains('open')){
+      closeProductDetail();
     }
-  }, 600);
-}
-function handleMobileSearch(val) {
-  const results   = searchProducts(val);
-  const container = document.getElementById('mobileSearchResults');
-  if (!val.trim() || !results.length) { container.innerHTML = ''; return; }
-  container.innerHTML = `<div style="margin-top:14px;display:grid;gap:10px">${results.slice(0,4).map(p => `<div onclick="gotoProduct('${escAttr(p.id)}','${escAttr(p._cat)}')" style="background:#fff;border:1px solid var(--cream2);border-radius:10px;padding:12px;display:flex;gap:12px;cursor:pointer;align-items:center;box-shadow:0 2px 12px rgba(0,0,0,.06)"><div style="font-size:1.8rem">${p.icon || '📦'}</div><div><div style="font-weight:800;font-size:.87rem;color:var(--cream-ink)">${escHtml(p.name)}</div><div style="font-size:.78rem;color:var(--gold-deep);font-weight:700;margin-top:2px">${fmt(p.price)}</div></div></div>`).join('')}</div>`;
-}
-function clearSearch() {
-  const hs = document.getElementById('headerSearch');
-  const ms = document.getElementById('mobileSearch');
-  if (hs) hs.value = '';
-  if (ms) ms.value = '';
-  document.getElementById('mobileSearchResults').innerHTML = '';
-  document.getElementById('searchBanner').classList.remove('show');
-  isSearchMode = false;
-  window.renderCatalog();
+  }
+});
+
+// ════════════════════════════════════════
+// META TAG INJECTION
+// ════════════════════════════════════════
+function injectProductMeta(p){
+  previousMeta = {};
+  const desc = document.querySelector('meta[name="description"]');
+  const ogTitle = document.querySelector('meta[property="og:title"]');
+  const ogDesc = document.querySelector('meta[property="og:description"]');
+  if(desc){ previousMeta.desc = desc.content; desc.content = p.seoMeta || (p.name+' — Factory Cost Price | GGS Global Consult Nigeria'); }
+  if(ogTitle){ previousMeta.ogTitle = ogTitle.content; ogTitle.content = (p.name||'Product')+' — Factory Cost Price | GGS Global Consult'; }
+  if(ogDesc){ previousMeta.ogDesc = ogDesc.content; ogDesc.content = p.seoMeta || ('Buy authentic '+p.name+' in Nigeria at factory cost price. GGS Global Consult.'); }
+  previousMeta.title = document.title;
+  document.title = (p.name||'Product')+' — GGS Global Consult | Factory Cost Price';
 }
 
-// CART
-function addItem(id, name, icon, price) {
-  const sel     = document.getElementById('v-' + id);
-  const variant = sel ? sel.value : 'Standard';
-  if (!variant) {
-    if (sel && sel.tagName === 'SELECT') { sel.style.borderColor = 'rgba(18,184,150,.7)'; sel.focus(); setTimeout(() => sel.style.borderColor = '', 2500); }
-    showToast('⚠️ Please select an option first'); return;
-  }
-  const ex = window.cart.find(i => i.id === id && i.variant === variant);
-  if (ex) { ex.qty++; showToast('Quantity updated ✓'); }
-  else { window.cart.push({ id, name, icon, price, variant, qty: 1 }); showToast('✅ Added to cart!'); }
-  renderCart(); updateDot();
-  const b = document.getElementById('abtn-' + id);
-  if (b) { b.classList.add('added'); b.textContent = '✓ Added to Cart'; setTimeout(() => { b.classList.remove('added'); b.textContent = '🛒 Add to Cart'; }, 2200); }
-  openCart();
+function restoreOriginalMeta(){
+  const desc = document.querySelector('meta[name="description"]');
+  const ogTitle = document.querySelector('meta[property="og:title"]');
+  const ogDesc = document.querySelector('meta[property="og:description"]');
+  if(desc && previousMeta.desc) desc.content = previousMeta.desc;
+  if(ogTitle && previousMeta.ogTitle) ogTitle.content = previousMeta.ogTitle;
+  if(ogDesc && previousMeta.ogDesc) ogDesc.content = previousMeta.ogDesc;
+  if(previousMeta.title) document.title = previousMeta.title;
 }
-function renderCart() {
-  const body   = document.getElementById('cartBody');
-  const totals = document.getElementById('cartTotals');
-  const cta    = document.getElementById('checkoutCta');
-  if (!window.cart.length) {
-    body.innerHTML = '<div class="cart-empty"><span class="ei">🛒</span><p>Your cart is empty.<br>Browse the catalog to add items.</p></div>';
-    totals.style.display = 'none'; cta.disabled = true; return;
+
+// ════════════════════════════════════════
+// CART
+// ════════════════════════════════════════
+window.addToCart = function(pid){
+  const p = getProductById(pid);
+  if(!p) return;
+
+  const sel = document.getElementById('vs-'+pid);
+  let variant = '';
+  let price = p.price || 0;
+  const hasVarPrices = p.variantPrices && p.variantPrices.length > 0;
+  const hasOldVars = !hasVarPrices && p.variants && p.variants.length > 0;
+
+  const hasPriceTiers = p.priceTiers && p.priceTiers.length > 0;
+const colorSel = document.getElementById('vc-'+pid);
+
+if(hasPriceTiers && sel){
+const opt = sel.options[sel.selectedIndex];
+const tierName = opt.textContent.split(' — ')[0].trim();
+price = parseInt(opt.getAttribute('data-price')) || price;
+const colorName = colorSel ? colorSel.value : '';
+variant = colorName ? tierName + ' · ' + colorName : tierName;
+} else if(hasVarPrices && sel){
+const opt = sel.options[sel.selectedIndex];
+variant = opt.textContent.split(' — ')[0].trim();
+price = parseInt(opt.getAttribute('data-price')) || price;
+} else if(hasOldVars && sel){
+variant = sel.value;
+}
+
+  addToCartItem({id:p.id, name:p.name, icon:p.icon||'📦', price, variant, qty:1});
+
+  const btn = document.getElementById('addbtn-'+pid);
+  if(btn){ btn.textContent='✅ Added!'; btn.classList.add('added'); setTimeout(()=>{btn.textContent='🛒 Add to Cart';btn.classList.remove('added');},2000); }
+};
+
+function addToCartItem(item){
+  const key = item.id + '|' + (item.variant||'');
+  const existing = window.cart.find(c => c.id===item.id && c.variant===item.variant);
+  if(existing){ existing.qty++; }
+  else { window.cart.push({...item}); }
+  renderCartUI();
+  // Open cart
+  if(!document.getElementById('cartDrawer').classList.contains('open')) toggleCart();
+}
+
+window.toggleCart = function(){
+  const overlay = document.getElementById('cartOverlay');
+  const drawer = document.getElementById('cartDrawer');
+  const isOpen = drawer.classList.contains('open');
+  overlay.classList.toggle('open', !isOpen);
+  drawer.classList.toggle('open', !isOpen);
+  if(!isOpen) document.body.style.overflow='hidden';
+  else document.body.style.overflow='';
+};
+
+function renderCartUI(){
+  const body = document.getElementById('cartBody');
+  const foot = document.getElementById('cartFoot');
+  const dot = document.getElementById('cartDot');
+  const totalQty = window.cart.reduce((a,c)=>a+c.qty,0);
+  const subtotal = window.cart.reduce((a,c)=>a+(c.price*c.qty),0);
+
+  dot.textContent = totalQty;
+  dot.classList.toggle('show', totalQty>0);
+
+  if(!window.cart.length){
+    body.innerHTML = `<div class="cart-empty"><span class="ei">🛒</span><p>Your cart is empty.<br>Add products to get started.</p></div>`;
+    foot.style.display = 'none';
+    return;
   }
-  body.innerHTML = window.cart.map((item, i) => `
+
+  body.innerHTML = window.cart.map((item,i) => `
     <div class="c-item">
-      <div class="c-icon">${item.icon}</div>
+      <div class="c-icon">${escHtml(item.icon||'📦')}</div>
       <div class="c-info">
         <div class="c-name">${escHtml(item.name)}</div>
-        <div class="c-variant">${escHtml(item.variant)}</div>
+        <div class="c-variant">${item.variant ? escHtml(item.variant) : 'Standard'}</div>
         <div class="c-row">
-          <div class="c-price">${fmt(item.price * item.qty)}</div>
-          <div style="display:flex;align-items:center;gap:12px">
-            <div class="qty-wrap">
-              <button class="qty-b" onclick="changeQty(${i}, -1)">−</button>
-              <span style="font-weight:700;font-size:.9rem;min-width:16px;text-align:center">${item.qty}</span>
-              <button class="qty-b" onclick="changeQty(${i}, 1)">+</button>
-            </div>
-            <button class="c-del" onclick="removeItem(${i})">✕ Remove</button>
+          <span class="c-price">${fmt(item.price)}</span>
+          <div class="qty-wrap">
+            <button class="qty-b" onclick="cartQty(${i},-1)">−</button>
+            <span>${item.qty}</span>
+            <button class="qty-b" onclick="cartQty(${i},1)">+</button>
+            <button class="c-del" onclick="cartRemove(${i})">✕ Remove</button>
           </div>
         </div>
       </div>
     </div>`).join('');
-  const total = window.cart.reduce((s, i) => s + i.price * i.qty, 0);
-  document.getElementById('ctTotal').textContent  = fmt(total);
-  document.getElementById('ctAmount').textContent = fmt(total);
-  totals.style.display = 'block'; cta.disabled = false;
-}
-function changeQty(i, d) { window.cart[i].qty += d; if (window.cart[i].qty <= 0) window.cart.splice(i, 1); renderCart(); updateDot(); }
-function removeItem(i) { window.cart.splice(i, 1); renderCart(); updateDot(); }
-function updateDot() {
-  const n = window.cart.reduce((s, i) => s + i.qty, 0);
-  const d = document.getElementById('cartDot');
-  d.textContent = n; d.classList.toggle('show', n > 0);
-}
-function toggleCart() {
-  const ov = document.getElementById('cartOverlay');
-  const dr = document.getElementById('cartDrawer');
-  ov.classList.toggle('open'); dr.classList.toggle('open');
-  document.body.style.overflow = dr.classList.contains('open') ? 'hidden' : '';
-}
-function openCart() {
-  document.getElementById('cartOverlay').classList.add('open');
-  document.getElementById('cartDrawer').classList.add('open');
-  document.body.style.overflow = 'hidden';
+
+  document.getElementById('cartSubtotal').textContent = fmt(subtotal);
+  document.getElementById('cartTotal').textContent = fmt(subtotal);
+  foot.style.display = '';
 }
 
+window.cartQty = function(i, d){
+  if(!window.cart[i]) return;
+  window.cart[i].qty += d;
+  if(window.cart[i].qty < 1) window.cart.splice(i,1);
+  renderCartUI();
+};
+
+window.cartRemove = function(i){ window.cart.splice(i,1); renderCartUI(); };
+
+window.wishlistToggle = function(id){
+  const btn = document.getElementById('wish-'+id);
+  if(!btn) return;
+  btn.textContent = btn.textContent==='🤍' ? '❤️' : '🤍';
+};
+
+// ════════════════════════════════════════
 // CHECKOUT
-let chosenShip = 'Express Air (3–7 days)';
-function pickShip(el) { document.querySelectorAll('.sopt').forEach(o => o.classList.remove('on')); el.classList.add('on'); chosenShip = el.dataset.ship; }
-function openCheckout() {
-  if (!window.cart.length) return;if (document.getElementById('checkoutCta').disabled) return;
-  let items = '';
-  window.cart.forEach(i => { items += `<div class="os-line"><span>${i.icon} ${escHtml(i.name)} × ${i.qty} (${escHtml(i.variant)})</span><span>${fmt(i.price * i.qty)}</span></div>`; });
-  document.getElementById('obItems').innerHTML = items;
-  const total = window.cart.reduce((s, i) => s + i.price * i.qty, 0);
-  document.getElementById('obTotal').textContent = fmt(total);
+// ════════════════════════════════════════
+window.openCheckout = function(){
+  if(!window.cart.length) return;
+  const subtotal = window.cart.reduce((a,c)=>a+(c.price*c.qty),0);
+  const summary = document.getElementById('orderSummary');
+  summary.innerHTML = `<div class="os-title">Order Summary</div>` +
+    window.cart.map(item=>`<div class="os-line"><span>${escHtml(item.name)}${item.variant?' ('+escHtml(item.variant)+')':''} ×${item.qty}</span><span>${fmt(item.price*item.qty)}</span></div>`).join('') +
+    `<div class="os-total"><span>Products Total</span><span>${fmt(subtotal)}</span></div>`;
+  document.getElementById('ck-products-total').textContent = fmt(subtotal);
+  document.getElementById('pay-btn-main').textContent = '🔒 Pay ₦' + subtotal.toLocaleString('en-NG') + ' via Flutterwave';
   document.getElementById('checkoutModal').classList.add('open');
   document.body.style.overflow = 'hidden';
-}
-function closeCheckout() { document.getElementById('checkoutModal').classList.remove('open'); document.body.style.overflow = ''; }
+  // Close cart
+  document.getElementById('cartOverlay').classList.remove('open');
+  document.getElementById('cartDrawer').classList.remove('open');
+};
 
-// FLUTTERWAVE PAYMENT
-function doPayment() {
-  const first = document.getElementById('ckFirst').value.trim();
-  const last  = document.getElementById('ckLast').value.trim();
-  const email = document.getElementById('ckEmail').value.trim();
-  const phone = document.getElementById('ckPhone').value.trim();
-  const state = document.getElementById('ckState').value;
-  const addr  = document.getElementById('ckAddr').value.trim();
-  const ref   = document.getElementById('ckRef').value.trim();
-  if (!first || !last) { alert('Please enter your full name.'); return; }
-  if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
-  if (!phone) { alert('Please enter your WhatsApp number.'); return; }
-  if (!state) { alert('Please select your delivery state.'); return; }
-  if (!addr)  { alert('Please enter your delivery address.'); return; }
-  const total = window.cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const txRef = 'GGS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
-  const orderDesc = window.cart.map(i => `${i.name}×${i.qty}(${i.variant})`).join(', ');
-  const stateL = state.toLowerCase();
-let deliveryFee = 0;
-let deliveryLabel = '';
-const feePH = window.deliveryFeePH ?? 0;
-const feeOther = window.deliveryFeeOther ?? 5000;
-const feeLagos = window.deliveryFeeLagos ?? 7500;
-const feeNorth = window.deliveryFeeNorth ?? 9000;
-if (stateL.includes('rivers')) {
-deliveryFee = feePH;
-deliveryLabel = feePH === 0 ? 'Free (Port Harcourt)' : `₦${feePH.toLocaleString()} (Port Harcourt)`;
-} else if (['delta','bayelsa','edo','cross river','akwa ibom','abia','imo','anambra','enugu','ebonyi'].some(s => stateL.includes(s))) {
-deliveryFee = feeOther;
-deliveryLabel = `₦${feeOther.toLocaleString()} (South-South/South-East)`;
-} else if (stateL.includes('lagos') || stateL.includes('abuja') || stateL.includes('fct') || stateL.includes('ogun')) {
-deliveryFee = feeLagos;
-deliveryLabel = `₦${feeLagos.toLocaleString()} (Lagos/Abuja)`;
-} else {
-deliveryFee = feeNorth;
-deliveryLabel = `₦${feeNorth.toLocaleString()} (Other States)`;
+window.closeCheckout = function(){
+  document.getElementById('checkoutModal').classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+window.selectShip = function(method, el){
+  currentShipping = method;
+  document.querySelectorAll('.sopt').forEach(s=>s.classList.remove('on'));
+  el.classList.add('on');
+};
+
+window.updateDeliveryFee = function(){
+const state = document.getElementById('ck-state').value;
+const hint = document.getElementById('delivery-fee-hint');
+const callout = document.getElementById('delivery-fee-callout');
+const amountEl = document.getElementById('delivery-fee-amount');
+const regionEl = document.getElementById('delivery-fee-region');
+const labelEl = document.getElementById('delivery-fee-label');
+
+// Map state value to selected state name for display
+const sel = document.getElementById('ck-state');
+const stateName = sel.options[sel.selectedIndex].text;
+
+if(!state){
+hint.style.display = 'block';
+callout.style.display = 'none';
+return;
 }
-const delivery = deliveryLabel;
-  const waMsg = `Hi GGS! I just paid for my order.\n\n👤 Name: ${first} ${last}\n📧 Email: ${email}\n📱 WhatsApp: ${phone}\n📍 State: ${state}\n🏠 Address: ${addr}\n\n📦 Shipping: ${chosenShip}\n🚚 Local Delivery: ${delivery}\n\n📋 Items:\n${window.cart.map(i => `• ${i.name} × ${i.qty} – ${i.variant} = ${fmt(i.price * i.qty)}`).join('\n')}\n\n💰 Total Paid: ${fmt(total)}\n🧾 Ref: ${txRef}${ref ? '\n🎁 Referral: ' + ref : ''}\n\nPlease confirm. Thank you!`;
+
+let fee = 0;
+let region = '';
+let isFree = false;
+
+if(state==='ph'){
+fee = window.deliveryFeePH || 0;
+isFree = fee === 0;
+region = 'Port Harcourt · Door delivery';
+} else if(state==='other'){
+fee = window.deliveryFeeOther || 5000;
+region = 'South-South / South-East · GIG Logistics';
+} else if(state==='lagos'){
+fee = window.deliveryFeeLagos || 7500;
+region = 'Lagos / Abuja zone · GIG Logistics';
+} else if(state==='north'){
+fee = window.deliveryFeeNorth || 9000;
+region = 'Northern states · GIG Logistics';
+}
+
+hint.style.display = 'none';
+
+// Style callout based on free vs paid
+if(isFree){
+callout.style.background = 'rgba(13,138,114,.1)';
+callout.style.border = '1px solid rgba(18,184,150,.3)';
+labelEl.style.color = 'var(--teal-bright)';
+amountEl.style.color = 'var(--teal-bright)';
+amountEl.textContent = 'FREE';
+regionEl.style.color = 'rgba(18,184,150,.6)';
+} else {
+callout.style.background = 'rgba(200,137,26,.07)';
+callout.style.border = '1px solid rgba(200,137,26,.25)';
+labelEl.style.color = 'var(--gold)';
+amountEl.style.color = 'var(--gold-bright)';
+amountEl.textContent = fmt(fee);
+regionEl.style.color = 'rgba(200,137,26,.55)';
+}
+
+regionEl.textContent = stateName + ' · ' + region;
+labelEl.textContent = 'In-Nigeria Delivery Fee';
+
+// Trigger re-animation on every change
+callout.style.display = 'none';
+callout.style.animation = 'none';
+requestAnimationFrame(()=>{
+callout.style.display = 'block';
+callout.style.animation = 'deliveryPop .3s cubic-bezier(.34,1.56,.64,1)';
+});
+};
+
+window.initiatePayment = function(){
+  const first = document.getElementById('ck-fname').value.trim();
+  const last = document.getElementById('ck-lname').value.trim();
+  const email = document.getElementById('ck-email').value.trim();
+  const phone = document.getElementById('ck-phone').value.trim();
+  const state = document.getElementById('ck-state').value;
+  const addr = document.getElementById('ck-address').value.trim();
+  const ref = document.getElementById('ck-ref').value.trim();
+
+  if(!first||!last||!email||!phone||!state||!addr){
+    alert('Please fill in all required fields.');
+    return;
+  }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  const subtotal = window.cart.reduce((a,c)=>a+(c.price*c.qty),0);
+  const txRef = 'GGS-' + Date.now() + '-' + Math.random().toString(36).slice(2,7).toUpperCase();
+
+  if(typeof FlutterwaveCheckout !== 'function'){
+    alert('Payment gateway not loaded. Please refresh and try again.');
+    return;
+  }
+
   FlutterwaveCheckout({
-    public_key: FW_KEY,
+    public_key: FLWPUBK,
     tx_ref: txRef,
-    amount: total,
+    amount: subtotal,
     currency: 'NGN',
-    payment_options: 'card,banktransfer,ussd,mobilemoney',
-    customer: { email, phone_number: phone, name: `${first} ${last}` },
-    customizations: { title: BIZ, description: 'Import Order – ' + orderDesc.substring(0, 80) },
-    callback(r) {
-      if (r.status === 'successful' || r.status === 'completed') {
-        gtag('event', 'purchase', {
-          transaction_id: txRef,
-          value: total,
-          currency: 'NGN',
-          items: window.cart.map(i => ({ item_id: i.id, item_name: i.name, price: i.price, quantity: i.qty }))
-        });
-        gtag('event', 'generate_lead', { currency: 'NGN', value: total });
-        if (typeof fbq !== 'undefined') {
-          fbq('track', 'Purchase', { value: total, currency: 'NGN', content_type: 'product', content_ids: window.cart.map(i => i.id) });
-          fbq('track', 'Lead');
+    payment_options: 'card, banktransfer, ussd, mobilemoney',
+    customer: { email, phone_number: phone, name: first+' '+last },
+    customizations: {
+      title: 'GGS Global Consult',
+      description: 'Factory Cost Price Order — ' + window.cart.map(c=>c.name).join(', '),
+      logo: '',
+    },
+    meta: {
+      consumer_id: email,
+      consumer_mac: txRef,
+    },
+    callback: function(response){
+      if(response.status === 'successful' || response.status === 'completed'){
+        // Save to Firebase
+        if(typeof window.saveOrderToFirebase === 'function'){
+          window.saveOrderToFirebase(response, first, last, email, phone, state, addr, ref, currentShipping, subtotal, txRef);
         }
-        if (typeof window.saveOrderToFirebase === 'function') {
-          window.saveOrderToFirebase(r, first, last, email, phone, state, addr, ref, chosenShip, total, txRef);
+        // GA event
+        if(typeof gtag === 'function'){
+          gtag('event','purchase',{transaction_id:txRef,value:subtotal,currency:'NGN',items:window.cart.map(c=>({item_id:c.id,item_name:c.name,price:c.price,quantity:c.qty}))});
         }
+        // Meta pixel
+        if(typeof fbq === 'function') fbq('track','Purchase',{value:subtotal,currency:'NGN'});
+        // Show success
         closeCheckout();
-        document.getElementById('txnNum').textContent = r.transaction_id || txRef;
-        document.getElementById('waLink').href = 'https://wa.me/' + window.GGS_WA + '?text=' + encodeURIComponent(waMsg);
-        document.getElementById('successModal').classList.add('open');
-        window.cart = []; renderCart(); updateDot();
-        document.getElementById('cartOverlay').classList.remove('open');
-        document.getElementById('cartDrawer').classList.remove('open');
-        document.body.style.overflow = '';
+        showSuccess(txRef, first, phone);
+        window.cart = [];
+        renderCartUI();
       }
     },
-    onclose() {}
+    onclose: function(){},
   });
-}
-function closeSuc() { document.getElementById('successModal').classList.remove('open'); document.body.style.overflow = ''; }
+};
 
-// CUSTOM REQUEST
-function submitCustom() {
-  const name = document.getElementById('rName').value.trim();
-  const desc = document.getElementById('rDesc').value.trim();
-  if (!name || !desc) { alert('Please enter your name and describe what you want.'); return; }
-  const phone  = document.getElementById('rPhone').value.trim();
-  const cat    = document.getElementById('rCat').value;
-  const budget = document.getElementById('rBudget').value;
-  const ref    = document.getElementById('rRef').value.trim();
-  let msg = `Hi GGS! I have a custom import request.\n\n👤 Name: ${name}`;
-  if (phone)  msg += `\n📱 WhatsApp: ${phone}`;
-  if (cat)    msg += `\n📦 Category: ${cat}`;
-  msg += `\n\n📝 What I want:\n${desc}`;
-  if (budget) msg += `\n💰 Budget: ${budget}`;
-  if (ref)    msg += `\n🎁 Referral: ${ref}`;
-  msg += '\n\nPlease send me pricing and details. Thank you!';
-  window.open('https://wa.me/' + window.GGS_WA + '?text=' + encodeURIComponent(msg), '_blank');
+function showSuccess(txRef, name, phone){
+  document.getElementById('success-txref').textContent = txRef;
+  const cleanPhone = phone.replace(/[^0-9]/g,'');
+  const waNum = window.GGS_WA || '2348142717585';
+  const msg = encodeURIComponent(`Hi Richard! I just completed my order on GGS Global Consult.\n\nRef: ${txRef}\nName: ${name}\n\nPlease confirm my order. Thank you! 🙏`);
+  document.getElementById('success-wa-link').href = `https://wa.me/${waNum}?text=${msg}`;
+  document.getElementById('successModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
+window.closeSuccess = function(){
+  document.getElementById('successModal').classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+// ════════════════════════════════════════
+// CUSTOM REQUEST FORM
+// ════════════════════════════════════════
+window.submitCustomRequest = function(){
+  const fname = document.getElementById('req-fname').value.trim();
+  const lname = document.getElementById('req-lname').value.trim();
+  const phone = document.getElementById('req-phone').value.trim();
+  const product = document.getElementById('req-product').value.trim();
+  if(!fname||!phone||!product){ alert('Please fill in Name, Phone, and Product Request.'); return; }
+  const budget = document.getElementById('req-budget').value.trim();
+  const state = document.getElementById('req-state').value;
+  const msg = encodeURIComponent(
+    `Hi Richard! I have a custom product request:\n\n` +
+    `👤 Name: ${fname} ${lname}\n📱 Phone: ${phone}\n📍 State: ${state||'Not specified'}\n\n` +
+    `🛒 I want to order:\n${product}\n\n` +
+    (budget ? `💰 Budget: ${budget}\n\n` : '') +
+    `Please let me know the factory cost price and availability. Thank you!`
+  );
+  window.open(`https://wa.me/${window.GGS_WA||'2348142717585'}?text=${msg}`, '_blank');
+  document.getElementById('req-fname').value='';
+  document.getElementById('req-lname').value='';
+  document.getElementById('req-phone').value='';
+  document.getElementById('req-product').value='';
+  document.getElementById('req-budget').value='';
+};
+
+// ════════════════════════════════════════
 // COUNTDOWN
-function getDefaultDeadline() {
-  const d = new Date();
-  const diff = (7 - d.getDay()) % 7 || 7;
-  d.setDate(d.getDate() + diff);
-  d.setHours(23, 59, 59, 0);
-  return d;
+// ════════════════════════════════════════
+function updateCountdown(){
+  const deadline = window.countdownDeadline;
+  if(!deadline) return;
+  const now = new Date();
+  let diff = Math.max(0, deadline - now);
+  const d = Math.floor(diff/86400000); diff %= 86400000;
+  const h = Math.floor(diff/3600000); diff %= 3600000;
+  const m = Math.floor(diff/60000); diff %= 60000;
+  const s = Math.floor(diff/1000);
+  const pad = n=>String(n).padStart(2,'0');
+  document.getElementById('cdD').textContent = pad(d);
+  document.getElementById('cdH').textContent = pad(h);
+  document.getElementById('cdM').textContent = pad(m);
+  document.getElementById('cdS').textContent = pad(s);
 }
-window.countdownDeadline = getDefaultDeadline();
-function tick() {
-  const dl = window.countdownDeadline instanceof Date ? window.countdownDeadline : getDefaultDeadline();
-  const ms = dl - Date.now();
-  if (ms <= 0) return;
-  const D = Math.floor(ms / 864e5);
-  const H = Math.floor(ms % 864e5 / 36e5);
-  const M = Math.floor(ms % 36e5 / 6e4);
-  const S = Math.floor(ms % 6e4 / 1e3);
-  const el = id => document.getElementById(id);
-  el('cdD').textContent = String(D).padStart(2,'0');
-  el('cdH').textContent = String(H).padStart(2,'0');
-  el('cdM').textContent = String(M).padStart(2,'0');
-  el('cdS').textContent = String(S).padStart(2,'0');
-}
-tick(); setInterval(tick, 1000);
+setInterval(updateCountdown, 1000);
 
-// SLIDER — 4 slides
-let cur = 0, tot = 4;
-let autoSlide = setInterval(nextSlide, 6000);
-function goSlide(n) {
-  cur = n;
-  document.getElementById('tTrack').style.transform = `translateX(-${n * 100}%)`;
-  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i === n));
-  clearInterval(autoSlide); autoSlide = setInterval(nextSlide, 6000);
-}
-function nextSlide() { goSlide((cur + 1) % tot); }
-function prevSlide() { goSlide((cur - 1 + tot) % tot); }
+// ════════════════════════════════════════
+// SLIDER
+// ════════════════════════════════════════
+let currentSlide = 0;
+const totalSlides = 2;
 
+window.goSlide = function(n){
+  currentSlide = n;
+  document.getElementById('sliderTrack').style.transform = `translateX(-${n*100}%)`;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===n));
+};
+
+window.nextSlide = function(){ goSlide((currentSlide+1)%totalSlides); };
+window.prevSlide = function(){ goSlide((currentSlide-1+totalSlides)%totalSlides); };
+setInterval(()=>nextSlide(), 5000);
+
+// ════════════════════════════════════════
 // FAQ
-function faqToggle(el) {
-  const item = el.parentElement;
-  const was  = item.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-  if (!was) item.classList.add('open');
-}
+// ════════════════════════════════════════
+window.toggleFaq = function(el){
+  const item = el.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f=>f.classList.remove('open'));
+  if(!isOpen) item.classList.add('open');
+};
 
-// REFERRAL COPY
-function copyRef() {
-  navigator.clipboard.writeText(document.getElementById('refCode').textContent)
-    .then(() => { const b = document.querySelector('.copy-btn'); b.textContent = '✓ Copied!'; setTimeout(() => b.textContent = 'Copy', 2400); });
-}
+// ════════════════════════════════════════
+// REVEAL OBSERVER
+// ════════════════════════════════════════
+const revealObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); revealObserver.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
 
-// TOAST
-function showToast(msg) {
-  let t = document.getElementById('siteToast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'siteToast';
-    t.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:rgba(13,138,114,.15);border:1px solid rgba(18,184,150,.3);color:#34d399;padding:12px 24px;border-radius:10px;font-size:.82rem;font-weight:700;z-index:9998;white-space:nowrap;pointer-events:none;transition:opacity .3s';
-    document.body.appendChild(t);
+// ════════════════════════════════════════
+// KEYBOARD CLOSE
+// ════════════════════════════════════════
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){
+    if(document.getElementById('product-detail-overlay').classList.contains('open')) closeProductDetail();
+    else if(document.getElementById('successModal').classList.contains('open')) closeSuccess();
+    else if(document.getElementById('checkoutModal').classList.contains('open')) closeCheckout();
+    else if(document.getElementById('cartDrawer').classList.contains('open')) toggleCart();
   }
-  t.textContent = msg; t.style.opacity = '1';
-  clearTimeout(t._t);
-  t._t = setTimeout(() => { t.style.opacity = '0'; }, 2600);
-}
-
-// REVEAL ON SCROLL
-const revealObs = new IntersectionObserver(es => {
-  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); } });
-}, { threshold: .07 });
-document.querySelectorAll('.reveal').forEach(r => revealObs.observe(r));
+});
 </script>
 </body>
 </html>
