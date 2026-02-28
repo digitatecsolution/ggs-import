@@ -613,7 +613,40 @@ textarea.form-input{resize:vertical;min-height:80px;}
             </div>
           </div>
         </div>
-      </div>
+      </div><div class="settings-section" style="grid-column:1/-1;">
+  <h3>🤝 Agent Section</h3>
+  <div class="row-2">
+    <div class="form-group">
+      <label class="form-label">Commission Rate (%)</label>
+      <input type="number" class="form-input" id="s-agent-commission" placeholder="5" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Min. Qualifying Order (₦)</label>
+      <input type="number" class="form-input" id="s-agent-min-order" placeholder="200000" />
+    </div>
+  </div>
+  <div class="row-2">
+    <div class="form-group">
+      <label class="form-label">Earning Example 1 (orders/month)</label>
+      <input type="number" class="form-input" id="s-agent-ex1-orders" placeholder="2" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Average Order Value (₦)</label>
+      <input type="number" class="form-input" id="s-agent-avg-order" placeholder="500000" />
+    </div>
+  </div>
+  <div class="toggle-wrap">
+    <div>
+      <div class="toggle-label">Show Agent Section</div>
+      <div class="toggle-sub">Hide or show the agent recruitment section on storefront</div>
+    </div>
+    <label class="toggle">
+      <input type="checkbox" id="s-agent-visible" checked />
+      <div class="toggle-track"></div>
+      <div class="toggle-thumb"></div>
+    </label>
+  </div>
+</div>
 
       <!-- ══ REFERRAL PANEL ══ -->
       <div id="panel-referrals" class="panel">
@@ -1509,6 +1542,13 @@ if(s.deliveryFeeNorth!==undefined) document.getElementById('s-fee-north').value=
   if(s.whatsappNumber!==undefined) document.getElementById('s-whatsapp').value=s.whatsappNumber;
   document.getElementById('s-maintenance').checked=!!s.maintenanceMode;
   document.getElementById('s-accepting').checked=s.acceptingOrders!==false;
+  if(s.agentSection){
+document.getElementById('s-agent-commission').value = s.agentSection.commission || 5;
+document.getElementById('s-agent-min-order').value = s.agentSection.minOrder || 200000;
+document.getElementById('s-agent-ex1-orders').value = s.agentSection.ex1Orders || 2;
+document.getElementById('s-agent-avg-order').value = s.agentSection.avgOrder || 500000;
+document.getElementById('s-agent-visible').checked = s.agentSection.visible !== false;
+}
   if(s.referralTiers){
     document.getElementById('s-tier-bronze').value=s.referralTiers.bronze||1;
     document.getElementById('s-tier-silver').value=s.referralTiers.silver||3;
@@ -1537,6 +1577,13 @@ deliveryFeeNorth:parseInt(document.getElementById('s-fee-north').value)||0,
     whatsappNumber:document.getElementById('s-whatsapp').value.trim(),
     maintenanceMode:document.getElementById('s-maintenance').checked,
     acceptingOrders:document.getElementById('s-accepting').checked,
+    agentSection:{
+commission: parseInt(document.getElementById('s-agent-commission').value) || 5,
+minOrder: parseInt(document.getElementById('s-agent-min-order').value) || 200000,
+ex1Orders: parseInt(document.getElementById('s-agent-ex1-orders').value) || 2,
+avgOrder: parseInt(document.getElementById('s-agent-avg-order').value) || 500000,
+visible: document.getElementById('s-agent-visible').checked,
+},
     referralTiers:{
       bronze:parseInt(document.getElementById('s-tier-bronze').value)||1,
       silver:parseInt(document.getElementById('s-tier-silver').value)||3,
