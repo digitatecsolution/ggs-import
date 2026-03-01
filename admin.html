@@ -991,25 +991,58 @@ textarea.form-input{resize:vertical;min-height:80px;}
 
       <!-- ── PRODUCT IMAGES (multi-image) ── -->
       <div class="form-group">
-        <label class="form-label">Product Images (up to 8)</label>
-        <div class="img-upload-wrap" id="img-drop-zone"
-             onclick="document.getElementById('img-file-input').click()"
-             ondragover="event.preventDefault();this.classList.add('dragover')"
-             ondragleave="this.classList.remove('dragover')"
-             ondrop="handleImgDrop(event)">
-          <div style="font-size:28px;margin-bottom:8px">🖼️</div>
-          <div style="font-size:13px;font-weight:600;color:var(--muted2)">Click or drag images here</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">PNG, JPG, WebP · Max 500KB each · First image = primary</div>
-        </div>
-        <input type="file" id="img-file-input" accept="image/*" multiple style="display:none" onchange="handleImgSelect(this.files)">
-        <div class="img-preview-grid" id="img-preview-grid"></div>
-        <div class="form-group" style="margin-top:12px;margin-bottom:0">
-          <label class="form-label">Or paste image URL</label>
-          <div style="display:flex;gap:8px;">
-            <input class="form-input" id="pm-img-url" placeholder="https://..." style="flex:1">
-            <button type="button" class="btn btn-outline btn-sm" onclick="addImageUrl()">Add</button>
+        <label class="form-label">Product Images (up to 8) — First image = Primary</label>
+
+        <!-- Cloudinary instruction banner -->
+        <div style="background:linear-gradient(135deg,#0D8A7215,#0B6E5C0a);border:1px solid #0D8A7240;border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:20px;">☁️</span>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--teal-bright);">Use Cloudinary to host your images</div>
+              <div style="font-size:11px;color:var(--muted2);margin-top:1px;">Upload photos at <strong style="color:var(--white)">cloudinary.com</strong> → copy the <code style="color:var(--gold-bright)">res.cloudinary.com/...</code> URL → paste below</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted2);">
+            <div>✅ &nbsp;Use URL starting with <code style="color:#4ade80">res.cloudinary.com/...</code></div>
+            <div>❌ &nbsp;Never use <code style="color:#f87171">collection.cloudinary.com/...</code> — expires in 7 days</div>
+            <div>❌ &nbsp;Do not use the drag/upload box below — Firebase Storage not active</div>
           </div>
         </div>
+
+        <!-- URL Paste — PRIMARY METHOD -->
+        <div style="background:var(--card2);border:1px solid #ffffff10;border-radius:var(--radius);padding:16px;margin-bottom:12px;">
+          <div style="font-size:12px;font-weight:700;color:var(--white);margin-bottom:10px;">📋 Paste Cloudinary URL</div>
+          <div style="display:flex;gap:8px;">
+            <input class="form-input" id="pm-img-url" placeholder="https://res.cloudinary.com/yourname/image/upload/v.../photo.jpg" style="flex:1">
+            <button type="button" class="btn btn-primary btn-sm" onclick="addImageUrl()">➕ Add</button>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px;">Paste one URL at a time and click Add. Repeat for each photo (up to 8 total).</div>
+        </div>
+
+        <!-- Image previews -->
+        <div class="img-preview-grid" id="img-preview-grid"></div>
+        <div id="img-count-hint" style="font-size:11px;color:var(--muted);margin-top:6px;display:none;"></div>
+
+        <!-- Disabled upload box — visible but blocked -->
+        <details style="margin-top:12px;">
+          <summary style="font-size:11px;color:var(--muted);cursor:pointer;user-select:none;">⚠️ Direct upload (disabled — Firebase Storage not active)</summary>
+          <div style="margin-top:8px;position:relative;">
+            <!-- Overlay to block clicks -->
+            <div style="position:absolute;inset:0;z-index:10;background:rgba(8,9,12,0.7);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;cursor:not-allowed;">
+              <div style="text-align:center;">
+                <div style="font-size:22px;margin-bottom:4px;">🔒</div>
+                <div style="font-size:12px;font-weight:700;color:#f87171;">Firebase Storage Not Active</div>
+                <div style="font-size:11px;color:var(--muted2);margin-top:2px;">Use Cloudinary URL paste above</div>
+              </div>
+            </div>
+            <div class="img-upload-wrap" style="opacity:0.3;pointer-events:none;">
+              <div style="font-size:28px;margin-bottom:8px">🖼️</div>
+              <div style="font-size:13px;font-weight:600;color:var(--muted2)">Click or drag images here</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Disabled — use URL paste above</div>
+            </div>
+          </div>
+        </details>
+        <input type="file" id="img-file-input" accept="image/*" multiple style="display:none" onchange="handleImgSelect(this.files)">
       </div>
 
       <!-- ── FULL DESCRIPTION (SEO) ── -->
@@ -1639,29 +1672,48 @@ function renderImgPreviews(){
       <img src="${escHtml(img.src)}" alt="" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\'><rect width=\'80\' height=\'80\' fill=\'%23161820\'/><text x=\'40\' y=\'44\' text-anchor=\'middle\' fill=\'%238C8898\' font-size=\'12\'>IMG</text></svg>'">
       <button class="img-del" onclick="removeImg(${i})">✕</button>
     </div>`).join('');
+  updateImgCountHint();
 }
-window.removeImg = function(i){ _pmImages.splice(i,1); renderImgPreviews(); };
+function updateImgCountHint(){
+  const hint = document.getElementById('img-count-hint');
+  if(!hint) return;
+  const count = _pmImages.length;
+  if(count === 0){ hint.style.display='none'; return; }
+  hint.style.display='block';
+  const maxMsg = count>=8 ? ' — <span style="color:#f87171">maximum reached</span>' : '';
+  hint.innerHTML = `<span style="color:var(--teal-bright);font-weight:700;">${count}/8</span> images added${maxMsg}. <span style="color:var(--muted2)">First image = primary catalog photo.</span>`;
+}
+window.removeImg = function(i){
+  _pmImages.splice(i,1);
+  renderImgPreviews();
+  updateImgCountHint();
+};
 window.addImageUrl = function(){
   const url = document.getElementById('pm-img-url').value.trim();
-  if(!url) return;
-  if(_pmImages.length>=8){ toast('Max 8 images',true); return; }
-  _pmImages.push({src:url,isNew:false});
+  if(!url){ toast('Please paste an image URL first', true); return; }
+  if(_pmImages.length>=8){ toast('Maximum 8 images reached — remove one first', true); return; }
+  // Block expiring Cloudinary share links
+  if(url.includes('collection.cloudinary.com')){
+    toast('⚠️ That link expires in 7 days! Copy the res.cloudinary.com URL instead.', true);
+    return;
+  }
+  // Warn if not a recognised image URL pattern (loose check)
+  if(!url.startsWith('http')){
+    toast('⚠️ URL must start with https://', true);
+    return;
+  }
+  _pmImages.push({src:url, isNew:false});
   document.getElementById('pm-img-url').value='';
   renderImgPreviews();
+  updateImgCountHint();
+  toast(`✅ Image ${_pmImages.length} added`);
 };
 window.handleImgDrop = function(e){
   e.preventDefault();
-  document.getElementById('img-drop-zone').classList.remove('dragover');
-  handleImgSelect(e.dataTransfer.files);
+  toast('⚠️ Direct upload disabled. Use Cloudinary URL paste instead.', true);
 };
-window.handleImgSelect = async function(files){
-  for(const f of files){
-    if(_pmImages.length>=8) break;
-    if(f.size>500*1024){ toast(`${f.name} exceeds 500KB limit`,true); continue; }
-    const b64 = await toBase64(f);
-    _pmImages.push({src:b64, isNew:true, file:f});
-  }
-  renderImgPreviews();
+window.handleImgSelect = function(files){
+  toast('⚠️ Direct upload disabled. Use Cloudinary URL paste instead.', true);
 };
 function toBase64(file){ return new Promise(res=>{ const r=new FileReader(); r.onload=e=>res(e.target.result); r.readAsDataURL(file); }); }
 
