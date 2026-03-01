@@ -586,19 +586,19 @@ textarea.form-input{resize:vertical;min-height:80px;}
             <div class="form-group">
               <label class="form-label">Product Category</label>
               <select class="form-select" id="calc-cat" onchange="runCalc()">
-                <option value="1.65">📱 iPhones / Samsung (×1.65)</option>
-                <option value="1.65">💻 MacBooks / Laptops (×1.65)</option>
-                <option value="1.68">📲 iPads / Tablets (×1.68)</option>
-                <option value="1.70">🎧 AirPods / Earbuds (×1.70)</option>
-                <option value="1.72">⌚ Smart Watches (×1.72)</option>
-                <option value="1.70">🎮 Gaming (×1.70)</option>
-                <option value="1.78">👜 Designer Bags (×1.78)</option>
-                <option value="1.80">👠 Shoes / Footwear (×1.80)</option>
-                <option value="1.82">🌸 Perfumes (×1.82)</option>
-                <option value="1.82">💍 Jewelry (×1.82)</option>
-                <option value="1.82">✨ Skincare / Beauty (×1.82)</option>
-                <option value="1.82">💼 Accessories (×1.82)</option>
-                <option value="1.75">🧸 Kids Items (×1.75)</option>
+                <option value="1.333">📱 iPhones / Samsung (25% margin)</option>
+<option value="1.389">💻 MacBooks / Laptops (28% margin)</option>
+<option value="1.389">📲 iPads / Tablets (28% margin)</option>
+<option value="1.389">🎧 AirPods / Earbuds (28% margin)</option>
+<option value="1.429">⌚ Smart Watches (30% margin)</option>
+<option value="1.389">🎮 Gaming (28% margin)</option>
+<option value="1.429">👜 Designer Bags (30% margin)</option>
+<option value="1.429">👠 Shoes / Footwear (30% margin)</option>
+<option value="1.493">🌸 Perfumes (33% margin)</option>
+<option value="1.493">💍 Jewelry (33% margin)</option>
+<option value="1.493">✨ Skincare / Beauty (33% margin)</option>
+<option value="1.429">💼 Accessories (30% margin)</option>
+<option value="1.389">🧸 Kids Items (28% margin)</option>
               </select>
             </div>
             <div class="calc-result" id="calc-result" style="display:none">
@@ -1154,9 +1154,9 @@ function toast(msg, isErr=false){
 
 // Category multiplier map
 const CAT_MULTIPLIERS = {
-  tech: 1.65, fashion: 1.78, shoes: 1.80, bags: 1.78,
-  watches: 1.72, perfume: 1.82, skincare: 1.82, gaming: 1.70,
-  jewelry: 1.82, kids: 1.75, sports: 1.78, home: 1.78, general: 1.78
+  tech: 1.333, fashion: 1.429, shoes: 1.429, bags: 1.429,
+  watches: 1.429, perfume: 1.493, skincare: 1.493, gaming: 1.389,
+  jewelry: 1.493, kids: 1.389, sports: 1.389, home: 1.389, general: 1.389
 };
 
 function calcListingPrice(costCNY, rate, sourceMethod, multiplier){
