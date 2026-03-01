@@ -223,7 +223,8 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .variant-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
 .variant-row input{flex:1;background:var(--ink2);border:1px solid #ffffff14;border-radius:var(--radius-sm);padding:9px 12px;color:var(--white);font-family:inherit;font-size:13px;outline:none;}
 .variant-row input:focus{border-color:var(--teal-bright);}
-.variant-row .v-price{width:150px;}
+.variant-row .v-price{width:130px;}
+.variant-row .v-cny{width:110px;}
 .variant-row .btn-icon{flex-shrink:0;}
 .add-variant-btn{background:transparent;border:1px dashed #ffffff22;border-radius:var(--radius-sm);padding:8px;color:var(--muted2);font-size:12px;cursor:pointer;width:100%;font-family:inherit;transition:all var(--transition);}
 .add-variant-btn:hover{border-color:var(--teal-mid);color:var(--teal-bright);}
@@ -244,6 +245,25 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .calc-line{display:flex;justify-content:space-between;font-size:12px;color:var(--muted2);padding:4px 0;border-bottom:1px solid #ffffff06;}
 .calc-line:last-child{border-bottom:none;}
 .calc-line span:last-child{color:var(--white);font-weight:600;}
+
+/* ─── REPRICE PANEL ─── */
+.reprice-section{background:var(--card);border:1px solid #ffffff0a;border-radius:var(--radius);padding:24px;margin-bottom:20px;}
+.reprice-section h3{font-family:'Playfair Display',serif;font-size:16px;color:var(--gold-bright);margin-bottom:16px;}
+.reprice-rate-display{background:var(--ink2);border:1px solid #0D8A7240;border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.reprice-rate-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--teal-bright);}
+.reprice-rate-label{font-size:12px;color:var(--muted2);}
+.reprice-preview-table tbody tr.price-up td.change-col{color:#4ade80;}
+.reprice-preview-table tbody tr.price-down td.change-col{color:#f87171;}
+.reprice-preview-table tbody tr.no-cost td{opacity:.5;}
+.reprice-action-bar{background:linear-gradient(135deg,#0D8A7220,#0B6E5C10);border:1px solid #0D8A7240;border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.reprice-summary{flex:1;font-size:13px;color:var(--muted2);}
+.reprice-summary strong{color:var(--white);}
+.reprice-progress{background:var(--ink2);border:1px solid #ffffff0a;border-radius:var(--radius);padding:24px;text-align:center;margin-top:16px;}
+.progress-bar-wrap{background:#ffffff10;border-radius:4px;height:8px;margin:12px 0;overflow:hidden;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-bright));border-radius:4px;transition:width .3s ease;}
+.missing-cost-section{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:20px;margin-top:20px;}
+.missing-cost-section h4{font-size:14px;color:#f87171;margin-bottom:12px;}
+.suggested-price-hint{background:linear-gradient(135deg,#0D8A7215,#0B6E5C0a);border:1px solid #0D8A7230;border-radius:6px;padding:8px 12px;font-size:12px;color:var(--teal-bright);margin-top:6px;}
 
 /* ─── REVENUE CHART (simple bars) ─── */
 .mini-chart{display:flex;align-items:flex-end;gap:4px;height:80px;margin-top:8px;}
@@ -329,6 +349,9 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <div class="nav-item" data-panel="pricing" onclick="navTo('pricing',this)">
         <span class="nav-icon">🧮</span><span class="nav-label">Pricing Calc</span>
       </div>
+      <div class="nav-item" data-panel="reprice" onclick="navTo('reprice',this)">
+        <span class="nav-icon">💱</span><span class="nav-label">Bulk Reprice</span>
+      </div>
       <div class="nav-item" data-panel="referrals" onclick="navTo('referrals',this)">
         <span class="nav-icon">🎁</span><span class="nav-label">Referrals</span>
       </div>
@@ -393,10 +416,10 @@ textarea.form-input{resize:vertical;min-height:80px;}
             <div class="quick-title">View Orders</div>
             <div class="quick-sub">Manage &amp; update status</div>
           </div>
-          <div class="quick-card" onclick="navTo('settings')">
-            <div class="quick-icon">⚡</div>
-            <div class="quick-title">Update Urgency</div>
-            <div class="quick-sub">Slots &amp; countdown timer</div>
+          <div class="quick-card" onclick="navTo('reprice')">
+            <div class="quick-icon">💱</div>
+            <div class="quick-title">Bulk Reprice</div>
+            <div class="quick-sub">Update all prices with new rate</div>
           </div>
           <div class="quick-card" onclick="navTo('pricing')">
             <div class="quick-icon">🧮</div>
@@ -534,6 +557,16 @@ textarea.form-input{resize:vertical;min-height:80px;}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
           <div class="calc-box">
             <h3 style="font-family:'Playfair Display',serif;font-size:16px;color:var(--gold-bright);margin-bottom:20px;">🧮 Calculate Listing Price</h3>
+
+            <!-- Rate sync from settings -->
+            <div id="calc-stored-rate-info" style="background:var(--ink2);border:1px solid #0D8A7230;border-radius:8px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
+              <div>
+                <div style="font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.6px;">Current Stored Rate</div>
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--teal-bright);margin-top:2px;" id="calc-stored-rate-display">₦220 / ¥1</div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="syncCalcRateFromSettings()">🔄 Sync Rate</button>
+            </div>
+
             <div class="form-group">
               <label class="form-label">Factory Price (CNY ¥)</label>
               <input class="form-input" type="number" id="calc-cny" placeholder="e.g. 4800" oninput="runCalc()">
@@ -609,6 +642,102 @@ textarea.form-input{resize:vertical;min-height:80px;}
         </div>
       </div>
 
+      <!-- ═══ BULK REPRICE PANEL ═══ -->
+      <div class="panel" id="panel-reprice">
+        <div class="section-header">
+          <div class="section-title">💱 Bulk Reprice Engine</div>
+        </div>
+
+        <!-- Section A: Rate Input -->
+        <div class="reprice-section">
+          <h3>Section A — Set New Exchange Rate</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+            <div>
+              <div class="reprice-rate-display">
+                <div>
+                  <div class="reprice-rate-label">Current Stored Rate</div>
+                  <div class="reprice-rate-val" id="reprice-current-rate">₦—</div>
+                  <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="reprice-rate-updated">Not yet loaded</div>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:12px">
+                <label class="form-label">New Exchange Rate (₦ per ¥1 CNY)</label>
+                <input class="form-input" type="number" id="reprice-new-rate" placeholder="e.g. 235" oninput="clearRepricePreview()">
+              </div>
+              <div style="background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:#f87171;margin-bottom:16px;">
+                ⚠️ Update every <strong>Monday morning</strong> before repricing. Rate deviation affects all product margins.
+              </div>
+              <button class="btn btn-gold" onclick="previewReprice()" style="width:100%;justify-content:center;">🔍 Preview Impact</button>
+            </div>
+            <div style="background:var(--ink2);border-radius:var(--radius);padding:16px;font-size:13px;">
+              <div style="font-weight:700;color:var(--white);margin-bottom:10px;">How It Works</div>
+              <div style="display:flex;flex-direction:column;gap:8px;color:var(--muted2);">
+                <div>1️⃣ Enter the new ₦/¥ rate</div>
+                <div>2️⃣ Click <strong style="color:var(--white)">Preview Impact</strong> to see all price changes</div>
+                <div>3️⃣ Uncheck any products to exclude</div>
+                <div>4️⃣ Click <strong style="color:var(--white)">Apply New Rate</strong> to batch-update Firestore</div>
+                <div style="margin-top:6px;padding:8px;background:#ffffff06;border-radius:6px;font-size:11px;">Only products with a Factory Cost (CNY) stored will be updated. Products without it are flagged below.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section B: Preview Table (hidden until preview) -->
+        <div id="reprice-preview-wrap" style="display:none;">
+          <div class="reprice-section">
+            <h3>Section B — Price Preview</h3>
+            <div id="reprice-preview-summary-top" style="font-size:13px;color:var(--muted2);margin-bottom:16px;"></div>
+            <div class="table-wrap">
+              <div class="tbl-scroll">
+                <table class="reprice-preview-table">
+                  <thead>
+                    <tr>
+                      <th><input type="checkbox" id="reprice-check-all" onchange="toggleAllRepriceChecks(this.checked)" style="cursor:pointer;accent-color:var(--teal-bright);width:16px;height:16px;"></th>
+                      <th>Product</th>
+                      <th>Category</th>
+                      <th>Variant</th>
+                      <th>Current Price</th>
+                      <th>New Price</th>
+                      <th class="change-col">Change (₦)</th>
+                      <th>% Change</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reprice-preview-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Missing cost data section -->
+          <div class="missing-cost-section" id="reprice-missing-section" style="display:none;">
+            <h4>⚠️ Missing Cost Data — these products will NOT be updated</h4>
+            <p style="font-size:12px;color:var(--muted2);margin-bottom:12px;">Add <strong>Factory Cost (CNY)</strong> in the product editor to include these in future repricing.</p>
+            <div id="reprice-missing-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+          </div>
+
+          <!-- Section C: Action Bar -->
+          <div class="reprice-action-bar" id="reprice-action-bar" style="margin-top:16px;">
+            <div class="reprice-summary" id="reprice-action-summary">
+              <strong id="reprice-will-update">0</strong> products will be updated ·
+              <strong id="reprice-will-skip">0</strong> skipped (no cost data) ·
+              Estimated time: instant
+            </div>
+            <button class="btn btn-primary" style="font-size:14px;padding:12px 24px;" onclick="applyReprice()">
+              ⚡ Apply New Rate &amp; Update All Prices
+            </button>
+          </div>
+
+          <!-- Progress -->
+          <div class="reprice-progress" id="reprice-progress" style="display:none;">
+            <div style="font-size:15px;font-weight:700;color:var(--white);" id="reprice-progress-label">Updating prices…</div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" id="reprice-progress-bar" style="width:0%"></div>
+            </div>
+            <div style="font-size:12px;color:var(--muted2);" id="reprice-progress-detail">Preparing batch…</div>
+          </div>
+        </div>
+      </div>
+
       <!-- ═══ REFERRALS PANEL ═══ -->
       <div class="panel" id="panel-referrals">
         <div class="section-header">
@@ -635,6 +764,24 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <!-- ═══ SETTINGS PANEL ═══ -->
       <div class="panel" id="panel-settings">
         <div class="settings-grid">
+
+          <!-- Exchange Rate Control (NEW) -->
+          <div class="settings-section" style="border-color:#0D8A7240;">
+            <h3>💱 Exchange Rate Control</h3>
+            <div class="form-group">
+              <label class="form-label">Current Rate (₦ per ¥1 CNY)</label>
+              <input class="form-input" type="number" id="s-exchange-rate" placeholder="e.g. 220" oninput="">
+              <div style="font-size:11px;color:var(--muted);margin-top:4px;">Update every Monday morning before repricing</div>
+            </div>
+            <div style="background:var(--ink2);border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--muted2);">
+              Last updated: <span id="s-rate-last-updated" style="color:var(--white);">—</span>
+            </div>
+            <div style="background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:#f87171;margin-bottom:16px;">
+              ⚠️ Saving a new rate here does NOT automatically update product prices. Use the <strong>💱 Bulk Reprice</strong> panel after updating.
+            </div>
+            <button class="btn btn-primary btn-full" onclick="saveExchangeRate()">💾 Save Exchange Rate</button>
+          </div>
+
           <!-- Site Announcements -->
           <div class="settings-section">
             <h3>📣 Announcement Bar</h3>
@@ -644,6 +791,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
             </div>
             <button class="btn btn-primary btn-full" onclick="saveSetting('announcementText', document.getElementById('s-ann').value)">Save Announcement</button>
           </div>
+
           <!-- Urgency Slots -->
           <div class="settings-section">
             <h3>⚡ Urgency Slots</h3>
@@ -663,6 +811,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
             </div>
             <button class="btn btn-primary btn-full" onclick="saveUrgency()">Update Urgency</button>
           </div>
+
           <!-- Delivery Fees -->
           <div class="settings-section">
             <h3>🚚 Delivery Fees</h3>
@@ -684,6 +833,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
             </div>
             <button class="btn btn-primary btn-full" onclick="saveDeliveryFees()">Save Delivery Fees</button>
           </div>
+
           <!-- Site Controls -->
           <div class="settings-section">
             <h3>🔧 Site Controls</h3>
@@ -711,6 +861,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
             </div>
             <button class="btn btn-primary btn-full" onclick="saveSiteControls()">Save Settings</button>
           </div>
+
         </div>
       </div>
 
@@ -736,7 +887,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
         </div>
         <div class="form-group" style="margin-bottom:0">
           <label class="form-label">Category *</label>
-          <select class="form-select" id="pm-cat">
+          <select class="form-select" id="pm-cat" onchange="onPmCatChange()">
             <option value="tech">📱 Tech &amp; Gadgets</option>
             <option value="fashion">👜 Fashion</option>
             <option value="shoes">👟 Shoes</option>
@@ -770,6 +921,31 @@ textarea.form-input{resize:vertical;min-height:80px;}
         </div>
       </div>
 
+      <!-- ── COST & SOURCING (NEW) ── -->
+      <div style="background:linear-gradient(135deg,#0D8A7215,#0B6E5C0a);border:1px solid #0D8A7230;border-radius:var(--radius);padding:16px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--teal-bright);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;">🧮 Costing &amp; Auto-Pricing</div>
+        <div class="form-row" style="margin-bottom:12px;">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Factory Cost (CNY ¥)</label>
+            <input class="form-input" type="number" id="pm-cost-cny" placeholder="e.g. 4800" oninput="updatePmSuggestedPrice()">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Sourcing Method</label>
+            <select class="form-select" id="pm-source-method" onchange="updatePmSuggestedPrice()">
+              <option value="agent">Via Agent (×1.06)</option>
+              <option value="direct">Direct 1688 (no agent fee)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Category Multiplier <span style="color:var(--muted);font-weight:400;font-size:11px;">(auto-filled by category, override allowed)</span></label>
+          <input class="form-input" type="number" id="pm-cat-multiplier" placeholder="e.g. 1.65" step="0.01" oninput="updatePmSuggestedPrice()">
+        </div>
+        <div id="pm-suggested-price-hint" style="display:none;" class="suggested-price-hint">
+          💡 Suggested Price at current rate: <strong id="pm-suggested-price-val">₦0</strong>
+        </div>
+      </div>
+
       <!-- Base Price -->
       <div class="form-group">
         <label class="form-label">Base Price (₦) — used if no variant prices set</label>
@@ -783,8 +959,14 @@ textarea.form-input{resize:vertical;min-height:80px;}
           <span>Storage / Model Variants with Prices</span>
           <button type="button" class="btn btn-outline btn-sm" onclick="addVariantPriceRow()">+ Add</button>
         </label>
+        <div style="display:grid;grid-template-columns:1fr 130px 110px auto;gap:6px;align-items:center;margin-bottom:4px;padding:0 2px;">
+          <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Label</span>
+          <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Price (₦)</span>
+          <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Cost (CNY)</span>
+          <span></span>
+        </div>
         <div id="variant-prices-container" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;"></div>
-        <div style="font-size:11px;color:var(--muted)">Each entry creates a separate price tier (e.g. 256GB, 512GB, 1TB). Leave empty to use base price only.</div>
+        <div style="font-size:11px;color:var(--muted)">Each entry = a separate price tier (e.g. 256GB, 512GB). Add CNY cost per tier for accurate bulk repricing.</div>
       </div>
 
       <!-- ── COLORS (Free choice, no price change) ── -->
@@ -804,7 +986,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
           <button type="button" class="btn btn-outline btn-sm" onclick="addLegacyVariantRow()">+ Add</button>
         </label>
         <div id="legacy-variants-container" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;"></div>
-        <div style="font-size:11px;color:var(--muted)">Old-style flat list (Black, White…) — only used if no variant prices above. Kept for existing products.</div>
+        <div style="font-size:11px;color:var(--muted)">Old-style flat list (Black, White…) — only used if no variant prices above.</div>
       </div>
 
       <!-- ── PRODUCT IMAGES (multi-image) ── -->
@@ -905,7 +1087,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
   getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc,
-  onSnapshot, serverTimestamp, query, orderBy, limit, getDoc
+  onSnapshot, serverTimestamp, query, orderBy, limit, getDoc, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getStorage, ref as stRef, uploadString, getDownloadURL
@@ -935,6 +1117,24 @@ function toast(msg, isErr=false){
   t.className = 'show' + (isErr ? ' error' : '');
   clearTimeout(t._t);
   t._t = setTimeout(()=>{ t.className=''; }, 3200);
+}
+
+// Category multiplier map
+const CAT_MULTIPLIERS = {
+  tech: 1.65, fashion: 1.78, shoes: 1.80, bags: 1.78,
+  watches: 1.72, perfume: 1.82, skincare: 1.82, gaming: 1.70,
+  jewelry: 1.82, kids: 1.75, sports: 1.78, home: 1.78, general: 1.78
+};
+
+function calcListingPrice(costCNY, rate, sourceMethod, multiplier){
+  if(!costCNY || !rate || !multiplier) return 0;
+  let p = costCNY * rate;
+  p *= 1.15;
+  if(sourceMethod === 'agent') p *= 1.06;
+  p *= 1.08;
+  p *= 1.014;
+  p *= multiplier;
+  return Math.ceil(p / 5000) * 5000;
 }
 
 // ─────────────────────────────
@@ -971,6 +1171,7 @@ onAuthStateChanged(auth, user => {
 const PANEL_TITLES = {
   overview:'Overview', orders:'Orders', products:'Products',
   categories:'Categories', pricing:'Pricing Calculator',
+  reprice:'Bulk Reprice Engine',
   referrals:'Referral Tracker', settings:'Site Settings'
 };
 window.navTo = function(panel, el){
@@ -985,6 +1186,8 @@ window.navTo = function(panel, el){
   }
   document.getElementById('topbarTitle').textContent = PANEL_TITLES[panel]||panel;
   closeSidebar();
+  if(panel === 'reprice') renderRepricePanelRate();
+  if(panel === 'pricing') syncCalcRateFromSettings();
 };
 window.toggleSidebar = function(){
   document.getElementById('sidebar').classList.toggle('open');
@@ -1031,6 +1234,8 @@ function initDashboard(){
     if(!snap.exists()) return;
     _settings = snap.data();
     applySettings(_settings);
+    updateCalcStoredRateDisplay();
+    renderRepricePanelRate();
   });
 }
 
@@ -1283,24 +1488,50 @@ window.renderProducts = function(){
 let _editingProductId = null;
 let _pmImages = []; // array of {src:string, isNew:bool}
 
+// Category change handler — auto-fill multiplier
+window.onPmCatChange = function(){
+  const cat = document.getElementById('pm-cat').value;
+  const mult = CAT_MULTIPLIERS[cat] || 1.78;
+  document.getElementById('pm-cat-multiplier').value = mult;
+  updatePmSuggestedPrice();
+};
+
+// Live price preview in product modal
+window.updatePmSuggestedPrice = function(){
+  const cny  = Number(document.getElementById('pm-cost-cny').value||0);
+  const meth = document.getElementById('pm-source-method').value;
+  const mult = Number(document.getElementById('pm-cat-multiplier').value||0);
+  const rate = Number(_settings.exchangeRate||220);
+  const hint = document.getElementById('pm-suggested-price-hint');
+  const val  = document.getElementById('pm-suggested-price-val');
+  if(!cny || !mult || !rate){ if(hint) hint.style.display='none'; return; }
+  const price = calcListingPrice(cny, rate, meth, mult);
+  if(hint) hint.style.display='block';
+  if(val)  val.textContent = fmt(price);
+};
+
 window.openProductModal = function(id){
   _editingProductId = id || null;
   _pmImages = [];
 
   // Reset form
-  ['pm-name','pm-spec','pm-icon','pm-price','pm-badge-text','pm-img-url','pm-description','pm-seo-meta'].forEach(f=>{
+  ['pm-name','pm-spec','pm-icon','pm-price','pm-badge-text','pm-img-url','pm-description','pm-seo-meta','pm-cost-cny'].forEach(f=>{
     const el=document.getElementById(f); if(el) el.value='';
   });
   document.getElementById('pm-sort').value='';
   document.getElementById('pm-cat').value='tech';
   document.getElementById('pm-badge').value='';
   document.getElementById('pm-active').checked=true;
+  document.getElementById('pm-source-method').value='agent';
+  document.getElementById('pm-cat-multiplier').value = CAT_MULTIPLIERS['tech']||1.65;
   document.getElementById('variant-prices-container').innerHTML='';
   document.getElementById('colors-container').innerHTML='';
   document.getElementById('legacy-variants-container').innerHTML='';
   document.getElementById('img-preview-grid').innerHTML='';
   document.getElementById('seo-char-counter').textContent='0 / 160';
   document.getElementById('seo-char-counter').className='char-counter';
+  const hint = document.getElementById('pm-suggested-price-hint');
+  if(hint) hint.style.display='none';
 
   if(id){
     const p = _allProducts.find(x=>x.id===id);
@@ -1318,7 +1549,11 @@ window.openProductModal = function(id){
     document.getElementById('pm-active').checked= p.active!==false;
     document.getElementById('pm-description').value = p.description||'';
     document.getElementById('pm-seo-meta').value    = p.seoMeta||'';
+    document.getElementById('pm-cost-cny').value    = p.costCNY||'';
+    document.getElementById('pm-source-method').value = p.sourceMethod||'agent';
+    document.getElementById('pm-cat-multiplier').value = p.categoryMultiplier || CAT_MULTIPLIERS[p.category||'tech'] || 1.65;
     updateSeoCounter(document.getElementById('pm-seo-meta'));
+    updatePmSuggestedPrice();
 
     // Images
     const imgs = p.images?.length ? p.images : (p.img?[p.img]:[]);
@@ -1327,7 +1562,7 @@ window.openProductModal = function(id){
 
     // variantPrices
     if(Array.isArray(p.variantPrices)){
-      p.variantPrices.forEach(vp=>addVariantPriceRow(vp.label, vp.price));
+      p.variantPrices.forEach(vp=>addVariantPriceRow(vp.label, vp.price, vp.costCNY));
     }
     // colors
     if(Array.isArray(p.colors)){
@@ -1346,14 +1581,15 @@ window.openProductModal = function(id){
 window.closeProductModal = function(){ document.getElementById('product-modal').classList.remove('open'); };
 window.editProduct = function(id){ openProductModal(id); };
 
-// Variant price rows
-window.addVariantPriceRow = function(label='', price=''){
+// Variant price rows — now with costCNY column
+window.addVariantPriceRow = function(label='', price='', costCNY=''){
   const c = document.getElementById('variant-prices-container');
   const d = document.createElement('div');
   d.className='variant-row';
   d.innerHTML=`
-    <input type="text"   class="form-input vp-label" placeholder="Label e.g. 256GB" value="${escHtml(String(label))}">
+    <input type="text"   class="form-input vp-label" placeholder="e.g. 256GB" value="${escHtml(String(label))}">
     <input type="number" class="form-input vp-price v-price" placeholder="Price ₦" value="${price?price:''}">
+    <input type="number" class="form-input vp-cny v-cny" placeholder="CNY ¥" value="${costCNY?costCNY:''}">
     <button type="button" class="btn btn-danger btn-icon btn-sm" onclick="this.parentElement.remove()">✕</button>`;
   c.appendChild(d);
 };
@@ -1434,12 +1670,17 @@ window.saveProduct = async function(){
   const name = document.getElementById('pm-name').value.trim();
   if(!name){ toast('Product name is required',true); return; }
 
-  // Collect variantPrices
+  // Collect variantPrices (now includes costCNY per tier)
   const variantPrices = [];
   document.querySelectorAll('#variant-prices-container .variant-row').forEach(row=>{
-    const label = row.querySelector('.vp-label')?.value.trim();
-    const price = Number(row.querySelector('.vp-price')?.value||0);
-    if(label && price) variantPrices.push({label,price});
+    const label   = row.querySelector('.vp-label')?.value.trim();
+    const price   = Number(row.querySelector('.vp-price')?.value||0);
+    const vpCNY   = Number(row.querySelector('.vp-cny')?.value||0);
+    if(label && price){
+      const entry = {label,price};
+      if(vpCNY) entry.costCNY = vpCNY;
+      variantPrices.push(entry);
+    }
   });
   // Collect colors
   const colors = [];
@@ -1457,7 +1698,7 @@ window.saveProduct = async function(){
         await uploadString(imgRef, img.src, 'data_url');
         const url = await getDownloadURL(imgRef);
         finalImages.push(url);
-      } catch(e){ finalImages.push(img.src); } // fallback to base64 if storage fails
+      } catch(e){ finalImages.push(img.src); }
     } else {
       finalImages.push(img.src);
     }
@@ -1465,6 +1706,10 @@ window.saveProduct = async function(){
 
   const basePrice = Number(document.getElementById('pm-price').value||0) ||
                     (variantPrices.length ? variantPrices[0].price : 0);
+
+  const costCNY  = Number(document.getElementById('pm-cost-cny').value||0) || undefined;
+  const catMult  = Number(document.getElementById('pm-cat-multiplier').value||0) || undefined;
+  const srcMeth  = document.getElementById('pm-source-method').value || 'agent';
 
   const data = {
     name,
@@ -1478,6 +1723,7 @@ window.saveProduct = async function(){
     active:   document.getElementById('pm-active').checked,
     description: document.getElementById('pm-description').value.trim(),
     seoMeta:  document.getElementById('pm-seo-meta').value.trim(),
+    sourceMethod: srcMeth,
     variantPrices,
     colors,
     variants,
@@ -1485,6 +1731,10 @@ window.saveProduct = async function(){
     img:      finalImages[0]||'',
     updatedAt: serverTimestamp()
   };
+
+  // Only set costCNY / categoryMultiplier if provided (don't overwrite with undefined)
+  if(costCNY) data.costCNY = costCNY;
+  if(catMult) data.categoryMultiplier = catMult;
 
   try {
     const existingId = document.getElementById('pm-id').value || _editingProductId;
@@ -1559,6 +1809,22 @@ function renderCategories(){
 // ─────────────────────────────
 // PRICING CALCULATOR
 // ─────────────────────────────
+function updateCalcStoredRateDisplay(){
+  const rate = _settings.exchangeRate;
+  if(!rate) return;
+  const el = document.getElementById('calc-stored-rate-display');
+  if(el) el.textContent = `₦${Number(rate).toLocaleString('en-NG')} / ¥1`;
+}
+
+window.syncCalcRateFromSettings = function(){
+  const rate = _settings.exchangeRate;
+  if(!rate){ toast('No exchange rate stored yet. Save one in Settings.', true); return; }
+  const inp = document.getElementById('calc-rate');
+  if(inp){ inp.value = rate; }
+  runCalc();
+  toast('✅ Rate synced from settings: ₦'+Number(rate).toLocaleString('en-NG'));
+};
+
 window.runCalc = function(){
   const cny    = Number(document.getElementById('calc-cny').value||0);
   const rate   = Number(document.getElementById('calc-rate').value||220);
@@ -1592,6 +1858,289 @@ window.useCalcPrice = function(){
   navTo('products');
   openProductModal();
   setTimeout(()=>{ document.getElementById('pm-price').value=price; },100);
+};
+
+// ─────────────────────────────
+// BULK REPRICE ENGINE
+// ─────────────────────────────
+let _repriceRows = []; // computed rows for preview
+
+function renderRepricePanelRate(){
+  const rate    = _settings.exchangeRate;
+  const updAt   = _settings.exchangeRateUpdatedAt;
+  const rateEl  = document.getElementById('reprice-current-rate');
+  const updEl   = document.getElementById('reprice-rate-updated');
+  if(rateEl) rateEl.textContent = rate ? `₦${Number(rate).toLocaleString('en-NG')}` : '₦—';
+  if(updEl){
+    if(updAt?.toDate){
+      updEl.textContent = 'Last updated: ' + updAt.toDate().toLocaleDateString('en-NG',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+    } else {
+      updEl.textContent = 'Not yet set';
+    }
+  }
+}
+
+window.clearRepricePreview = function(){
+  document.getElementById('reprice-preview-wrap').style.display='none';
+  _repriceRows = [];
+};
+
+window.previewReprice = function(){
+  const newRate = Number(document.getElementById('reprice-new-rate').value||0);
+  if(!newRate || newRate < 1){ toast('Please enter a valid new exchange rate', true); return; }
+
+  _repriceRows = [];
+  const hasCostProducts  = [];
+  const missingCostProducts = [];
+
+  _allProducts.forEach(p=>{
+    const hasVP = Array.isArray(p.variantPrices) && p.variantPrices.length;
+
+    if(hasVP){
+      // Check if any variant tier has costCNY
+      let anyVarHasCost = false;
+      p.variantPrices.forEach((vp,idx)=>{
+        const vpCNY = vp.costCNY || p.costCNY; // fallback to product-level cost
+        if(vpCNY){
+          anyVarHasCost = true;
+          const mult    = p.categoryMultiplier || CAT_MULTIPLIERS[p.category||'general'] || 1.78;
+          const srcMeth = p.sourceMethod || 'agent';
+          const oldPrice= vp.price||0;
+          const newPrice= calcListingPrice(vpCNY, newRate, srcMeth, mult);
+          const diff    = newPrice - oldPrice;
+          const pct     = oldPrice ? ((diff/oldPrice)*100).toFixed(1) : '—';
+          hasCostProducts.push({
+            productId: p.id,
+            name:      p.name||'',
+            category:  p.category||'',
+            variantIdx: idx,
+            variantLabel: vp.label||`Tier ${idx+1}`,
+            oldPrice, newPrice, diff, pct,
+            isVariant: true,
+            hasCost: true
+          });
+        }
+      });
+      if(!anyVarHasCost && !p.costCNY){
+        missingCostProducts.push(p);
+      }
+    } else {
+      if(p.costCNY){
+        const mult    = p.categoryMultiplier || CAT_MULTIPLIERS[p.category||'general'] || 1.78;
+        const srcMeth = p.sourceMethod || 'agent';
+        const oldPrice= p.price||0;
+        const newPrice= calcListingPrice(p.costCNY, newRate, srcMeth, mult);
+        const diff    = newPrice - oldPrice;
+        const pct     = oldPrice ? ((diff/oldPrice)*100).toFixed(1) : '—';
+        hasCostProducts.push({
+          productId: p.id,
+          name:      p.name||'',
+          category:  p.category||'',
+          variantIdx: null,
+          variantLabel: null,
+          oldPrice, newPrice, diff, pct,
+          isVariant: false,
+          hasCost: true
+        });
+      } else {
+        missingCostProducts.push(p);
+      }
+    }
+  });
+
+  _repriceRows = hasCostProducts;
+
+  // Render preview table
+  const tbody = document.getElementById('reprice-preview-tbody');
+  if(!_repriceRows.length){
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px">No products with Factory Cost (CNY) data found. Add costCNY to products to use this feature.</td></tr>`;
+  } else {
+    tbody.innerHTML = _repriceRows.map((r,i)=>{
+      const upDown = r.diff > 0 ? 'price-up' : r.diff < 0 ? 'price-down' : '';
+      const diffStr = r.diff > 0 ? '+'+fmt(r.diff) : fmt(r.diff);
+      return `
+      <tr class="${upDown}" data-row-idx="${i}">
+        <td><input type="checkbox" class="reprice-row-check" data-idx="${i}" checked style="cursor:pointer;accent-color:var(--teal-bright);width:16px;height:16px;" onchange="updateRepriceSummary()"></td>
+        <td><strong>${escHtml(r.name)}</strong></td>
+        <td><span class="badge badge-muted" style="font-size:10px;">${escHtml(r.category)}</span></td>
+        <td style="color:var(--muted2);font-size:12px;">${escHtml(r.variantLabel||'—')}</td>
+        <td style="color:var(--muted2);">${fmt(r.oldPrice)}</td>
+        <td><strong style="color:var(--gold-bright);">${fmt(r.newPrice)}</strong></td>
+        <td class="change-col" style="font-weight:700;">${diffStr}</td>
+        <td style="font-size:12px;${r.diff>=0?'color:#4ade80':'color:#f87171'}">${r.pct !== '—' ? r.pct+'%' : '—'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Missing section
+  const missSection = document.getElementById('reprice-missing-section');
+  const missList    = document.getElementById('reprice-missing-list');
+  if(missingCostProducts.length){
+    missSection.style.display='block';
+    missList.innerHTML = missingCostProducts.map(p=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:8px;padding:10px 14px;">
+        <div>
+          <strong style="font-size:13px;">${escHtml(p.name||'')}</strong>
+          <span class="badge badge-muted" style="font-size:10px;margin-left:8px;">${escHtml(p.category||'')}</span>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="editProduct('${escHtml(p.id)}');document.getElementById('product-modal').scrollTop=300">✏️ Add Cost</button>
+      </div>`).join('');
+  } else {
+    missSection.style.display='none';
+  }
+
+  // Summary
+  document.getElementById('reprice-preview-summary-top').textContent =
+    `Previewing rate change to ₦${Number(newRate).toLocaleString('en-NG')}/¥1. ${_repriceRows.length} rows found with cost data.`;
+
+  // Show the will-skip in summary
+  document.getElementById('reprice-will-skip').textContent = missingCostProducts.length;
+  document.getElementById('reprice-will-update').textContent = _repriceRows.length;
+
+  document.getElementById('reprice-preview-wrap').style.display='block';
+  document.getElementById('reprice-progress').style.display='none';
+
+  // Sync check-all state
+  const allCheck = document.getElementById('reprice-check-all');
+  if(allCheck) allCheck.checked = true;
+};
+
+window.toggleAllRepriceChecks = function(checked){
+  document.querySelectorAll('.reprice-row-check').forEach(c=>{ c.checked = checked; });
+  updateRepriceSummary();
+};
+
+window.updateRepriceSummary = function(){
+  const checkedCount = document.querySelectorAll('.reprice-row-check:checked').length;
+  document.getElementById('reprice-will-update').textContent = checkedCount;
+};
+
+window.applyReprice = async function(){
+  const newRate = Number(document.getElementById('reprice-new-rate').value||0);
+  if(!newRate){ toast('No rate entered', true); return; }
+
+  const checkedBoxes = Array.from(document.querySelectorAll('.reprice-row-check:checked'));
+  if(!checkedBoxes.length){ toast('No products selected to update', true); return; }
+
+  const progressWrap  = document.getElementById('reprice-progress');
+  const progressBar   = document.getElementById('reprice-progress-bar');
+  const progressLabel = document.getElementById('reprice-progress-label');
+  const progressDetail= document.getElementById('reprice-progress-detail');
+
+  progressWrap.style.display='block';
+  progressBar.style.width='0%';
+  progressLabel.textContent = 'Preparing batch update…';
+  progressDetail.textContent = `0 / ${checkedBoxes.length} products`;
+
+  try {
+    // 1. Save new exchange rate to settings
+    progressLabel.textContent = 'Saving new exchange rate…';
+    await setDoc(doc(db,'settings','site-config'), {
+      exchangeRate: newRate,
+      exchangeRateUpdatedAt: serverTimestamp()
+    }, {merge:true});
+
+    progressBar.style.width='10%';
+
+    // 2. Group checked rows by productId to build update payloads
+    const productUpdates = {}; // productId => {price?, variantPrices?[]}
+
+    checkedBoxes.forEach(cb=>{
+      const idx = Number(cb.dataset.idx);
+      const row = _repriceRows[idx];
+      if(!row) return;
+
+      if(!productUpdates[row.productId]){
+        const p = _allProducts.find(x=>x.id===row.productId);
+        productUpdates[row.productId] = {
+          product: p,
+          newBasePrice: null,
+          variantUpdates: {} // idx -> newPrice
+        };
+      }
+
+      if(row.isVariant){
+        productUpdates[row.productId].variantUpdates[row.variantIdx] = row.newPrice;
+      } else {
+        productUpdates[row.productId].newBasePrice = row.newPrice;
+      }
+    });
+
+    const productIds = Object.keys(productUpdates);
+    const total = productIds.length;
+
+    // 3. Batch write — Firebase max 500 ops per batch
+    const BATCH_LIMIT = 490;
+    let batchCount = 0;
+    let currentBatch = writeBatch(db);
+    let processed = 0;
+
+    for(const productId of productIds){
+      const upd  = productUpdates[productId];
+      const p    = upd.product;
+      if(!p) continue;
+
+      const payload = { updatedAt: serverTimestamp() };
+
+      // Update base price if applicable
+      if(upd.newBasePrice !== null){
+        payload.price = upd.newBasePrice;
+      }
+
+      // Update variantPrices if applicable
+      if(Object.keys(upd.variantUpdates).length > 0 && Array.isArray(p.variantPrices)){
+        const updatedVPs = p.variantPrices.map((vp, idx)=>{
+          if(upd.variantUpdates[idx] !== undefined){
+            return {...vp, price: upd.variantUpdates[idx]};
+          }
+          return vp;
+        });
+        payload.variantPrices = updatedVPs;
+        // Also update base price to first variant price for consistency
+        if(updatedVPs.length > 0 && upd.newBasePrice === null){
+          payload.price = updatedVPs[0].price;
+        }
+      }
+
+      currentBatch.update(doc(db,'products',productId), payload);
+      batchCount++;
+      processed++;
+
+      if(batchCount >= BATCH_LIMIT){
+        progressLabel.textContent = 'Writing to Firestore…';
+        await currentBatch.commit();
+        currentBatch = writeBatch(db);
+        batchCount = 0;
+      }
+
+      const pct = Math.round(10 + (processed/total)*85);
+      progressBar.style.width = pct + '%';
+      progressDetail.textContent = `${processed} / ${total} products…`;
+    }
+
+    // Commit remaining
+    if(batchCount > 0){
+      await currentBatch.commit();
+    }
+
+    progressBar.style.width = '100%';
+    progressLabel.textContent = '✅ All prices updated successfully!';
+    progressDetail.textContent = `${processed} products updated. Storefront prices are now live.`;
+
+    toast(`✅ ${processed} products updated at ₦${Number(newRate).toLocaleString('en-NG')}/¥1`);
+
+    // Clear preview after success
+    setTimeout(()=>{
+      document.getElementById('reprice-preview-wrap').style.display='none';
+      document.getElementById('reprice-new-rate').value='';
+      _repriceRows = [];
+    }, 4000);
+
+  } catch(e){
+    progressLabel.textContent = '❌ Error during update';
+    progressDetail.textContent = e.message;
+    toast('Batch update error: '+e.message, true);
+  }
 };
 
 // ─────────────────────────────
@@ -1655,11 +2204,34 @@ function applySettings(s){
   if(document.getElementById('s-round'))      document.getElementById('s-round').value      = s.currentRound||'';
   if(document.getElementById('s-accepting'))  document.getElementById('s-accepting').checked= s.acceptingOrders!==false;
   if(document.getElementById('s-maintenance'))document.getElementById('s-maintenance').checked= !!s.maintenanceMode;
+  if(document.getElementById('s-exchange-rate') && s.exchangeRate){
+    document.getElementById('s-exchange-rate').value = s.exchangeRate;
+  }
+  if(document.getElementById('s-rate-last-updated')){
+    if(s.exchangeRateUpdatedAt?.toDate){
+      document.getElementById('s-rate-last-updated').textContent =
+        s.exchangeRateUpdatedAt.toDate().toLocaleDateString('en-NG',{weekday:'short',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    } else {
+      document.getElementById('s-rate-last-updated').textContent = 'Never';
+    }
+  }
   if(s.countdownDeadline?.toDate && document.getElementById('s-deadline')){
     const d = s.countdownDeadline.toDate();
     document.getElementById('s-deadline').value = d.toISOString().slice(0,16);
   }
 }
+
+window.saveExchangeRate = async function(){
+  const rate = Number(document.getElementById('s-exchange-rate').value||0);
+  if(!rate || rate < 1){ toast('Please enter a valid exchange rate', true); return; }
+  try {
+    await setDoc(doc(db,'settings','site-config'), {
+      exchangeRate: rate,
+      exchangeRateUpdatedAt: serverTimestamp()
+    }, {merge:true});
+    toast(`✅ Exchange rate saved: ₦${rate.toLocaleString('en-NG')}/¥1`);
+  } catch(e){ toast('Error: '+e.message, true); }
+};
 
 window.saveSetting = async function(key, value){
   try {
@@ -1674,7 +2246,6 @@ window.saveUrgency = async function(){
   const dlStr   = document.getElementById('s-deadline').value;
   const payload = { urgencySlots:{total,remaining:rem} };
   if(dlStr){
-    // Store as Timestamp via import
     const { Timestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     payload.countdownDeadline = Timestamp.fromDate(new Date(dlStr));
   }
