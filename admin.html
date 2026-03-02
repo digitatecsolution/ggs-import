@@ -152,7 +152,8 @@ tbody td{padding:12px 16px;font-size:13px;color:var(--white);}
 .btn-full{width:100%;justify-content:center;}
 
 /* ─── PRODUCT THUMB ─── */
-.prod-thumb{width:40px;height:40px;border-radius:8px;object-fit:cover;background:var(--ink2);border:1px solid #ffffff10;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.prod-thumb{width:40px;height:40px;border-radius:8px;object-fit:cover;background:var(--ink2);border:1px solid #ffffff10;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+.prod-thumb img{width:100%;height:100%;object-fit:cover;}
 .prod-thumb-wrap{display:flex;align-items:center;gap:10px;}
 .prod-name{font-weight:600;font-size:13px;}
 .prod-spec{font-size:11px;color:var(--muted2);margin-top:1px;}
@@ -193,7 +194,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
 /* ─── MODAL ─── */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:20px;}
 .modal-bg.open{display:flex;}
-.modal-box{background:var(--card);border:1px solid #ffffff12;border-radius:20px;width:100%;max-width:640px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 30px 80px #000000a0;}
+.modal-box{background:var(--card);border:1px solid #ffffff12;border-radius:20px;width:100%;max-width:680px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 30px 80px #000000a0;}
 .modal-box::-webkit-scrollbar{width:4px;}
 .modal-box::-webkit-scrollbar-thumb{background:rgba(200,137,26,.2);border-radius:4px;}
 .modal-header{padding:24px 28px 0;border-bottom:1px solid #ffffff08;padding-bottom:18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--card);z-index:1;}
@@ -209,27 +210,32 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .form-select:focus{border-color:var(--teal-bright);}
 .form-select option{background:var(--card);}
 
-/* ─── IMAGE UPLOAD ─── */
-.img-upload-wrap{border:2px dashed #ffffff18;border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all var(--transition);background:var(--ink2);}
-.img-upload-wrap:hover{border-color:var(--teal-mid);background:#0D8A7210;}
-.img-upload-wrap.dragover{border-color:var(--teal-bright);background:#12B89610;}
-.img-preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:12px;}
-.img-preview-item{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid #ffffff14;}
-.img-preview-item img{width:100%;height:100%;object-fit:cover;}
-.img-preview-item .img-del{position:absolute;top:3px;right:3px;background:rgba(220,38,38,.85);border:none;border-radius:4px;color:#fff;font-size:11px;padding:2px 5px;cursor:pointer;font-family:inherit;}
-.img-preview-item.primary-img::after{content:'PRIMARY';position:absolute;bottom:0;left:0;right:0;background:rgba(200,137,26,.85);color:#fff;font-size:9px;font-weight:700;text-align:center;padding:2px;letter-spacing:.5px;}
+/* ─── IMAGE MANAGER (URL-only, stable) ─── */
+.img-manager{background:var(--ink2);border:1px solid #ffffff14;border-radius:var(--radius);padding:16px;}
+.img-url-row{display:flex;gap:8px;margin-bottom:12px;}
+.img-url-row input{flex:1;background:var(--card);border:1px solid #ffffff14;border-radius:var(--radius-sm);padding:9px 12px;color:var(--white);font-family:inherit;font-size:13px;outline:none;transition:border-color var(--transition);}
+.img-url-row input:focus{border-color:var(--teal-bright);}
+.img-url-row input::placeholder{color:var(--muted);}
+.img-url-row button{flex-shrink:0;}
+.img-list{display:flex;flex-direction:column;gap:8px;}
+.img-list-item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid #ffffff0a;border-radius:8px;padding:8px 10px;}
+.img-list-item.primary-item{border-color:#C8891A40;background:#C8891A08;}
+.img-thumb-sm{width:44px;height:44px;border-radius:6px;object-fit:cover;background:var(--ink2);flex-shrink:0;border:1px solid #ffffff10;}
+.img-url-text{flex:1;font-size:11px;color:var(--muted2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.img-primary-badge{font-size:9px;font-weight:700;background:var(--gold-deep);color:var(--gold-bright);padding:2px 6px;border-radius:4px;letter-spacing:.5px;flex-shrink:0;}
+.img-empty{text-align:center;padding:20px;color:var(--muted);font-size:12px;}
 
 /* ─── VARIANT MANAGER ─── */
-.variant-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
-.variant-row input{flex:1;background:var(--ink2);border:1px solid #ffffff14;border-radius:var(--radius-sm);padding:9px 12px;color:var(--white);font-family:inherit;font-size:13px;outline:none;}
+.variant-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.variant-row input{flex:1;background:var(--ink2);border:1px solid #ffffff14;border-radius:var(--radius-sm);padding:8px 10px;color:var(--white);font-family:inherit;font-size:13px;outline:none;}
 .variant-row input:focus{border-color:var(--teal-bright);}
-.variant-row .v-price{width:130px;}
-.variant-row .v-cny{width:110px;}
+.variant-row .v-price{width:120px;}
+.variant-row .v-cny{width:100px;}
 .variant-row .btn-icon{flex-shrink:0;}
 .add-variant-btn{background:transparent;border:1px dashed #ffffff22;border-radius:var(--radius-sm);padding:8px;color:var(--muted2);font-size:12px;cursor:pointer;width:100%;font-family:inherit;transition:all var(--transition);}
 .add-variant-btn:hover{border-color:var(--teal-mid);color:var(--teal-bright);}
-.color-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
-.color-row input{flex:1;background:var(--ink2);border:1px solid #ffffff14;border-radius:var(--radius-sm);padding:9px 12px;color:var(--white);font-family:inherit;font-size:13px;outline:none;}
+.color-row{display:flex;gap:8px;align-items:center;margin-bottom:6px;}
+.color-row input{flex:1;background:var(--ink2);border:1px solid #ffffff14;border-radius:var(--radius-sm);padding:8px 10px;color:var(--white);font-family:inherit;font-size:13px;outline:none;}
 .color-row input:focus{border-color:var(--gold);}
 
 /* ─── CHAR COUNTER ─── */
@@ -263,12 +269,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-bright));border-radius:4px;transition:width .3s ease;}
 .missing-cost-section{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);padding:20px;margin-top:20px;}
 .missing-cost-section h4{font-size:14px;color:#f87171;margin-bottom:12px;}
-.suggested-price-hint{background:linear-gradient(135deg,#0D8A7215,#0B6E5C0a);border:1px solid #0D8A7230;border-radius:6px;padding:8px 12px;font-size:12px;color:var(--teal-bright);margin-top:6px;}
-
-/* ─── REVENUE CHART (simple bars) ─── */
-.mini-chart{display:flex;align-items:flex-end;gap:4px;height:80px;margin-top:8px;}
-.mini-bar{flex:1;background:linear-gradient(to top,var(--teal),var(--teal-mid));border-radius:3px 3px 0 0;min-height:4px;transition:height .4s ease;cursor:pointer;position:relative;}
-.mini-bar:hover::after{content:attr(data-label);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid #ffffff14;border-radius:4px;padding:3px 7px;font-size:10px;white-space:nowrap;color:var(--white);}
+.suggested-price-hint{background:linear-gradient(135deg,#0D8A7215,#0B6E5C0a);border:1px solid #0D8A7230;border-radius:6px;padding:8px 12px;font-size:12px;color:var(--teal-bright);margin-top:8px;}
 
 /* ─── NOTIFICATION TOAST ─── */
 #admin-toast{position:fixed;bottom:24px;right:24px;z-index:9000;background:var(--card);border:1px solid #0D8A7250;border-radius:var(--radius-sm);padding:14px 20px;color:var(--teal-bright);font-size:13px;font-weight:600;box-shadow:0 8px 32px #000000a0;transform:translateY(100px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;max-width:320px;}
@@ -279,6 +280,17 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .empty-state{text-align:center;padding:60px 20px;color:var(--muted2);}
 .empty-icon{font-size:48px;margin-bottom:16px;display:block;opacity:.4;}
 .empty-text{font-size:14px;}
+
+/* ─── ACCORDION SECTION (product modal sections) ─── */
+.modal-section{border:1px solid #ffffff0a;border-radius:var(--radius-sm);margin-bottom:12px;overflow:hidden;}
+.modal-section-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--ink2);cursor:pointer;user-select:none;}
+.modal-section-header:hover{background:#ffffff06;}
+.modal-section-title{font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;}
+.modal-section-body{padding:14px;background:var(--ink);}
+
+/* ─── COST BOX ─── */
+.cost-box{background:linear-gradient(135deg,#0D8A7215,#0B6E5C0a);border:1px solid #0D8A7230;border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;}
+.cost-box-title{font-size:11px;font-weight:700;color:var(--teal-bright);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;}
 
 /* ─── RESPONSIVE ─── */
 #sidebar-overlay{display:none;position:fixed;inset:0;background:#00000060;z-index:199;}
@@ -373,7 +385,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <div class="topbar-title" id="topbarTitle">Overview</div>
       <div class="topbar-actions">
         <a href="/" target="_blank" class="btn-topbar">🌐 View Store</a>
-        <button class="btn-topbar" onclick="navTo('products')">+ Add Product</button>
+        <button class="btn-topbar" onclick="navTo('products');openProductModal()">+ Add Product</button>
       </div>
     </div>
 
@@ -437,14 +449,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
             <table>
               <thead>
                 <tr>
-                  <th>Ref</th>
-                  <th>Customer</th>
-                  <th>Items</th>
-                  <th>Total</th>
-                  <th>Shipping</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                  <th>Action</th>
+                  <th>Ref</th><th>Customer</th><th>Items</th><th>Total</th><th>Shipping</th><th>Status</th><th>Date</th><th>Action</th>
                 </tr>
               </thead>
               <tbody id="overview-orders-tbody">
@@ -472,16 +477,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
             <table>
               <thead>
                 <tr>
-                  <th>Ref</th>
-                  <th>Customer</th>
-                  <th>Phone</th>
-                  <th>State</th>
-                  <th>Items</th>
-                  <th>Total Paid</th>
-                  <th>Shipping</th>
-                  <th>Order Status</th>
-                  <th>Date</th>
-                  <th>Action</th>
+                  <th>Ref</th><th>Customer</th><th>Phone</th><th>State</th><th>Items</th><th>Total Paid</th><th>Shipping</th><th>Order Status</th><th>Date</th><th>Action</th>
                 </tr>
               </thead>
               <tbody id="orders-tbody">
@@ -523,18 +519,11 @@ textarea.form-input{resize:vertical;min-height:80px;}
             <table>
               <thead>
                 <tr>
-                  <th>Product</th>
-                  <th>Category</th>
-                  <th>Base Price</th>
-                  <th>Variants</th>
-                  <th>Badge</th>
-                  <th>Status</th>
-                  <th>Sort</th>
-                  <th>Actions</th>
+                  <th>Product</th><th>Category</th><th>Base Price</th><th>CNY Cost</th><th>Variants</th><th>Badge</th><th>Status</th><th>Sort</th><th>Actions</th>
                 </tr>
               </thead>
               <tbody id="products-tbody">
-                <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px">Loading products…</td></tr>
+                <tr><td colspan="9" style="text-align:center;color:var(--muted);padding:40px">Loading products…</td></tr>
               </tbody>
             </table>
           </div>
@@ -558,11 +547,11 @@ textarea.form-input{resize:vertical;min-height:80px;}
           <div class="calc-box">
             <h3 style="font-family:'Playfair Display',serif;font-size:16px;color:var(--gold-bright);margin-bottom:20px;">🧮 Calculate Listing Price</h3>
 
-            <!-- Rate sync from settings -->
+            <!-- Stored rate display -->
             <div id="calc-stored-rate-info" style="background:var(--ink2);border:1px solid #0D8A7230;border-radius:8px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
               <div>
                 <div style="font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.6px;">Current Stored Rate</div>
-                <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--teal-bright);margin-top:2px;" id="calc-stored-rate-display">₦220 / ¥1</div>
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--teal-bright);margin-top:2px;" id="calc-stored-rate-display">₦— / ¥1</div>
               </div>
               <button class="btn btn-outline btn-sm" onclick="syncCalcRateFromSettings()">🔄 Sync Rate</button>
             </div>
@@ -573,7 +562,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
             </div>
             <div class="form-group">
               <label class="form-label">Exchange Rate (₦ per ¥1)</label>
-              <input class="form-input" type="number" id="calc-rate" placeholder="e.g. 220" value="220" oninput="runCalc()">
+              <input class="form-input" type="number" id="calc-rate" placeholder="e.g. 220" oninput="runCalc()">
               <div style="font-size:11px;color:var(--muted);margin-top:4px">Update every Monday morning</div>
             </div>
             <div class="form-group">
@@ -586,19 +575,20 @@ textarea.form-input{resize:vertical;min-height:80px;}
             <div class="form-group">
               <label class="form-label">Product Category</label>
               <select class="form-select" id="calc-cat" onchange="runCalc()">
-                <option value="1.333">📱 iPhones / Samsung (25% margin)</option>
-<option value="1.389">💻 MacBooks / Laptops (28% margin)</option>
-<option value="1.389">📲 iPads / Tablets (28% margin)</option>
-<option value="1.389">🎧 AirPods / Earbuds (28% margin)</option>
-<option value="1.429">⌚ Smart Watches (30% margin)</option>
-<option value="1.389">🎮 Gaming (28% margin)</option>
-<option value="1.429">👜 Designer Bags (30% margin)</option>
-<option value="1.429">👠 Shoes / Footwear (30% margin)</option>
-<option value="1.493">🌸 Perfumes (33% margin)</option>
-<option value="1.493">💍 Jewelry (33% margin)</option>
-<option value="1.493">✨ Skincare / Beauty (33% margin)</option>
-<option value="1.429">💼 Accessories (30% margin)</option>
-<option value="1.389">🧸 Kids Items (28% margin)</option>
+                <option value="1.333">📱 iPhones / Samsung (×1.333)</option>
+                <option value="1.389">💻 MacBooks / Laptops (×1.389)</option>
+                <option value="1.389">📲 iPads / Tablets (×1.389)</option>
+                <option value="1.429">🎧 AirPods / Earbuds (×1.429)</option>
+                <option value="1.389">⌚ Smart Watches (×1.389)</option>
+                <option value="1.429">🎮 Gaming (×1.429)</option>
+                <option value="1.429">👜 Designer Bags (×1.429)</option>
+                <option value="1.429">👠 Shoes / Footwear (×1.429)</option>
+                <option value="1.493">🌸 Perfumes (×1.493)</option>
+                <option value="1.493">💍 Jewelry (×1.493)</option>
+                <option value="1.493">✨ Skincare / Beauty (×1.493)</option>
+                <option value="1.429">💼 Accessories (×1.429)</option>
+                <option value="1.389">🧸 Kids Items (×1.389)</option>
+                <option value="1.389">📦 Fashion / General (×1.389)</option>
               </select>
             </div>
             <div class="calc-result" id="calc-result" style="display:none">
@@ -626,16 +616,16 @@ textarea.form-input{resize:vertical;min-height:80px;}
               <div style="background:var(--ink2);border-radius:8px;padding:14px;">
                 <div style="font-weight:700;color:var(--white);margin-bottom:8px;">Quick Reference — Multipliers</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:11px;color:var(--muted2);">
-                  <span>iPhones/MacBooks</span><span style="color:var(--gold)">×1.65 / ×1.56</span>
-                  <span>Bags</span><span style="color:var(--gold)">×1.78 / ×1.68</span>
-                  <span>Shoes</span><span style="color:var(--gold)">×1.80 / ×1.70</span>
-                  <span>Perfumes/Jewelry</span><span style="color:var(--gold)">×1.82 / ×1.72</span>
-                  <span>Watches</span><span style="color:var(--gold)">×1.72 / ×1.63</span>
-                  <span>Gaming</span><span style="color:var(--gold)">×1.70 / ×1.61</span>
+                  <span>iPhones/Samsung</span><span style="color:var(--gold)">×1.333</span>
+                  <span>MacBooks/Laptops/iPads</span><span style="color:var(--gold)">×1.389</span>
+                  <span>Bags/Shoes/Gaming</span><span style="color:var(--gold)">×1.429</span>
+                  <span>Perfumes/Jewelry/Skincare</span><span style="color:var(--gold)">×1.493</span>
+                  <span>Watches/Kids/Fashion</span><span style="color:var(--gold)">×1.389</span>
+                  <span>Accessories</span><span style="color:var(--gold)">×1.429</span>
                 </div>
               </div>
               <div style="background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:14px;">
-                <div style="font-size:12px;color:#f87171;line-height:1.7;">⚠️ Always update the exchange rate every <strong>Monday morning</strong> before pricing new products. Rate deviation by ₦5+ affects margins significantly.</div>
+                <div style="font-size:12px;color:#f87171;line-height:1.7;">⚠️ Always update the exchange rate every <strong>Monday morning</strong> before pricing new products.</div>
               </div>
             </div>
           </div>
@@ -665,7 +655,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
                 <input class="form-input" type="number" id="reprice-new-rate" placeholder="e.g. 235" oninput="clearRepricePreview()">
               </div>
               <div style="background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:#f87171;margin-bottom:16px;">
-                ⚠️ Update every <strong>Monday morning</strong> before repricing. Rate deviation affects all product margins.
+                ⚠️ Update every <strong>Monday morning</strong> before repricing.
               </div>
               <button class="btn btn-gold" onclick="previewReprice()" style="width:100%;justify-content:center;">🔍 Preview Impact</button>
             </div>
@@ -682,7 +672,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
           </div>
         </div>
 
-        <!-- Section B: Preview Table (hidden until preview) -->
+        <!-- Section B: Preview Table -->
         <div id="reprice-preview-wrap" style="display:none;">
           <div class="reprice-section">
             <h3>Section B — Price Preview</h3>
@@ -693,13 +683,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
                   <thead>
                     <tr>
                       <th><input type="checkbox" id="reprice-check-all" onchange="toggleAllRepriceChecks(this.checked)" style="cursor:pointer;accent-color:var(--teal-bright);width:16px;height:16px;"></th>
-                      <th>Product</th>
-                      <th>Category</th>
-                      <th>Variant</th>
-                      <th>Current Price</th>
-                      <th>New Price</th>
-                      <th class="change-col">Change (₦)</th>
-                      <th>% Change</th>
+                      <th>Product</th><th>Category</th><th>Variant</th><th>Current Price</th><th>New Price</th><th class="change-col">Change (₦)</th><th>% Change</th>
                     </tr>
                   </thead>
                   <tbody id="reprice-preview-tbody"></tbody>
@@ -708,7 +692,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
             </div>
           </div>
 
-          <!-- Missing cost data section -->
+          <!-- Missing cost data -->
           <div class="missing-cost-section" id="reprice-missing-section" style="display:none;">
             <h4>⚠️ Missing Cost Data — these products will NOT be updated</h4>
             <p style="font-size:12px;color:var(--muted2);margin-bottom:12px;">Add <strong>Factory Cost (CNY)</strong> in the product editor to include these in future repricing.</p>
@@ -765,19 +749,19 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <div class="panel" id="panel-settings">
         <div class="settings-grid">
 
-          <!-- Exchange Rate Control (NEW) -->
+          <!-- Exchange Rate Control -->
           <div class="settings-section" style="border-color:#0D8A7240;">
             <h3>💱 Exchange Rate Control</h3>
             <div class="form-group">
               <label class="form-label">Current Rate (₦ per ¥1 CNY)</label>
-              <input class="form-input" type="number" id="s-exchange-rate" placeholder="e.g. 220" oninput="">
+              <input class="form-input" type="number" id="s-exchange-rate" placeholder="e.g. 220">
               <div style="font-size:11px;color:var(--muted);margin-top:4px;">Update every Monday morning before repricing</div>
             </div>
             <div style="background:var(--ink2);border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--muted2);">
               Last updated: <span id="s-rate-last-updated" style="color:var(--white);">—</span>
             </div>
             <div style="background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:#f87171;margin-bottom:16px;">
-              ⚠️ Saving a new rate here does NOT automatically update product prices. Use the <strong>💱 Bulk Reprice</strong> panel after updating.
+              ⚠️ Saving a new rate does NOT automatically update product prices. Use the <strong>💱 Bulk Reprice</strong> panel after saving.
             </div>
             <button class="btn btn-primary btn-full" onclick="saveExchangeRate()">💾 Save Exchange Rate</button>
           </div>
@@ -879,52 +863,53 @@ textarea.form-input{resize:vertical;min-height:80px;}
     <div class="modal-body">
       <input type="hidden" id="pm-id">
 
-      <!-- Basic Info -->
-      <div class="form-row" style="margin-bottom:16px">
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">Product Name *</label>
-          <input class="form-input" id="pm-name" placeholder="iPhone 15 Pro Max 256GB">
+      <!-- ── SECTION 1: Basic Info ── -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:700;color:var(--gold-bright);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #ffffff0a;">📋 Basic Information</div>
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Product Name *</label>
+            <input class="form-input" id="pm-name" placeholder="iPhone 15 Pro Max 256GB">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Category *</label>
+            <select class="form-select" id="pm-cat" onchange="onPmCatChange()">
+              <option value="tech">📱 Tech &amp; Gadgets</option>
+              <option value="fashion">👗 Fashion</option>
+              <option value="shoes">👟 Shoes</option>
+              <option value="bags">👜 Bags</option>
+              <option value="watches">⌚ Watches</option>
+              <option value="perfume">🌸 Perfumes</option>
+              <option value="skincare">✨ Skincare</option>
+              <option value="gaming">🎮 Gaming</option>
+              <option value="jewelry">💍 Jewelry</option>
+              <option value="kids">🧸 Kids</option>
+              <option value="sports">💪 Sports</option>
+              <option value="home">🏠 Home</option>
+              <option value="general">📦 General</option>
+            </select>
+          </div>
         </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">Category *</label>
-          <select class="form-select" id="pm-cat" onchange="onPmCatChange()">
-            <option value="tech">📱 Tech &amp; Gadgets</option>
-            <option value="fashion">👜 Fashion</option>
-            <option value="shoes">👟 Shoes</option>
-            <option value="bags">👜 Bags</option>
-            <option value="watches">⌚ Watches</option>
-            <option value="perfume">🌸 Perfumes</option>
-            <option value="skincare">✨ Skincare</option>
-            <option value="gaming">🎮 Gaming</option>
-            <option value="jewelry">💍 Jewelry</option>
-            <option value="kids">🧸 Kids</option>
-            <option value="sports">💪 Sports</option>
-            <option value="home">🏠 Home</option>
-            <option value="general">📦 General</option>
-          </select>
+        <div class="form-group" style="margin-bottom:12px">
+          <label class="form-label">Short Spec / Subtitle</label>
+          <input class="form-input" id="pm-spec" placeholder="6.7&quot; Super Retina XDR · A17 Pro · 48MP Camera">
+        </div>
+        <div class="form-row" style="margin-bottom:0">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Icon Emoji</label>
+            <input class="form-input" id="pm-icon" placeholder="📱" style="font-size:20px;text-align:center;" maxlength="4">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Sort Order (lower = first)</label>
+            <input class="form-input" type="number" id="pm-sort" placeholder="1">
+          </div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Short Spec / Subtitle</label>
-        <input class="form-input" id="pm-spec" placeholder="6.7&quot; Super Retina XDR · A17 Pro · 48MP Camera">
-      </div>
-
-      <div class="form-row" style="margin-bottom:16px">
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">Icon Emoji</label>
-          <input class="form-input" id="pm-icon" placeholder="📱" style="font-size:20px;text-align:center;" maxlength="4">
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">Sort Order (lower = first)</label>
-          <input class="form-input" type="number" id="pm-sort" placeholder="1">
-        </div>
-      </div>
-
-      <!-- ── COST & SOURCING (NEW) ── -->
-      <div style="background:linear-gradient(135deg,#0D8A7215,#0B6E5C0a);border:1px solid #0D8A7230;border-radius:var(--radius);padding:16px;margin-bottom:16px;">
-        <div style="font-size:12px;font-weight:700;color:var(--teal-bright);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;">🧮 Costing &amp; Auto-Pricing</div>
-        <div class="form-row" style="margin-bottom:12px;">
+      <!-- ── SECTION 2: Costing & Auto-Pricing ── -->
+      <div class="cost-box" style="margin-bottom:14px;">
+        <div class="cost-box-title">🧮 Costing &amp; Auto-Pricing</div>
+        <div class="form-row" style="margin-bottom:10px;">
           <div class="form-group" style="margin-bottom:0">
             <label class="form-label">Factory Cost (CNY ¥)</label>
             <input class="form-input" type="number" id="pm-cost-cny" placeholder="e.g. 4800" oninput="updatePmSuggestedPrice()">
@@ -938,153 +923,106 @@ textarea.form-input{resize:vertical;min-height:80px;}
           </div>
         </div>
         <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">Category Multiplier <span style="color:var(--muted);font-weight:400;font-size:11px;">(auto-filled by category, override allowed)</span></label>
-          <input class="form-input" type="number" id="pm-cat-multiplier" placeholder="e.g. 1.65" step="0.01" oninput="updatePmSuggestedPrice()">
+          <label class="form-label">Category Multiplier <span style="color:var(--muted);font-weight:400;font-size:11px;">(auto-filled by category)</span></label>
+          <input class="form-input" type="number" id="pm-cat-multiplier" placeholder="e.g. 1.333" step="0.001" oninput="updatePmSuggestedPrice()">
         </div>
         <div id="pm-suggested-price-hint" style="display:none;" class="suggested-price-hint">
           💡 Suggested Price at current rate: <strong id="pm-suggested-price-val">₦0</strong>
         </div>
       </div>
 
-      <!-- Base Price -->
-      <div class="form-group">
-        <label class="form-label">Base Price (₦) — used if no variant prices set</label>
-        <input class="form-input" type="number" id="pm-price" placeholder="895000" oninput="calcSuggestedMargin()">
-        <div id="pm-margin-hint" style="font-size:11px;color:var(--muted);margin-top:4px;"></div>
-      </div>
-
-      <!-- ── VARIANT PRICES (New Two-Tier System) ── -->
-      <div class="form-group">
-        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
-          <span>Storage / Model Variants with Prices</span>
-          <button type="button" class="btn btn-outline btn-sm" onclick="addVariantPriceRow()">+ Add</button>
-        </label>
-        <div style="display:grid;grid-template-columns:1fr 130px 110px auto;gap:6px;align-items:center;margin-bottom:4px;padding:0 2px;">
-          <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Label</span>
-          <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Price (₦)</span>
-          <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Cost (CNY)</span>
-          <span></span>
-        </div>
-        <div id="variant-prices-container" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;"></div>
-        <div style="font-size:11px;color:var(--muted)">Each entry = a separate price tier (e.g. 256GB, 512GB). Add CNY cost per tier for accurate bulk repricing.</div>
-      </div>
-
-      <!-- ── COLORS (Free choice, no price change) ── -->
-      <div class="form-group">
-        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
-          <span>Color Options (no price change)</span>
-          <button type="button" class="btn btn-outline btn-sm" onclick="addColorRow()">+ Add Color</button>
-        </label>
-        <div id="colors-container" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;"></div>
-        <div style="font-size:11px;color:var(--muted)">Color/variant labels customers choose freely (e.g. Natural Titanium, Blue Titanium).</div>
-      </div>
-
-      <!-- ── LEGACY VARIANTS (kept for backward compat) ── -->
-      <div class="form-group">
-        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
-          <span>Legacy Flat Variants (optional)</span>
-          <button type="button" class="btn btn-outline btn-sm" onclick="addLegacyVariantRow()">+ Add</button>
-        </label>
-        <div id="legacy-variants-container" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;"></div>
-        <div style="font-size:11px;color:var(--muted)">Old-style flat list (Black, White…) — only used if no variant prices above.</div>
-      </div>
-
-      <!-- ── PRODUCT IMAGES (multi-image) ── -->
-      <div class="form-group">
-        <label class="form-label">Product Images (up to 8) — First image = Primary</label>
-
-        <!-- Cloudinary instruction banner -->
-        <div style="background:linear-gradient(135deg,#0D8A7215,#0B6E5C0a);border:1px solid #0D8A7240;border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            <span style="font-size:20px;">☁️</span>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--teal-bright);">Use Cloudinary to host your images</div>
-              <div style="font-size:11px;color:var(--muted2);margin-top:1px;">Upload photos at <strong style="color:var(--white)">cloudinary.com</strong> → copy the <code style="color:var(--gold-bright)">res.cloudinary.com/...</code> URL → paste below</div>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted2);">
-            <div>✅ &nbsp;Use URL starting with <code style="color:#4ade80">res.cloudinary.com/...</code></div>
-            <div>❌ &nbsp;Never use <code style="color:#f87171">collection.cloudinary.com/...</code> — expires in 7 days</div>
-            <div>❌ &nbsp;Do not use the drag/upload box below — Firebase Storage not active</div>
-          </div>
+      <!-- ── SECTION 3: Pricing ── -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:700;color:var(--gold-bright);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #ffffff0a;">💰 Pricing</div>
+        <div class="form-group" style="margin-bottom:12px">
+          <label class="form-label">Base Price (₦) — used if no variant prices set</label>
+          <input class="form-input" type="number" id="pm-price" placeholder="895000">
         </div>
 
-        <!-- URL Paste — PRIMARY METHOD -->
-        <div style="background:var(--card2);border:1px solid #ffffff10;border-radius:var(--radius);padding:16px;margin-bottom:12px;">
-          <div style="font-size:12px;font-weight:700;color:var(--white);margin-bottom:10px;">📋 Paste Cloudinary URL</div>
-          <div style="display:flex;gap:8px;">
-            <input class="form-input" id="pm-img-url" placeholder="https://res.cloudinary.com/yourname/image/upload/v.../photo.jpg" style="flex:1">
+        <!-- Variant price rows -->
+        <div class="form-group" style="margin-bottom:12px">
+          <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
+            <span>Storage / Model Variants with Prices</span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="addVariantPriceRow()">+ Add Tier</button>
+          </label>
+          <div style="display:grid;grid-template-columns:1fr 120px 100px auto;gap:6px;align-items:center;margin-bottom:4px;padding:0 2px;">
+            <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Label</span>
+            <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Price (₦)</span>
+            <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Cost (CNY)</span>
+            <span></span>
+          </div>
+          <div id="variant-prices-container" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;"></div>
+          <div style="font-size:11px;color:var(--muted)">Each entry = a separate price tier (e.g. 256GB, 512GB). Add CNY cost per tier for bulk repricing.</div>
+        </div>
+
+        <!-- Colors -->
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
+            <span>Color Options (no price change)</span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="addColorRow()">+ Add Color</button>
+          </label>
+          <div id="colors-container" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;"></div>
+          <div style="font-size:11px;color:var(--muted)">Color labels customers choose freely (e.g. Natural Titanium, Blue).</div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 4: Product Images (URL only — stable) ── -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:700;color:var(--gold-bright);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #ffffff0a;">🖼️ Product Images (URL links)</div>
+        <div class="img-manager">
+          <div class="img-url-row">
+            <input type="text" id="pm-img-url" placeholder="Paste image URL (https://…)" onkeydown="if(event.key==='Enter'){event.preventDefault();addImageUrl();}">
             <button type="button" class="btn btn-primary btn-sm" onclick="addImageUrl()">➕ Add</button>
           </div>
-          <div style="font-size:11px;color:var(--muted);margin-top:8px;">Paste one URL at a time and click Add. Repeat for each photo (up to 8 total).</div>
-        </div>
-
-        <!-- Image previews -->
-        <div class="img-preview-grid" id="img-preview-grid"></div>
-        <div id="img-count-hint" style="font-size:11px;color:var(--muted);margin-top:6px;display:none;"></div>
-
-        <!-- Disabled upload box — visible but blocked -->
-        <details style="margin-top:12px;">
-          <summary style="font-size:11px;color:var(--muted);cursor:pointer;user-select:none;">⚠️ Direct upload (disabled — Firebase Storage not active)</summary>
-          <div style="margin-top:8px;position:relative;">
-            <!-- Overlay to block clicks -->
-            <div style="position:absolute;inset:0;z-index:10;background:rgba(8,9,12,0.7);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;cursor:not-allowed;">
-              <div style="text-align:center;">
-                <div style="font-size:22px;margin-bottom:4px;">🔒</div>
-                <div style="font-size:12px;font-weight:700;color:#f87171;">Firebase Storage Not Active</div>
-                <div style="font-size:11px;color:var(--muted2);margin-top:2px;">Use Cloudinary URL paste above</div>
-              </div>
-            </div>
-            <div class="img-upload-wrap" style="opacity:0.3;pointer-events:none;">
-              <div style="font-size:28px;margin-bottom:8px">🖼️</div>
-              <div style="font-size:13px;font-weight:600;color:var(--muted2)">Click or drag images here</div>
-              <div style="font-size:11px;color:var(--muted);margin-top:4px">Disabled — use URL paste above</div>
-            </div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">First image = primary (shown in catalog). Up to 8 images. Press Enter or click Add after each URL.</div>
+          <div class="img-list" id="img-list-container">
+            <div class="img-empty" id="img-empty-msg">No images added yet. Paste a URL above.</div>
           </div>
-        </details>
-        <input type="file" id="img-file-input" accept="image/*" multiple style="display:none" onchange="handleImgSelect(this.files)">
+        </div>
       </div>
 
-      <!-- ── FULL DESCRIPTION (SEO) ── -->
-      <div class="form-group">
-        <label class="form-label">Full Product Description (SEO)</label>
-        <textarea class="form-input" id="pm-description" rows="6"
-          placeholder="Full product details, key specs, why buy from GGS, authenticity notes, compatibility info, FAQs about this product…"></textarea>
-        <div style="font-size:11px;color:var(--muted);margin-top:4px">Displayed in the product detail modal. Supports line breaks. Used for SEO content.</div>
-      </div>
-
-      <!-- ── SEO META DESCRIPTION ── -->
-      <div class="form-group">
-        <label class="form-label">SEO Meta Description (160 chars max)</label>
-        <input class="form-input" id="pm-seo-meta" maxlength="200"
-          placeholder="Buy authentic iPhone 15 Pro Max in Nigeria at factory cost price. 256GB/512GB/1TB. A17 Pro. Flutterwave secure checkout."
-          oninput="updateSeoCounter(this)">
-        <div class="char-counter" id="seo-char-counter">0 / 160</div>
-      </div>
-
-      <!-- Badge & Status -->
-      <div class="form-row" style="margin-bottom:16px">
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">Badge</label>
-          <select class="form-select" id="pm-badge">
-            <option value="">None</option>
-            <option value="hot">🔥 HOT</option>
-            <option value="new">✨ NEW</option>
-            <option value="pick">⭐ TOP PICK</option>
-          </select>
+      <!-- ── SECTION 5: Description & SEO ── -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:700;color:var(--gold-bright);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #ffffff0a;">📝 Description &amp; SEO</div>
+        <div class="form-group" style="margin-bottom:12px">
+          <label class="form-label">Full Product Description</label>
+          <textarea class="form-input" id="pm-description" rows="5"
+            placeholder="Full product details, key specs, why buy from GGS, authenticity notes, compatibility info…"></textarea>
         </div>
         <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">Badge Label Text</label>
-          <input class="form-input" id="pm-badge-text" placeholder="HOT DEAL / New Arrival">
+          <label class="form-label">SEO Meta Description (160 chars max)</label>
+          <input class="form-input" id="pm-seo-meta" maxlength="200"
+            placeholder="Buy authentic iPhone 15 Pro Max in Nigeria at factory price…"
+            oninput="updateSeoCounter(this)">
+          <div class="char-counter" id="seo-char-counter">0 / 160</div>
         </div>
       </div>
 
-      <div class="toggle-wrap">
-        <div>
-          <div class="toggle-label">Product Active (visible on site)</div>
-          <div class="toggle-sub">Uncheck to hide from catalog without deleting</div>
+      <!-- ── SECTION 6: Badge & Visibility ── -->
+      <div style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--gold-bright);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #ffffff0a;">🏷️ Badge &amp; Visibility</div>
+        <div class="form-row" style="margin-bottom:14px">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Badge</label>
+            <select class="form-select" id="pm-badge">
+              <option value="">None</option>
+              <option value="hot">🔥 HOT</option>
+              <option value="new">✨ NEW</option>
+              <option value="pick">⭐ TOP PICK</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Badge Label Text</label>
+            <input class="form-input" id="pm-badge-text" placeholder="HOT DEAL / New Arrival">
+          </div>
         </div>
-        <label class="toggle"><input type="checkbox" id="pm-active" checked><span class="toggle-track"></span></label>
+        <div class="toggle-wrap" style="padding-top:0">
+          <div>
+            <div class="toggle-label">Product Active (visible on site)</div>
+            <div class="toggle-sub">Uncheck to hide from catalog without deleting</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="pm-active" checked><span class="toggle-track"></span></label>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -1120,11 +1058,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
   getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc,
-  onSnapshot, serverTimestamp, query, orderBy, limit, getDoc, writeBatch
+  onSnapshot, serverTimestamp, query, orderBy, getDoc, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import {
-  getStorage, ref as stRef, uploadString, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyCGU14FHH82Ja5Bx9ZE3ImlePoyKvZLdYg",
@@ -1137,7 +1072,6 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
-const storage = getStorage(app);
 
 // ─────────────────────────────
 // HELPERS
@@ -1152,11 +1086,21 @@ function toast(msg, isErr=false){
   t._t = setTimeout(()=>{ t.className=''; }, 3200);
 }
 
-// Category multiplier map
+// Category multiplier map — updated per spec
 const CAT_MULTIPLIERS = {
-  tech: 1.333, fashion: 1.429, shoes: 1.429, bags: 1.429,
-  watches: 1.429, perfume: 1.493, skincare: 1.493, gaming: 1.389,
-  jewelry: 1.493, kids: 1.389, sports: 1.389, home: 1.389, general: 1.389
+  tech: 1.333,
+  fashion: 1.389,
+  shoes: 1.429,
+  bags: 1.429,
+  watches: 1.389,
+  perfume: 1.493,
+  skincare: 1.493,
+  gaming: 1.429,
+  jewelry: 1.493,
+  kids: 1.389,
+  sports: 1.429,
+  home: 1.389,
+  general: 1.389
 };
 
 function calcListingPrice(costCNY, rate, sourceMethod, multiplier){
@@ -1245,7 +1189,6 @@ const PAGE_SIZE  = 20;
 // INIT LISTENERS
 // ─────────────────────────────
 function initDashboard(){
-  // Orders listener
   onSnapshot(query(collection(db,'orders'), orderBy('createdAt','desc')), snap=>{
     _allOrders = snap.docs.map(d=>({id:d.id,...d.data()}));
     renderOverviewOrders();
@@ -1254,7 +1197,6 @@ function initDashboard(){
     updateStatsFromOrders();
   }, err=>console.error('Orders error:',err));
 
-  // Products listener
   onSnapshot(collection(db,'products'), snap=>{
     _allProducts = snap.docs.map(d=>({id:d.id,...d.data()}));
     renderProducts();
@@ -1262,7 +1204,6 @@ function initDashboard(){
     updateProductStat();
   }, err=>console.error('Products error:',err));
 
-  // Settings listener
   onSnapshot(doc(db,'settings','site-config'), snap=>{
     if(!snap.exists()) return;
     _settings = snap.data();
@@ -1276,11 +1217,12 @@ function initDashboard(){
 // STATS
 // ─────────────────────────────
 function updateStatsFromOrders(){
-  const total    = _allOrders.reduce((s,o)=>s+(o.totalPaid||0),0);
-  const pending  = _allOrders.filter(o=>o.orderStatus==='processing'||o.orderStatus==='shipped').length;
-  const thisMonth= _allOrders.filter(o=>{
+  const total   = _allOrders.reduce((s,o)=>s+(o.totalPaid||0),0);
+  const pending = _allOrders.filter(o=>o.orderStatus==='processing'||o.orderStatus==='shipped').length;
+  const now = new Date();
+  const thisMonth = _allOrders.filter(o=>{
     if(!o.createdAt?.toDate) return false;
-    const d=o.createdAt.toDate(); const now=new Date();
+    const d=o.createdAt.toDate();
     return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
   }).length;
   document.getElementById('stat-revenue').textContent = fmt(total);
@@ -1301,7 +1243,10 @@ function updateProductStat(){
 function renderOverviewOrders(){
   const tbody = document.getElementById('overview-orders-tbody');
   const recent = _allOrders.slice(0,8);
-  if(!recent.length){ tbody.innerHTML=`<tr><td colspan="8" class="empty-state" style="padding:30px;color:var(--muted)">No orders yet.</td></tr>`; return; }
+  if(!recent.length){
+    tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px">No orders yet.</td></tr>`;
+    return;
+  }
   tbody.innerHTML = recent.map(o=>`
     <tr>
       <td><code style="font-size:11px;color:var(--gold)">${escHtml(o.txRef||o.id)}</code></td>
@@ -1347,7 +1292,11 @@ window.renderOrders = function(){
   const start    = _orderPage * PAGE_SIZE;
   const page     = filtered.slice(start, start+PAGE_SIZE);
   const tbody    = document.getElementById('orders-tbody');
-  if(!page.length){ tbody.innerHTML=`<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:40px">No orders found.</td></tr>`; renderPagination(0,0); return; }
+  if(!page.length){
+    tbody.innerHTML=`<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:40px">No orders found.</td></tr>`;
+    renderPagination(0,0);
+    return;
+  }
   tbody.innerHTML = page.map(o=>`
     <tr>
       <td><code style="font-size:11px;color:var(--gold)">${escHtml(o.txRef||o.id)}</code></td>
@@ -1471,38 +1420,47 @@ window.exportOrdersCSV = function(){
 };
 
 // ─────────────────────────────
-// PRODUCTS
+// PRODUCTS TABLE
 // ─────────────────────────────
 window.renderProducts = function(){
-  const q    = (document.getElementById('prod-search')?.value||'').toLowerCase();
-  const cat  = document.getElementById('prod-cat-filter')?.value||'';
+  const q   = (document.getElementById('prod-search')?.value||'').toLowerCase();
+  const cat = document.getElementById('prod-cat-filter')?.value||'';
   const list = _allProducts.filter(p=>{
     const mq = !q || (p.name||'').toLowerCase().includes(q) || (p.category||'').toLowerCase().includes(q);
     const mc = !cat || p.category===cat;
     return mq && mc;
   }).sort((a,b)=>(a.sortOrder||a.order||99)-(b.sortOrder||b.order||99));
+
   const tbody = document.getElementById('products-tbody');
-  if(!list.length){ tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px">No products found.</td></tr>`; return; }
+  if(!list.length){
+    tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:40px">No products found.</td></tr>`;
+    return;
+  }
 
   tbody.innerHTML = list.map(p=>{
     const imgs  = p.images?.length ? p.images : (p.img ? [p.img] : []);
     const thumb = imgs[0] || '';
     const hasVP = Array.isArray(p.variantPrices) && p.variantPrices.length;
-    const hasCL = Array.isArray(p.colors) && p.colors.length;
     const baseP = hasVP ? p.variantPrices[0].price : (p.price||0);
+    const hasCL = Array.isArray(p.colors) && p.colors.length;
     const variantInfo = hasVP
       ? `<span style="color:var(--teal-bright);font-size:11px">${p.variantPrices.length} sizes</span>${hasCL?`<br><span style="font-size:10px;color:var(--muted2)">${p.colors.length} colors</span>`:''}`
-      : (Array.isArray(p.variants)&&p.variants.length ? `<span style="font-size:11px;color:var(--muted2)">${p.variants.length} options</span>` : `<span style="color:var(--muted);font-size:11px">—</span>`);
+      : `<span style="color:var(--muted);font-size:11px">—</span>`;
+    const cnyDisplay = p.costCNY ? `<span style="color:var(--teal-bright);font-size:12px">¥${Number(p.costCNY).toLocaleString()}</span>` : `<span style="color:var(--muted);font-size:11px">—</span>`;
+    const thumbHtml = thumb
+      ? `<div class="prod-thumb"><img src="${escHtml(thumb)}" alt="" onerror="this.parentElement.innerHTML='${escHtml(p.icon||'📦')}'"></div>`
+      : `<div class="prod-thumb" style="font-size:20px">${escHtml(p.icon||'📦')}</div>`;
     return `
     <tr>
       <td>
         <div class="prod-thumb-wrap">
-          <div class="prod-thumb">${thumb?`<img src="${escHtml(thumb)}" alt="" onerror="this.parentElement.textContent='${escHtml(p.icon||'📦')}'">`:escHtml(p.icon||'📦')}</div>
+          ${thumbHtml}
           <div><div class="prod-name">${escHtml(p.name||'')}</div><div class="prod-spec">${escHtml((p.spec||'').substring(0,50))}</div></div>
         </div>
       </td>
       <td><span class="badge badge-muted">${escHtml(p.category||'general')}</span></td>
-      <td><strong style="color:var(--gold-bright)">${fmt(baseP)}</strong>${hasVP?`<br><span style="font-size:10px;color:var(--muted)">from</span>`:''}${hasVP&&p.variantPrices.length>1?`<br><span style="font-size:10px;color:var(--muted2)">to ${fmt(p.variantPrices[p.variantPrices.length-1].price)}</span>`:''}</td>
+      <td><strong style="color:var(--gold-bright)">${fmt(baseP)}</strong>${hasVP&&p.variantPrices.length>1?`<br><span style="font-size:10px;color:var(--muted)">to ${fmt(p.variantPrices[p.variantPrices.length-1].price)}</span>`:''}</td>
+      <td>${cnyDisplay}</td>
       <td>${variantInfo}</td>
       <td>${p.badge?`<span class="badge badge-${p.badge==='hot'?'hot':p.badge==='new'?'new':'pick'}">${escHtml(p.badgeText||p.badge)}</span>`:'<span style="color:var(--muted)">—</span>'}</td>
       <td>${p.active===false?`<span class="badge badge-red">Hidden</span>`:`<span class="badge badge-teal">Active</span>`}</td>
@@ -1510,31 +1468,33 @@ window.renderProducts = function(){
       <td>
         <div style="display:flex;gap:6px">
           <button class="btn btn-outline btn-sm" onclick="editProduct('${escHtml(p.id)}')">✏️ Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${escHtml(p.id)}','${escHtml(p.name||'')}')">🗑️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${escHtml(p.id)}','${escHtml((p.name||'').replace(/'/g,"\\'"))}')">🗑️</button>
         </div>
       </td>
     </tr>`;
   }).join('');
 };
 
-// ── PRODUCT MODAL LOGIC ──
+// ─────────────────────────────
+// PRODUCT MODAL
+// ─────────────────────────────
 let _editingProductId = null;
-let _pmImages = []; // array of {src:string, isNew:bool}
+let _pmImages = []; // array of URL strings
 
-// Category change handler — auto-fill multiplier
+// Category change — auto-fill multiplier
 window.onPmCatChange = function(){
-  const cat = document.getElementById('pm-cat').value;
-  const mult = CAT_MULTIPLIERS[cat] || 1.78;
+  const cat  = document.getElementById('pm-cat').value;
+  const mult = CAT_MULTIPLIERS[cat] || 1.389;
   document.getElementById('pm-cat-multiplier').value = mult;
   updatePmSuggestedPrice();
 };
 
-// Live price preview in product modal
+// Live price preview
 window.updatePmSuggestedPrice = function(){
   const cny  = Number(document.getElementById('pm-cost-cny').value||0);
   const meth = document.getElementById('pm-source-method').value;
   const mult = Number(document.getElementById('pm-cat-multiplier').value||0);
-  const rate = Number(_settings.exchangeRate||220);
+  const rate = Number(_settings.exchangeRate||0);
   const hint = document.getElementById('pm-suggested-price-hint');
   const val  = document.getElementById('pm-suggested-price-val');
   if(!cny || !mult || !rate){ if(hint) hint.style.display='none'; return; }
@@ -1556,15 +1516,14 @@ window.openProductModal = function(id){
   document.getElementById('pm-badge').value='';
   document.getElementById('pm-active').checked=true;
   document.getElementById('pm-source-method').value='agent';
-  document.getElementById('pm-cat-multiplier').value = CAT_MULTIPLIERS['tech']||1.65;
+  document.getElementById('pm-cat-multiplier').value = CAT_MULTIPLIERS['tech']||1.333;
   document.getElementById('variant-prices-container').innerHTML='';
   document.getElementById('colors-container').innerHTML='';
-  document.getElementById('legacy-variants-container').innerHTML='';
-  document.getElementById('img-preview-grid').innerHTML='';
   document.getElementById('seo-char-counter').textContent='0 / 160';
   document.getElementById('seo-char-counter').className='char-counter';
   const hint = document.getElementById('pm-suggested-price-hint');
   if(hint) hint.style.display='none';
+  renderImgList();
 
   if(id){
     const p = _allProducts.find(x=>x.id===id);
@@ -1584,14 +1543,14 @@ window.openProductModal = function(id){
     document.getElementById('pm-seo-meta').value    = p.seoMeta||'';
     document.getElementById('pm-cost-cny').value    = p.costCNY||'';
     document.getElementById('pm-source-method').value = p.sourceMethod||'agent';
-    document.getElementById('pm-cat-multiplier').value = p.categoryMultiplier || CAT_MULTIPLIERS[p.category||'tech'] || 1.65;
+    document.getElementById('pm-cat-multiplier').value = p.categoryMultiplier || CAT_MULTIPLIERS[p.category||'tech'] || 1.333;
     updateSeoCounter(document.getElementById('pm-seo-meta'));
     updatePmSuggestedPrice();
 
     // Images
     const imgs = p.images?.length ? p.images : (p.img?[p.img]:[]);
-    _pmImages = imgs.map(s=>({src:s,isNew:false}));
-    renderImgPreviews();
+    _pmImages = imgs.filter(Boolean);
+    renderImgList();
 
     // variantPrices
     if(Array.isArray(p.variantPrices)){
@@ -1601,20 +1560,66 @@ window.openProductModal = function(id){
     if(Array.isArray(p.colors)){
       p.colors.forEach(c=>addColorRow(c));
     }
-    // legacy variants
-    if(Array.isArray(p.variants)){
-      p.variants.forEach(v=>addLegacyVariantRow(v));
-    }
   } else {
     document.getElementById('prod-modal-title').textContent='Add New Product';
     document.getElementById('pm-id').value='';
+    // Auto-fill multiplier for default category
+    document.getElementById('pm-cat-multiplier').value = CAT_MULTIPLIERS['tech']||1.333;
   }
   document.getElementById('product-modal').classList.add('open');
+  // Scroll modal to top
+  setTimeout(()=>{ const mb = document.querySelector('#product-modal .modal-box'); if(mb) mb.scrollTop=0; }, 50);
 };
-window.closeProductModal = function(){ document.getElementById('product-modal').classList.remove('open'); };
+window.closeProductModal = function(){
+  document.getElementById('product-modal').classList.remove('open');
+};
 window.editProduct = function(id){ openProductModal(id); };
 
-// Variant price rows — now with costCNY column
+// ── IMAGE MANAGER (URL-only, stable) ──
+function renderImgList(){
+  const container = document.getElementById('img-list-container');
+  const emptyMsg  = document.getElementById('img-empty-msg');
+  if(!_pmImages.length){
+    container.innerHTML = '<div class="img-empty" id="img-empty-msg">No images added yet. Paste a URL above.</div>';
+    return;
+  }
+  container.innerHTML = _pmImages.map((url,i)=>`
+    <div class="img-list-item${i===0?' primary-item':''}">
+      <img class="img-thumb-sm" src="${escHtml(url)}" alt="" onerror="this.style.background='var(--ink2)';this.style.opacity='.4'">
+      <div class="img-url-text" title="${escHtml(url)}">${escHtml(url)}</div>
+      ${i===0?'<span class="img-primary-badge">PRIMARY</span>':''}
+      ${i>0?`<button type="button" class="btn btn-outline btn-sm" style="padding:3px 8px;font-size:11px;" onclick="moveImgUp(${i})" title="Set as primary">↑</button>`:''}
+      <button type="button" class="btn btn-danger btn-sm" style="padding:3px 8px;font-size:11px;" onclick="removeImg(${i})">✕</button>
+    </div>`).join('');
+}
+
+window.addImageUrl = function(){
+  const inp = document.getElementById('pm-img-url');
+  const url = (inp?.value||'').trim();
+  if(!url){ toast('Please paste an image URL first', true); return; }
+  if(!url.startsWith('http')){ toast('URL must start with http:// or https://', true); return; }
+  if(_pmImages.length>=8){ toast('Maximum 8 images allowed', true); return; }
+  if(_pmImages.includes(url)){ toast('This URL is already added', true); return; }
+  _pmImages.push(url);
+  if(inp) inp.value='';
+  renderImgList();
+  toast('✅ Image added');
+};
+
+window.removeImg = function(i){
+  _pmImages.splice(i,1);
+  renderImgList();
+};
+
+window.moveImgUp = function(i){
+  if(i<=0) return;
+  const tmp = _pmImages[i-1];
+  _pmImages[i-1] = _pmImages[i];
+  _pmImages[i]   = tmp;
+  renderImgList();
+};
+
+// ── VARIANT PRICE ROWS ──
 window.addVariantPriceRow = function(label='', price='', costCNY=''){
   const c = document.getElementById('variant-prices-container');
   const d = document.createElement('div');
@@ -1626,7 +1631,8 @@ window.addVariantPriceRow = function(label='', price='', costCNY=''){
     <button type="button" class="btn btn-danger btn-icon btn-sm" onclick="this.parentElement.remove()">✕</button>`;
   c.appendChild(d);
 };
-// Color rows
+
+// ── COLOR ROWS ──
 window.addColorRow = function(val=''){
   const c = document.getElementById('colors-container');
   const d = document.createElement('div');
@@ -1636,163 +1642,74 @@ window.addColorRow = function(val=''){
     <button type="button" class="btn btn-danger btn-icon btn-sm" onclick="this.parentElement.remove()">✕</button>`;
   c.appendChild(d);
 };
-// Legacy variant rows
-window.addLegacyVariantRow = function(val=''){
-  const c = document.getElementById('legacy-variants-container');
-  const d = document.createElement('div');
-  d.className='variant-row';
-  d.innerHTML=`
-    <input type="text" class="form-input lv-val" placeholder="e.g. Black" value="${escHtml(String(val))}">
-    <button type="button" class="btn btn-danger btn-icon btn-sm" onclick="this.parentElement.remove()">✕</button>`;
-  c.appendChild(d);
-};
 
-// SEO counter
+// ── SEO COUNTER ──
 window.updateSeoCounter = function(el){
-  const n = (el.value||'').length;
+  const n   = (el.value||'').length;
   const cnt = document.getElementById('seo-char-counter');
   if(!cnt) return;
   cnt.textContent = `${n} / 160`;
-  cnt.className = 'char-counter' + (n>=160?' over':n>=140?' warn':'');
+  cnt.className   = 'char-counter' + (n>=160?' over':n>=140?' warn':'');
 };
 
-// Margin hint
-window.calcSuggestedMargin = function(){
-  const p = Number(document.getElementById('pm-price').value||0);
-  const el = document.getElementById('pm-margin-hint');
-  if(!el||!p) return;
-  el.textContent = `Listing: ${fmt(p)} · Est. margin ~18–25% depending on factory cost`;
-};
-
-// Image handling
-function renderImgPreviews(){
-  const grid = document.getElementById('img-preview-grid');
-  grid.innerHTML = _pmImages.map((img,i)=>`
-    <div class="img-preview-item${i===0?' primary-img':''}">
-      <img src="${escHtml(img.src)}" alt="" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\'><rect width=\'80\' height=\'80\' fill=\'%23161820\'/><text x=\'40\' y=\'44\' text-anchor=\'middle\' fill=\'%238C8898\' font-size=\'12\'>IMG</text></svg>'">
-      <button class="img-del" onclick="removeImg(${i})">✕</button>
-    </div>`).join('');
-  updateImgCountHint();
-}
-function updateImgCountHint(){
-  const hint = document.getElementById('img-count-hint');
-  if(!hint) return;
-  const count = _pmImages.length;
-  if(count === 0){ hint.style.display='none'; return; }
-  hint.style.display='block';
-  const maxMsg = count>=8 ? ' — <span style="color:#f87171">maximum reached</span>' : '';
-  hint.innerHTML = `<span style="color:var(--teal-bright);font-weight:700;">${count}/8</span> images added${maxMsg}. <span style="color:var(--muted2)">First image = primary catalog photo.</span>`;
-}
-window.removeImg = function(i){
-  _pmImages.splice(i,1);
-  renderImgPreviews();
-  updateImgCountHint();
-};
-window.addImageUrl = function(){
-  const url = document.getElementById('pm-img-url').value.trim();
-  if(!url){ toast('Please paste an image URL first', true); return; }
-  if(_pmImages.length>=8){ toast('Maximum 8 images reached — remove one first', true); return; }
-  // Block expiring Cloudinary share links
-  if(url.includes('collection.cloudinary.com')){
-    toast('⚠️ That link expires in 7 days! Copy the res.cloudinary.com URL instead.', true);
-    return;
-  }
-  // Warn if not a recognised image URL pattern (loose check)
-  if(!url.startsWith('http')){
-    toast('⚠️ URL must start with https://', true);
-    return;
-  }
-  _pmImages.push({src:url, isNew:false});
-  document.getElementById('pm-img-url').value='';
-  renderImgPreviews();
-  updateImgCountHint();
-  toast(`✅ Image ${_pmImages.length} added`);
-};
-window.handleImgDrop = function(e){
-  e.preventDefault();
-  toast('⚠️ Direct upload disabled. Use Cloudinary URL paste instead.', true);
-};
-window.handleImgSelect = function(files){
-  toast('⚠️ Direct upload disabled. Use Cloudinary URL paste instead.', true);
-};
-function toBase64(file){ return new Promise(res=>{ const r=new FileReader(); r.onload=e=>res(e.target.result); r.readAsDataURL(file); }); }
-
-// Save product
+// ── SAVE PRODUCT ──
 window.saveProduct = async function(){
   const name = document.getElementById('pm-name').value.trim();
-  if(!name){ toast('Product name is required',true); return; }
+  if(!name){ toast('Product name is required', true); return; }
 
-  // Collect variantPrices (now includes costCNY per tier)
+  // Collect variantPrices
   const variantPrices = [];
   document.querySelectorAll('#variant-prices-container .variant-row').forEach(row=>{
-    const label   = row.querySelector('.vp-label')?.value.trim();
-    const price   = Number(row.querySelector('.vp-price')?.value||0);
-    const vpCNY   = Number(row.querySelector('.vp-cny')?.value||0);
+    const label = row.querySelector('.vp-label')?.value.trim();
+    const price = Number(row.querySelector('.vp-price')?.value||0);
+    const vpCNY = Number(row.querySelector('.vp-cny')?.value||0);
     if(label && price){
-      const entry = {label,price};
+      const entry = {label, price};
       if(vpCNY) entry.costCNY = vpCNY;
       variantPrices.push(entry);
     }
   });
+
   // Collect colors
   const colors = [];
-  document.querySelectorAll('#colors-container .color-val').forEach(el=>{ const v=el.value.trim(); if(v) colors.push(v); });
-  // Collect legacy variants
-  const variants = [];
-  document.querySelectorAll('#legacy-variants-container .lv-val').forEach(el=>{ const v=el.value.trim(); if(v) variants.push(v); });
-
-  // Upload new images to Firebase Storage
-  const finalImages = [];
-  for(const img of _pmImages){
-    if(img.isNew && img.src.startsWith('data:')){
-      try {
-        const imgRef = stRef(storage, `products/${Date.now()}_${Math.random().toString(36).substr(2,6)}`);
-        await uploadString(imgRef, img.src, 'data_url');
-        const url = await getDownloadURL(imgRef);
-        finalImages.push(url);
-      } catch(e){ finalImages.push(img.src); }
-    } else {
-      finalImages.push(img.src);
-    }
-  }
+  document.querySelectorAll('#colors-container .color-val').forEach(el=>{
+    const v=el.value.trim(); if(v) colors.push(v);
+  });
 
   const basePrice = Number(document.getElementById('pm-price').value||0) ||
                     (variantPrices.length ? variantPrices[0].price : 0);
-
   const costCNY  = Number(document.getElementById('pm-cost-cny').value||0) || undefined;
   const catMult  = Number(document.getElementById('pm-cat-multiplier').value||0) || undefined;
   const srcMeth  = document.getElementById('pm-source-method').value || 'agent';
 
   const data = {
     name,
-    category: (document.getElementById('pm-cat').value||'general').toLowerCase().trim(),
-    spec:     document.getElementById('pm-spec').value.trim(),
-    icon:     document.getElementById('pm-icon').value.trim()||'📦',
-    price:    basePrice,
-    sortOrder: Number(document.getElementById('pm-sort').value||99),
-    badge:    document.getElementById('pm-badge').value,
-    badgeText:document.getElementById('pm-badge-text').value.trim(),
-    active:   document.getElementById('pm-active').checked,
-    description: document.getElementById('pm-description').value.trim(),
-    seoMeta:  document.getElementById('pm-seo-meta').value.trim(),
+    category:     (document.getElementById('pm-cat').value||'general').toLowerCase().trim(),
+    spec:         document.getElementById('pm-spec').value.trim(),
+    icon:         document.getElementById('pm-icon').value.trim()||'📦',
+    price:        basePrice,
+    sortOrder:    Number(document.getElementById('pm-sort').value||99),
+    badge:        document.getElementById('pm-badge').value,
+    badgeText:    document.getElementById('pm-badge-text').value.trim(),
+    active:       document.getElementById('pm-active').checked,
+    description:  document.getElementById('pm-description').value.trim(),
+    seoMeta:      document.getElementById('pm-seo-meta').value.trim(),
     sourceMethod: srcMeth,
     variantPrices,
     colors,
-    variants,
-    images:   finalImages,
-    img:      finalImages[0]||'',
-    updatedAt: serverTimestamp()
+    images:       _pmImages,
+    img:          _pmImages[0]||'',
+    updatedAt:    serverTimestamp()
   };
 
-  // Only set costCNY / categoryMultiplier if provided (don't overwrite with undefined)
-  if(costCNY) data.costCNY = costCNY;
-  if(catMult) data.categoryMultiplier = catMult;
+  if(costCNY)  data.costCNY = costCNY;
+  if(catMult)  data.categoryMultiplier = catMult;
 
   try {
     const existingId = document.getElementById('pm-id').value || _editingProductId;
     if(existingId){
       await updateDoc(doc(db,'products',existingId), data);
-      toast('✅ Product updated');
+      toast('✅ Product updated successfully');
     } else {
       data.createdAt = serverTimestamp();
       await addDoc(collection(db,'products'), data);
@@ -1802,7 +1719,7 @@ window.saveProduct = async function(){
   } catch(e){ toast('Error: '+e.message, true); }
 };
 
-// Delete product
+// ── DELETE PRODUCT ──
 window.deleteProduct = async function(id, name){
   if(!confirm(`Delete "${name}"? This cannot be undone.`)) return;
   try {
@@ -1816,7 +1733,7 @@ window.deleteProduct = async function(id, name){
 // ─────────────────────────────
 const CAT_META = {
   tech:    {label:'Tech & Gadgets',icon:'📱'},
-  fashion: {label:'Fashion',icon:'👜'},
+  fashion: {label:'Fashion',icon:'👗'},
   shoes:   {label:'Shoes',icon:'👟'},
   bags:    {label:'Bags',icon:'👜'},
   watches: {label:'Watches',icon:'⌚'},
@@ -1840,7 +1757,10 @@ function renderCategories(){
     if(p.active!==false) used[cat].active++;
   });
   const cats = Object.keys(used);
-  if(!cats.length){ grid.innerHTML=`<div class="empty-state"><span class="empty-icon">🗂️</span><p>No categories yet. Add products to see categories.</p></div>`; return; }
+  if(!cats.length){
+    grid.innerHTML=`<div class="empty-state"><span class="empty-icon">🗂️</span><p>No categories yet. Add products to see categories.</p></div>`;
+    return;
+  }
   grid.innerHTML = cats.map(key=>{
     const m = CAT_META[key]||{label:key,icon:'🏷️'};
     const s = used[key];
@@ -1863,26 +1783,25 @@ function renderCategories(){
 // ─────────────────────────────
 function updateCalcStoredRateDisplay(){
   const rate = _settings.exchangeRate;
-  if(!rate) return;
-  const el = document.getElementById('calc-stored-rate-display');
-  if(el) el.textContent = `₦${Number(rate).toLocaleString('en-NG')} / ¥1`;
+  const el   = document.getElementById('calc-stored-rate-display');
+  if(el) el.textContent = rate ? `₦${Number(rate).toLocaleString('en-NG')} / ¥1` : '₦— / ¥1';
 }
 
 window.syncCalcRateFromSettings = function(){
   const rate = _settings.exchangeRate;
-  if(!rate){ toast('No exchange rate stored yet. Save one in Settings.', true); return; }
+  if(!rate){ toast('No exchange rate stored yet. Save one in Settings first.', true); return; }
   const inp = document.getElementById('calc-rate');
   if(inp){ inp.value = rate; }
   runCalc();
-  toast('✅ Rate synced from settings: ₦'+Number(rate).toLocaleString('en-NG'));
+  toast(`✅ Rate synced: ₦${Number(rate).toLocaleString('en-NG')}`);
 };
 
 window.runCalc = function(){
   const cny    = Number(document.getElementById('calc-cny').value||0);
-  const rate   = Number(document.getElementById('calc-rate').value||220);
+  const rate   = Number(document.getElementById('calc-rate').value||0);
   const source = document.getElementById('calc-source').value;
-  const mult   = Number(document.getElementById('calc-cat').value||1.65);
-  if(!cny){ document.getElementById('calc-result').style.display='none'; return; }
+  const mult   = Number(document.getElementById('calc-cat').value||1.333);
+  if(!cny || !rate){ document.getElementById('calc-result').style.display='none'; return; }
 
   const step1 = cny * rate;
   const step2 = step1 * 1.15;
@@ -1904,24 +1823,25 @@ window.runCalc = function(){
   document.getElementById('calc-result').style.display='block';
   document.getElementById('calc-result')._price = final;
 };
+
 window.useCalcPrice = function(){
   const price = document.getElementById('calc-result')._price;
   if(!price) return;
   navTo('products');
   openProductModal();
-  setTimeout(()=>{ document.getElementById('pm-price').value=price; },100);
+  setTimeout(()=>{ document.getElementById('pm-price').value=price; }, 100);
 };
 
 // ─────────────────────────────
 // BULK REPRICE ENGINE
 // ─────────────────────────────
-let _repriceRows = []; // computed rows for preview
+let _repriceRows = [];
 
 function renderRepricePanelRate(){
-  const rate    = _settings.exchangeRate;
-  const updAt   = _settings.exchangeRateUpdatedAt;
-  const rateEl  = document.getElementById('reprice-current-rate');
-  const updEl   = document.getElementById('reprice-rate-updated');
+  const rate   = _settings.exchangeRate;
+  const updAt  = _settings.exchangeRateUpdatedAt;
+  const rateEl = document.getElementById('reprice-current-rate');
+  const updEl  = document.getElementById('reprice-rate-updated');
   if(rateEl) rateEl.textContent = rate ? `₦${Number(rate).toLocaleString('en-NG')}` : '₦—';
   if(updEl){
     if(updAt?.toDate){
@@ -1942,70 +1862,52 @@ window.previewReprice = function(){
   if(!newRate || newRate < 1){ toast('Please enter a valid new exchange rate', true); return; }
 
   _repriceRows = [];
-  const hasCostProducts  = [];
-  const missingCostProducts = [];
+  const hasCostRows     = [];
+  const missingCostProds= [];
 
   _allProducts.forEach(p=>{
     const hasVP = Array.isArray(p.variantPrices) && p.variantPrices.length;
 
     if(hasVP){
-      // Check if any variant tier has costCNY
-      let anyVarHasCost = false;
+      let anyHasCost = false;
       p.variantPrices.forEach((vp,idx)=>{
-        const vpCNY = vp.costCNY || p.costCNY; // fallback to product-level cost
+        const vpCNY = vp.costCNY || p.costCNY;
         if(vpCNY){
-          anyVarHasCost = true;
-          const mult    = p.categoryMultiplier || CAT_MULTIPLIERS[p.category||'general'] || 1.78;
+          anyHasCost = true;
+          const mult    = p.categoryMultiplier || CAT_MULTIPLIERS[p.category||'general'] || 1.389;
           const srcMeth = p.sourceMethod || 'agent';
           const oldPrice= vp.price||0;
           const newPrice= calcListingPrice(vpCNY, newRate, srcMeth, mult);
           const diff    = newPrice - oldPrice;
           const pct     = oldPrice ? ((diff/oldPrice)*100).toFixed(1) : '—';
-          hasCostProducts.push({
-            productId: p.id,
-            name:      p.name||'',
-            category:  p.category||'',
-            variantIdx: idx,
-            variantLabel: vp.label||`Tier ${idx+1}`,
-            oldPrice, newPrice, diff, pct,
-            isVariant: true,
-            hasCost: true
-          });
+          hasCostRows.push({ productId:p.id, name:p.name||'', category:p.category||'',
+            variantIdx:idx, variantLabel:vp.label||`Tier ${idx+1}`,
+            oldPrice, newPrice, diff, pct, isVariant:true });
         }
       });
-      if(!anyVarHasCost && !p.costCNY){
-        missingCostProducts.push(p);
-      }
+      if(!anyHasCost) missingCostProds.push(p);
     } else {
       if(p.costCNY){
-        const mult    = p.categoryMultiplier || CAT_MULTIPLIERS[p.category||'general'] || 1.78;
+        const mult    = p.categoryMultiplier || CAT_MULTIPLIERS[p.category||'general'] || 1.389;
         const srcMeth = p.sourceMethod || 'agent';
         const oldPrice= p.price||0;
         const newPrice= calcListingPrice(p.costCNY, newRate, srcMeth, mult);
         const diff    = newPrice - oldPrice;
         const pct     = oldPrice ? ((diff/oldPrice)*100).toFixed(1) : '—';
-        hasCostProducts.push({
-          productId: p.id,
-          name:      p.name||'',
-          category:  p.category||'',
-          variantIdx: null,
-          variantLabel: null,
-          oldPrice, newPrice, diff, pct,
-          isVariant: false,
-          hasCost: true
-        });
+        hasCostRows.push({ productId:p.id, name:p.name||'', category:p.category||'',
+          variantIdx:null, variantLabel:null,
+          oldPrice, newPrice, diff, pct, isVariant:false });
       } else {
-        missingCostProducts.push(p);
+        missingCostProds.push(p);
       }
     }
   });
 
-  _repriceRows = hasCostProducts;
+  _repriceRows = hasCostRows;
 
-  // Render preview table
   const tbody = document.getElementById('reprice-preview-tbody');
   if(!_repriceRows.length){
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px">No products with Factory Cost (CNY) data found. Add costCNY to products to use this feature.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px">No products with Factory Cost (CNY) data found. Edit products to add costCNY.</td></tr>`;
   } else {
     tbody.innerHTML = _repriceRows.map((r,i)=>{
       const upDown = r.diff > 0 ? 'price-up' : r.diff < 0 ? 'price-down' : '';
@@ -2024,35 +1926,30 @@ window.previewReprice = function(){
     }).join('');
   }
 
-  // Missing section
+  // Missing cost section
   const missSection = document.getElementById('reprice-missing-section');
   const missList    = document.getElementById('reprice-missing-list');
-  if(missingCostProducts.length){
+  if(missingCostProds.length){
     missSection.style.display='block';
-    missList.innerHTML = missingCostProducts.map(p=>`
+    missList.innerHTML = missingCostProds.map(p=>`
       <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:8px;padding:10px 14px;">
         <div>
           <strong style="font-size:13px;">${escHtml(p.name||'')}</strong>
           <span class="badge badge-muted" style="font-size:10px;margin-left:8px;">${escHtml(p.category||'')}</span>
         </div>
-        <button class="btn btn-outline btn-sm" onclick="editProduct('${escHtml(p.id)}');document.getElementById('product-modal').scrollTop=300">✏️ Add Cost</button>
+        <button class="btn btn-outline btn-sm" onclick="editProduct('${escHtml(p.id)}')">✏️ Add Cost</button>
       </div>`).join('');
   } else {
     missSection.style.display='none';
   }
 
-  // Summary
   document.getElementById('reprice-preview-summary-top').textContent =
-    `Previewing rate change to ₦${Number(newRate).toLocaleString('en-NG')}/¥1. ${_repriceRows.length} rows found with cost data.`;
-
-  // Show the will-skip in summary
-  document.getElementById('reprice-will-skip').textContent = missingCostProducts.length;
+    `Previewing rate change to ₦${Number(newRate).toLocaleString('en-NG')}/¥1. ${_repriceRows.length} rows with cost data.`;
+  document.getElementById('reprice-will-skip').textContent   = missingCostProds.length;
   document.getElementById('reprice-will-update').textContent = _repriceRows.length;
-
   document.getElementById('reprice-preview-wrap').style.display='block';
   document.getElementById('reprice-progress').style.display='none';
 
-  // Sync check-all state
   const allCheck = document.getElementById('reprice-check-all');
   if(allCheck) allCheck.checked = true;
 };
@@ -2063,8 +1960,8 @@ window.toggleAllRepriceChecks = function(checked){
 };
 
 window.updateRepriceSummary = function(){
-  const checkedCount = document.querySelectorAll('.reprice-row-check:checked').length;
-  document.getElementById('reprice-will-update').textContent = checkedCount;
+  const count = document.querySelectorAll('.reprice-row-check:checked').length;
+  document.getElementById('reprice-will-update').textContent = count;
 };
 
 window.applyReprice = async function(){
@@ -2074,43 +1971,35 @@ window.applyReprice = async function(){
   const checkedBoxes = Array.from(document.querySelectorAll('.reprice-row-check:checked'));
   if(!checkedBoxes.length){ toast('No products selected to update', true); return; }
 
-  const progressWrap  = document.getElementById('reprice-progress');
-  const progressBar   = document.getElementById('reprice-progress-bar');
-  const progressLabel = document.getElementById('reprice-progress-label');
-  const progressDetail= document.getElementById('reprice-progress-detail');
+  const progressWrap   = document.getElementById('reprice-progress');
+  const progressBar    = document.getElementById('reprice-progress-bar');
+  const progressLabel  = document.getElementById('reprice-progress-label');
+  const progressDetail = document.getElementById('reprice-progress-detail');
 
   progressWrap.style.display='block';
   progressBar.style.width='0%';
-  progressLabel.textContent = 'Preparing batch update…';
+  progressLabel.textContent  = 'Preparing batch update…';
   progressDetail.textContent = `0 / ${checkedBoxes.length} products`;
 
   try {
-    // 1. Save new exchange rate to settings
+    // 1. Save new exchange rate
     progressLabel.textContent = 'Saving new exchange rate…';
     await setDoc(doc(db,'settings','site-config'), {
       exchangeRate: newRate,
       exchangeRateUpdatedAt: serverTimestamp()
     }, {merge:true});
+    progressBar.style.width = '10%';
 
-    progressBar.style.width='10%';
-
-    // 2. Group checked rows by productId to build update payloads
-    const productUpdates = {}; // productId => {price?, variantPrices?[]}
-
+    // 2. Build per-product update payloads
+    const productUpdates = {};
     checkedBoxes.forEach(cb=>{
       const idx = Number(cb.dataset.idx);
       const row = _repriceRows[idx];
       if(!row) return;
-
       if(!productUpdates[row.productId]){
         const p = _allProducts.find(x=>x.id===row.productId);
-        productUpdates[row.productId] = {
-          product: p,
-          newBasePrice: null,
-          variantUpdates: {} // idx -> newPrice
-        };
+        productUpdates[row.productId] = { product:p, newBasePrice:null, variantUpdates:{} };
       }
-
       if(row.isVariant){
         productUpdates[row.productId].variantUpdates[row.variantIdx] = row.newPrice;
       } else {
@@ -2119,27 +2008,23 @@ window.applyReprice = async function(){
     });
 
     const productIds = Object.keys(productUpdates);
-    const total = productIds.length;
-
-    // 3. Batch write — Firebase max 500 ops per batch
-    const BATCH_LIMIT = 490;
-    let batchCount = 0;
+    const total      = productIds.length;
+    const BATCH_LIMIT= 490;
+    let batchCount   = 0;
     let currentBatch = writeBatch(db);
-    let processed = 0;
+    let processed    = 0;
 
     for(const productId of productIds){
-      const upd  = productUpdates[productId];
-      const p    = upd.product;
+      const upd = productUpdates[productId];
+      const p   = upd.product;
       if(!p) continue;
 
       const payload = { updatedAt: serverTimestamp() };
 
-      // Update base price if applicable
       if(upd.newBasePrice !== null){
         payload.price = upd.newBasePrice;
       }
 
-      // Update variantPrices if applicable
       if(Object.keys(upd.variantUpdates).length > 0 && Array.isArray(p.variantPrices)){
         const updatedVPs = p.variantPrices.map((vp, idx)=>{
           if(upd.variantUpdates[idx] !== undefined){
@@ -2148,7 +2033,6 @@ window.applyReprice = async function(){
           return vp;
         });
         payload.variantPrices = updatedVPs;
-        // Also update base price to first variant price for consistency
         if(updatedVPs.length > 0 && upd.newBasePrice === null){
           payload.price = updatedVPs[0].price;
         }
@@ -2162,26 +2046,23 @@ window.applyReprice = async function(){
         progressLabel.textContent = 'Writing to Firestore…';
         await currentBatch.commit();
         currentBatch = writeBatch(db);
-        batchCount = 0;
+        batchCount   = 0;
       }
 
       const pct = Math.round(10 + (processed/total)*85);
-      progressBar.style.width = pct + '%';
+      progressBar.style.width  = pct + '%';
       progressDetail.textContent = `${processed} / ${total} products…`;
     }
 
-    // Commit remaining
     if(batchCount > 0){
       await currentBatch.commit();
     }
 
-    progressBar.style.width = '100%';
+    progressBar.style.width   = '100%';
     progressLabel.textContent = '✅ All prices updated successfully!';
-    progressDetail.textContent = `${processed} products updated. Storefront prices are now live.`;
-
+    progressDetail.textContent= `${processed} products updated. Storefront prices are now live.`;
     toast(`✅ ${processed} products updated at ₦${Number(newRate).toLocaleString('en-NG')}/¥1`);
 
-    // Clear preview after success
     setTimeout(()=>{
       document.getElementById('reprice-preview-wrap').style.display='none';
       document.getElementById('reprice-new-rate').value='';
@@ -2189,7 +2070,7 @@ window.applyReprice = async function(){
     }, 4000);
 
   } catch(e){
-    progressLabel.textContent = '❌ Error during update';
+    progressLabel.textContent  = '❌ Error during update';
     progressDetail.textContent = e.message;
     toast('Batch update error: '+e.message, true);
   }
@@ -2199,8 +2080,6 @@ window.applyReprice = async function(){
 // REFERRALS
 // ─────────────────────────────
 function renderReferrals(){
-  // Tier summary
-  const tierCounts = {};
   const TIER_THRESHOLDS = {bronze:1,silver:3,gold:5,platinum:10};
   const referrerMap = {};
   _allOrders.filter(o=>o.referralCode).forEach(o=>{
@@ -2220,15 +2099,17 @@ function renderReferrals(){
       </div>`;
     }).join('');
   }
-  // Table
   const tbody = document.getElementById('ref-tbody');
   if(!tbody) return;
   const refOrders = _allOrders.filter(o=>o.referralCode);
-  if(!refOrders.length){ tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">No referral orders yet.</td></tr>`; return; }
+  if(!refOrders.length){
+    tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">No referral orders yet.</td></tr>`;
+    return;
+  }
   tbody.innerHTML = refOrders.map(o=>{
-    const code = o.referralCode||'';
+    const code     = o.referralCode||'';
     const refCount = (referrerMap[code.toLowerCase().trim()]||[]).length;
-    const tier = refCount>=10?'💎 Platinum':refCount>=5?'🥇 Gold':refCount>=3?'🥈 Silver':'🥉 Bronze';
+    const tier     = refCount>=10?'💎 Platinum':refCount>=5?'🥇 Gold':refCount>=3?'🥈 Silver':'🥉 Bronze';
     return `<tr>
       <td><strong style="color:var(--gold-bright)">${escHtml(code)}</strong></td>
       <td><code style="font-size:11px;color:var(--muted2)">${escHtml(o.txRef||o.id)}</code></td>
@@ -2293,14 +2174,12 @@ window.saveSetting = async function(key, value){
 };
 
 window.saveUrgency = async function(){
-  const total   = Number(document.getElementById('s-slots-total').value||15);
-  const rem     = Number(document.getElementById('s-slots-rem').value||7);
-  const dlStr   = document.getElementById('s-deadline').value;
-  const payload = { urgencySlots:{total,remaining:rem} };
-  if(dlStr){
-    const { Timestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    payload.countdownDeadline = Timestamp.fromDate(new Date(dlStr));
-  }
+  const total  = Number(document.getElementById('s-slots-total').value||15);
+  const rem    = Number(document.getElementById('s-slots-rem').value||7);
+  const dlStr  = document.getElementById('s-deadline').value;
+  const { Timestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+  const payload= { urgencySlots:{total,remaining:rem} };
+  if(dlStr) payload.countdownDeadline = Timestamp.fromDate(new Date(dlStr));
   try {
     await setDoc(doc(db,'settings','site-config'), payload, {merge:true});
     toast('✅ Urgency settings saved');
@@ -2322,8 +2201,8 @@ window.saveDeliveryFees = async function(){
 
 window.saveSiteControls = async function(){
   const payload = {
-    whatsappNumber:  document.getElementById('s-wa').value.trim(),
-    currentRound:    document.getElementById('s-round').value.trim(),
+    whatsappNumber: document.getElementById('s-wa').value.trim(),
+    currentRound:   document.getElementById('s-round').value.trim(),
   };
   try {
     await setDoc(doc(db,'settings','site-config'), payload, {merge:true});
@@ -2344,7 +2223,6 @@ function formatDate(ts){
   const d = ts.toDate();
   return d.toLocaleDateString('en-NG',{day:'2-digit',month:'short',year:'numeric'});
 }
-
 </script>
 </body>
 </html>
