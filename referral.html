@@ -27,15 +27,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-// Live referrer count
-onSnapshot(query(collection(db, 'referralApplications'), where('status','==','approved')), snap => {
-  const el = document.getElementById('liveReferrerCount');
-  if (el) el.textContent = snap.size;
-});
+// Live referrer count — real-time via onSnapshot
+onSnapshot(
+  query(collection(db, 'referralApplications'), where('status','==','approved')),
+  snap => {
+    const el = document.getElementById('liveReferrerCount');
+    if (el) el.textContent = snap.size;
+  }
+);
 
 // Form submission
 window.submitApplication = async function() {
-  const btn = document.getElementById('submitBtn');
+  const btn   = document.getElementById('submitBtn');
   const errEl = document.getElementById('formError');
   errEl.textContent = '';
 
@@ -47,27 +50,29 @@ window.submitApplication = async function() {
   const heardFrom     = document.getElementById('fHeard').value;
 
   // Validation
-  if (!fullName)       { errEl.textContent = 'Please enter your full name.'; return; }
-  if (!whatsapp)       { errEl.textContent = 'Please enter your WhatsApp number.'; return; }
+  if (!fullName)      { errEl.textContent = 'Please enter your full name.'; return; }
+  if (!whatsapp)      { errEl.textContent = 'Please enter your WhatsApp number.'; return; }
   if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email address.'; return; }
-  if (!state)          { errEl.textContent = 'Please select your state.'; return; }
+  if (!state)         { errEl.textContent = 'Please select your state.'; return; }
   if (promotionPlan.length < 30) { errEl.textContent = 'Please describe your promotion plan in at least 30 characters.'; return; }
-  if (!heardFrom)      { errEl.textContent = 'Please tell us how you heard about us.'; return; }
+  if (!heardFrom)     { errEl.textContent = 'Please tell us how you heard about us.'; return; }
 
-  btn.disabled = true;
+  btn.disabled    = true;
   btn.textContent = 'Checking…';
 
-  // Clean WhatsApp number
+  // Clean WhatsApp number to international format
   let cleanWA = whatsapp.replace(/\D/g, '');
-  if (cleanWA.startsWith('0')) cleanWA = '234' + cleanWA.slice(1);
-  if (cleanWA.startsWith('+')) cleanWA = cleanWA.slice(1);
+  if (cleanWA.startsWith('0'))  cleanWA = '234' + cleanWA.slice(1);
+  if (cleanWA.startsWith('+'))  cleanWA = cleanWA.slice(1);
 
   try {
-    // Duplicate check
-    const dupeQ = await getDocs(query(collection(db, 'referralApplications'), where('whatsapp','==',cleanWA)));
+    // Duplicate check — query by cleaned WhatsApp number
+    const dupeQ = await getDocs(
+      query(collection(db, 'referralApplications'), where('whatsapp','==',cleanWA))
+    );
     if (!dupeQ.empty) {
       errEl.textContent = 'An application already exists for this WhatsApp number. If you have not heard back within 48 hours, please contact us directly.';
-      btn.disabled = false;
+      btn.disabled    = false;
       btn.textContent = 'Submit Application →';
       return;
     }
@@ -89,15 +94,15 @@ window.submitApplication = async function() {
       totalOrders:    0
     });
 
-    // Show success
+    // Show animated success state
     document.getElementById('applicationForm').style.display = 'none';
     document.getElementById('successState').style.display    = 'flex';
     window.scrollTo({ top: document.getElementById('apply').offsetTop - 80, behavior: 'smooth' });
 
   } catch(e) {
-    errEl.textContent = 'Something went wrong: ' + e.message;
-    btn.disabled = false;
-    btn.textContent = 'Submit Application →';
+    errEl.textContent   = 'Something went wrong: ' + e.message;
+    btn.disabled        = false;
+    btn.textContent     = 'Submit Application →';
   }
 };
 </script>
@@ -115,6 +120,8 @@ html{scroll-behavior:smooth;font-size:16px}
   --teal:#0B6E5C;--teal-mid:#0D8A72;--teal-bright:#12B896;
   --red:#DC2626;--white:#F0EDE7;--muted:#5C5968;--muted2:#8C8898;
   --r:10px;--r2:16px;--r3:24px;--r4:32px;
+  --sh-gold:0 0 0 1px rgba(200,137,26,.15),0 8px 32px rgba(0,0,0,.4);
+  --sh-teal:0 8px 32px rgba(18,184,150,.25);
 }
 body{background:var(--ink);color:var(--white);font-family:'Plus Jakarta Sans',sans-serif;overflow-x:hidden;line-height:1.6;}
 body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.5;}
@@ -124,40 +131,45 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 nav.topnav{position:sticky;top:0;z-index:400;background:rgba(8,9,12,.95);backdrop-filter:blur(40px) saturate(200%);border-bottom:1px solid rgba(200,137,26,.12);}
 .nav-inner{max-width:1200px;margin:0 auto;padding:0 32px;height:72px;display:flex;align-items:center;justify-content:space-between;}
 .nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
-.nav-logo-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--gold-deep),var(--gold-mid),var(--gold-bright));border-radius:12px;display:grid;place-items:center;font-family:'Bebas Neue';font-size:1rem;color:var(--ink);letter-spacing:.04em;flex-shrink:0;box-shadow:0 4px 20px rgba(200,137,26,.4);}
-.nav-logo-text .name{font-family:'Playfair Display';font-size:1.1rem;font-weight:900;color:var(--white);}
+.nav-logo-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--gold-deep),var(--gold-mid),var(--gold-bright));border-radius:12px;display:grid;place-items:center;font-family:'Bebas Neue';font-size:1rem;color:var(--ink);letter-spacing:.04em;flex-shrink:0;box-shadow:0 4px 20px rgba(200,137,26,.4);position:relative;overflow:hidden;}
+.nav-logo-icon::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.25),transparent);}
+.nav-logo-text .name{font-family:'Playfair Display';font-size:1.1rem;font-weight:900;color:var(--white);line-height:1;}
 .nav-logo-text .name em{color:var(--gold-bright);font-style:italic}
-.nav-logo-text .tag{font-size:.52rem;color:var(--muted2);letter-spacing:.18em;text-transform:uppercase;display:block;}
+.nav-logo-text .tag{font-size:.52rem;color:var(--muted2);letter-spacing:.18em;text-transform:uppercase;display:block;margin-top:3px;}
 .nav-back{display:flex;align-items:center;gap:8px;color:var(--muted2);text-decoration:none;font-size:.82rem;font-weight:600;padding:10px 20px;border:1px solid rgba(255,255,255,.1);border-radius:10px;transition:.25s;}
 .nav-back:hover{color:var(--white);border-color:rgba(200,137,26,.3);background:rgba(200,137,26,.06);}
 @media(max-width:500px){.nav-logo-text .tag{display:none}.nav-inner{padding:0 16px}}
 
 /* ── HERO ── */
-#hero{min-height:90vh;display:grid;place-items:center;position:relative;overflow:hidden;padding:100px 24px 80px;background:var(--ink2);}
+#hero{min-height:92vh;display:grid;place-items:center;position:relative;overflow:hidden;padding:100px 24px 80px;background:var(--ink2);}
 .hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(200,137,26,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,137,26,.03) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 90% 85% at 50% 40%,black,transparent);}
 .hero-orb1{position:absolute;top:-20%;left:-15%;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(200,137,26,.07) 0%,transparent 65%);pointer-events:none;}
 .hero-orb2{position:absolute;bottom:-20%;right:-10%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(18,184,150,.06) 0%,transparent 65%);pointer-events:none;}
+.hero-orb3{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(200,137,26,.03) 0%,transparent 65%);pointer-events:none;}
 .hero-wave{position:absolute;bottom:-1px;left:0;right:0;height:120px;overflow:hidden;}
 .hero-wave svg{width:100%;height:100%;display:block}
 .hero-content{position:relative;z-index:2;text-align:center;max-width:900px;}
 .hero-pill{display:inline-flex;align-items:center;gap:10px;background:rgba(18,184,150,.08);border:1px solid rgba(18,184,150,.2);border-radius:100px;padding:8px 22px;font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-bright);margin-bottom:28px;animation:fadeUp .8s both;}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--teal-bright);flex-shrink:0;animation:livePulse 2s infinite;}
 @keyframes livePulse{0%,100%{box-shadow:0 0 0 0 rgba(18,184,150,.5)}50%{box-shadow:0 0 0 8px rgba(18,184,150,0)}}
-.hero-h1{font-family:'Playfair Display';font-size:clamp(2.8rem,7vw,5.5rem);font-weight:900;line-height:1.04;margin-bottom:12px;letter-spacing:-.02em;animation:fadeUp .8s .1s both;}
+.hero-h1{font-family:'Playfair Display';font-size:clamp(2.8rem,7vw,5.8rem);font-weight:900;line-height:1.04;margin-bottom:12px;letter-spacing:-.02em;animation:fadeUp .8s .1s both;}
 .hero-h1 .gold{background:linear-gradient(135deg,var(--gold) 0%,var(--gold-bright) 50%,var(--gold-pale) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.hero-sub{font-family:'Playfair Display';font-style:italic;font-size:clamp(1rem,2.5vw,1.5rem);font-weight:400;color:rgba(240,237,231,.35);margin-bottom:24px;animation:fadeUp .8s .16s both;line-height:1.5;}
-.hero-p{font-size:clamp(.88rem,1.6vw,1.02rem);color:rgba(240,237,231,.5);line-height:1.9;max-width:620px;margin:0 auto 44px;animation:fadeUp .8s .22s both;}
+.hero-sub{font-family:'Playfair Display';font-style:italic;font-size:clamp(1rem,2.5vw,1.6rem);font-weight:400;color:rgba(240,237,231,.35);margin-bottom:24px;animation:fadeUp .8s .16s both;line-height:1.5;}
+.hero-p{font-size:clamp(.88rem,1.6vw,1.02rem);color:rgba(240,237,231,.5);line-height:1.9;max-width:640px;margin:0 auto 44px;animation:fadeUp .8s .22s both;}
 .hero-p strong{color:var(--gold-bright)}
 .hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .8s .3s both;}
-.btn-primary{display:inline-flex;align-items:center;gap:9px;background:linear-gradient(135deg,var(--teal),var(--teal-mid),var(--teal-bright));color:#fff;font-weight:800;font-size:.96rem;padding:16px 36px;border-radius:13px;text-decoration:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans';transition:.3s;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(13,138,114,.3);}
+.btn-primary{display:inline-flex;align-items:center;gap:9px;background:linear-gradient(135deg,var(--teal),var(--teal-mid),var(--teal-bright));color:#fff;font-weight:800;font-size:.96rem;padding:17px 36px;border-radius:13px;text-decoration:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans';letter-spacing:.01em;transition:.3s;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(13,138,114,.3);}
 .btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(255,255,255,.2),transparent);transform:translateX(-100%);transition:.6s;}
 .btn-primary:hover::after{transform:translateX(100%)}
 .btn-primary:hover{transform:translateY(-3px);box-shadow:0 20px 50px rgba(18,184,150,.4)}
-.btn-secondary{display:inline-flex;align-items:center;gap:9px;border:1.5px solid rgba(200,137,26,.35);color:var(--gold-bright);font-weight:600;font-size:.9rem;padding:15px 30px;border-radius:13px;text-decoration:none;transition:.3s;background:rgba(200,137,26,.06);cursor:pointer;font-family:'Plus Jakarta Sans';}
+.btn-secondary{display:inline-flex;align-items:center;gap:9px;border:1.5px solid rgba(200,137,26,.35);color:var(--gold-bright);font-weight:600;font-size:.9rem;padding:16px 30px;border-radius:13px;text-decoration:none;transition:.3s;background:rgba(200,137,26,.06);cursor:pointer;font-family:'Plus Jakarta Sans';}
 .btn-secondary:hover{background:rgba(200,137,26,.12);border-color:var(--gold);transform:translateY(-2px)}
-.hero-social{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:44px;animation:fadeUp .8s .44s both;}
-.hero-social p{font-size:.8rem;color:var(--muted2);}
-.referrer-count-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(200,137,26,.08);border:1px solid rgba(200,137,26,.2);border-radius:100px;padding:6px 16px;font-size:.78rem;font-weight:700;color:var(--gold-bright);}
+.hero-social{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:48px;animation:fadeUp .8s .44s both;flex-wrap:wrap;}
+.hero-social p{font-size:.82rem;color:var(--muted2);}
+.referrer-count-chip{display:inline-flex;align-items:center;gap:7px;background:rgba(200,137,26,.08);border:1px solid rgba(200,137,26,.2);border-radius:100px;padding:8px 18px;font-size:.8rem;font-weight:700;color:var(--gold-bright);}
+.hero-stats-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:32px;animation:fadeUp .8s .52s both;}
+.h-stat{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:100px;padding:8px 18px;font-size:.72rem;color:rgba(240,237,231,.5);font-weight:500;}
+.h-stat .dot{width:5px;height:5px;border-radius:50%;background:var(--teal-bright);flex-shrink:0;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── SECTIONS ── */
@@ -167,101 +179,164 @@ nav.topnav{position:sticky;top:0;z-index:400;background:rgba(8,9,12,.95);backdro
 .container{max-width:1200px;margin:0 auto;}
 .sec-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(200,137,26,.07);border:1px solid rgba(200,137,26,.18);border-radius:100px;padding:6px 16px;font-size:.62rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;}
 .cream-section .sec-tag{background:rgba(154,107,10,.08);border-color:rgba(154,107,10,.22);color:var(--gold-deep)}
-.sec-h{font-family:'Playfair Display';font-size:clamp(2rem,4vw,3rem);font-weight:900;line-height:1.1;margin-bottom:14px;letter-spacing:-.01em;}
+.sec-h{font-family:'Playfair Display';font-size:clamp(2rem,4vw,3.1rem);font-weight:900;line-height:1.1;margin-bottom:14px;letter-spacing:-.01em;}
 .sec-h em{font-style:italic;color:var(--gold-bright)}
 .cream-section .sec-h em{color:var(--gold)}
 .sec-p{font-size:.9rem;color:rgba(240,237,231,.46);line-height:1.88;max-width:560px;}
 .cream-section .sec-p{color:var(--cream-sub)}
-.sec-head{max-width:680px;margin:0 auto 64px;text-align:center;}
+.sec-head{max-width:700px;margin:0 auto 64px;text-align:center;}
 .sec-head .sec-p{margin:0 auto}
 
-/* ── STEPS ── */
-.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;}
-.step-card{background:var(--card);padding:44px 32px;position:relative;overflow:hidden;transition:.3s;}
-.step-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,137,26,.04),transparent 60%);opacity:0;transition:.4s;}
+/* ── HOW IT WORKS STEPS ── */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;}
+.step-card{background:var(--card);padding:48px 36px;position:relative;overflow:hidden;transition:.3s;}
+.step-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,137,26,.05),transparent 60%);opacity:0;transition:.4s;}
 .step-card:hover::before{opacity:1}
-.step-card:hover{transform:translateY(-3px)}
+.step-card:hover{transform:translateY(-4px)}
 .step-num{font-family:'Bebas Neue';font-size:5rem;color:rgba(200,137,26,.07);line-height:1;margin-bottom:12px;letter-spacing:.04em;}
-.step-icon{font-size:2.2rem;display:block;margin-bottom:16px;}
-.step-title{font-size:1.05rem;font-weight:800;margin-bottom:10px;}
-.step-desc{font-size:.83rem;color:var(--muted2);line-height:1.75;}
+.step-icon{font-size:2.4rem;display:block;margin-bottom:18px;}
+.step-title{font-size:1.08rem;font-weight:800;margin-bottom:10px;color:var(--white);}
+.step-desc{font-size:.84rem;color:var(--muted2);line-height:1.78;}
+.step-connector{display:none;}
+@media(min-width:800px){
+  .steps-grid{grid-template-columns:repeat(3,1fr);}
+}
 
 /* ── TIER CARDS ── */
 .tiers-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:32px;}
-.tier-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r3);padding:36px 28px;text-align:center;position:relative;overflow:hidden;transition:.35s;}
-.tier-card:hover{transform:translateY(-6px);}
+.tier-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r3);padding:40px 28px;text-align:center;position:relative;overflow:hidden;transition:.4s;cursor:default;}
+.tier-card:hover{transform:translateY(-8px);box-shadow:0 28px 60px rgba(0,0,0,.4);}
 .tier-card::before{content:'';position:absolute;top:0;inset-inline:0;height:3px;}
 .t-bronze::before{background:linear-gradient(90deg,#7C4A1E,#D4894A,#7C4A1E)}
 .t-silver::before{background:linear-gradient(90deg,#5A5A5A,#C8C8C8,#5A5A5A)}
 .t-gold::before{background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright),var(--gold-deep))}
 .t-plat::before{background:linear-gradient(90deg,#4C1D95,#A78BFA,#EC4899,#A78BFA,#4C1D95)}
-.tier-medal{font-size:3rem;display:block;margin-bottom:14px;}
-.tier-badge{display:inline-block;padding:4px 12px;border-radius:100px;font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;}
+.tier-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(transparent,rgba(0,0,0,.2));pointer-events:none;}
+.tier-medal{font-size:3.2rem;display:block;margin-bottom:16px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.3));}
+.tier-badge{display:inline-block;padding:5px 14px;border-radius:100px;font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:16px;}
 .t-bronze .tier-badge{background:rgba(212,137,74,.12);color:#D4894A;border:1px solid rgba(212,137,74,.3);}
 .t-silver .tier-badge{background:rgba(200,200,200,.1);color:#C8C8C8;border:1px solid rgba(200,200,200,.3);}
 .t-gold .tier-badge{background:rgba(200,137,26,.12);color:var(--gold-bright);border:1px solid rgba(200,137,26,.3);}
 .t-plat .tier-badge{background:rgba(167,139,250,.1);color:#A78BFA;border:1px solid rgba(167,139,250,.3);}
-.tier-orders{font-family:'Playfair Display';font-size:1.8rem;font-weight:700;line-height:1;margin-bottom:6px;}
+.tier-orders{font-family:'Playfair Display';font-size:2.4rem;font-weight:900;line-height:1;margin-bottom:8px;}
 .t-bronze .tier-orders{color:#D4894A}
 .t-silver .tier-orders{color:#C8C8C8}
 .t-gold .tier-orders{color:var(--gold-bright)}
 .t-plat .tier-orders{color:#A78BFA}
-.tier-req{font-size:.78rem;color:var(--muted2);line-height:1.6;}
-.tiers-note{text-align:center;font-size:.82rem;color:var(--muted2);background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r);padding:18px 24px;line-height:1.7;}
+.tier-req{font-size:.8rem;color:var(--muted2);line-height:1.65;margin-bottom:0;}
+.tier-highlight{margin-top:12px;font-size:.72rem;font-weight:700;padding:6px 12px;border-radius:8px;}
+.t-bronze .tier-highlight{background:rgba(212,137,74,.08);color:#D4894A;}
+.t-silver .tier-highlight{background:rgba(200,200,200,.07);color:#C8C8C8;}
+.t-gold .tier-highlight{background:rgba(200,137,26,.08);color:var(--gold-bright);}
+.t-plat .tier-highlight{background:rgba(167,139,250,.07);color:#A78BFA;}
+.tiers-note{text-align:center;font-size:.84rem;color:var(--muted2);background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r2);padding:20px 28px;line-height:1.8;max-width:700px;margin:0 auto;}
+.tiers-note strong{color:var(--white);}
+
+/* ── EARNING EXAMPLES ── */
+.earning-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:48px;}
+.earning-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r2);padding:24px;display:flex;flex-direction:column;gap:8px;}
+.earning-scenario{font-size:.8rem;color:var(--muted2);}
+.earning-amount{font-family:'Bebas Neue';font-size:2rem;letter-spacing:.04em;line-height:1;}
+.t-bronze .earning-amount{color:#D4894A}
+.t-silver .earning-amount{color:#C8C8C8}
+.t-gold .earning-amount{color:var(--gold-bright)}
+.t-plat .earning-amount{color:#A78BFA}
 
 /* ── WHY CARDS ── */
-.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
-.why-card{background:#fff;border:1.5px solid var(--cream2);border-radius:var(--r3);padding:36px;box-shadow:0 2px 18px rgba(0,0,0,.05);transition:.3s;}
-.why-card:hover{transform:translateY(-4px);border-color:rgba(154,107,10,.25);box-shadow:0 16px 44px rgba(0,0,0,.1);}
-.why-icon{font-size:2.2rem;display:block;margin-bottom:18px;}
-.why-title{font-size:1.05rem;font-weight:800;margin-bottom:10px;color:var(--cream-ink);}
-.why-desc{font-size:.85rem;color:#6B5F4A;line-height:1.78;}
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px;}
+.why-card{background:#fff;border:1.5px solid var(--cream2);border-radius:var(--r3);padding:38px;box-shadow:0 2px 18px rgba(0,0,0,.05);transition:.3s;position:relative;overflow:hidden;}
+.why-card::before{content:'';position:absolute;top:0;inset-inline:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold-deep),transparent);}
+.why-card:hover{transform:translateY(-5px);border-color:rgba(154,107,10,.25);box-shadow:0 20px 50px rgba(0,0,0,.1);}
+.why-icon{font-size:2.4rem;display:block;margin-bottom:20px;}
+.why-title{font-size:1.08rem;font-weight:800;margin-bottom:10px;color:var(--cream-ink);}
+.why-desc{font-size:.86rem;color:#6B5F4A;line-height:1.8;}
 
 /* ── APPLICATION FORM ── */
-.form-card{background:#fff;border:1.5px solid var(--cream2);border-radius:var(--r4);padding:52px;max-width:700px;margin:0 auto;box-shadow:0 10px 48px rgba(0,0,0,.08);position:relative;overflow:hidden;}
+.form-wrap{max-width:700px;margin:0 auto;}
+.form-card{background:#fff;border:1.5px solid var(--cream2);border-radius:var(--r4);padding:52px;box-shadow:0 12px 56px rgba(0,0,0,.1);position:relative;overflow:hidden;}
 .form-card::before{content:'';position:absolute;top:0;inset-inline:0;height:4px;background:linear-gradient(90deg,transparent,var(--gold-deep),var(--gold-bright),var(--gold-deep),transparent);border-radius:var(--r4) var(--r4) 0 0;}
-@media(max-width:600px){.form-card{padding:28px 20px}}
-.field{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;}
+@media(max-width:600px){.form-card{padding:30px 20px}}
+.field{display:flex;flex-direction:column;gap:7px;margin-bottom:18px;}
 .field label{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-sub);}
 .field input,.field select,.field textarea{background:var(--cream);border:1.5px solid var(--cream2);border-radius:10px;padding:13px 16px;color:var(--cream-ink);font-family:'Plus Jakarta Sans';font-size:.87rem;transition:.25s;outline:none;width:100%;-webkit-appearance:none;}
 .field input::placeholder,.field textarea::placeholder{color:var(--cream-sub)}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold-deep);background:#fffdf7;box-shadow:0 0 0 3px rgba(154,107,10,.08);}
 .field select option{background:#fff;color:var(--cream-ink)}
-.field textarea{min-height:110px;resize:vertical}
+.field textarea{min-height:120px;resize:vertical}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:540px){.form-row{grid-template-columns:1fr}}
-#formError{color:var(--red);font-size:.82rem;text-align:center;min-height:20px;margin-bottom:8px;font-weight:600;}
+#formError{color:var(--red);font-size:.82rem;text-align:center;min-height:20px;margin-bottom:10px;font-weight:600;}
 .submit-btn{width:100%;padding:18px;background:linear-gradient(135deg,var(--teal),var(--teal-mid),var(--teal-bright));color:#fff;font-weight:800;font-size:1rem;border-radius:12px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans';letter-spacing:.02em;transition:.3s;box-shadow:0 6px 28px rgba(13,138,114,.3);}
 .submit-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 40px rgba(18,184,150,.35)}
-.submit-btn:disabled{opacity:.5;cursor:not-allowed}
-.form-note{font-size:.7rem;color:var(--cream-sub);text-align:center;margin-top:14px;line-height:1.6;}
-.wa-note{display:flex;align-items:center;gap:10px;background:rgba(37,211,102,.06);border:1px solid rgba(37,211,102,.2);border-radius:10px;padding:12px 16px;margin-bottom:24px;}
-.wa-note span{font-size:.78rem;color:#2D7A3A;line-height:1.6;}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.form-note{font-size:.72rem;color:var(--cream-sub);text-align:center;margin-top:14px;line-height:1.6;}
+.form-note a{color:var(--gold-deep);font-weight:700;}
+.wa-note{display:flex;align-items:flex-start;gap:12px;background:rgba(37,211,102,.05);border:1px solid rgba(37,211,102,.2);border-radius:10px;padding:14px 18px;margin-bottom:26px;}
+.wa-note .wn-icon{font-size:1.4rem;flex-shrink:0;margin-top:1px;}
+.wa-note span{font-size:.8rem;color:#2D7A3A;line-height:1.65;}
+.wa-note strong{color:#1A5C28;}
 
 /* ── SUCCESS STATE ── */
 #successState{display:none;flex-direction:column;align-items:center;text-align:center;padding:60px 20px;}
-.success-icon{font-size:5rem;display:block;margin-bottom:24px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+.success-icon{font-size:5.5rem;display:block;margin-bottom:24px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both;}
 @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-#successState h2{font-family:'Playfair Display';font-size:2.2rem;font-weight:900;color:var(--gold-deep);margin-bottom:14px;}
-#successState p{font-size:.9rem;color:var(--cream-sub);line-height:1.85;max-width:460px;margin-bottom:28px;}
-.back-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--teal),var(--teal-mid));color:#fff;font-weight:700;font-size:.9rem;padding:14px 28px;border-radius:11px;text-decoration:none;transition:.3s;}
-.back-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(13,138,114,.3)}
+#successState h2{font-family:'Playfair Display';font-size:2.4rem;font-weight:900;color:var(--gold-deep);margin-bottom:14px;}
+#successState p{font-size:.9rem;color:var(--cream-sub);line-height:1.88;max-width:460px;margin-bottom:28px;}
+.back-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--teal),var(--teal-mid),var(--teal-bright));color:#fff;font-weight:700;font-size:.9rem;padding:15px 30px;border-radius:12px;text-decoration:none;transition:.3s;box-shadow:0 6px 24px rgba(13,138,114,.25);}
+.back-btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(13,138,114,.35)}
+
+/* ── TESTIMONIAL STRIP ── */
+.testimonial-strip{background:var(--card);border:1px solid var(--border);border-radius:var(--r3);padding:32px;margin-top:48px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;}
+.t-mini{display:flex;flex-direction:column;gap:10px;}
+.t-mini-stars{color:var(--gold-bright);font-size:.72rem;letter-spacing:2px;}
+.t-mini-text{font-size:.84rem;color:rgba(240,237,231,.55);line-height:1.75;font-style:italic;}
+.t-mini-author{font-size:.75rem;font-weight:700;color:var(--muted2);}
+.t-mini-tier{display:inline-block;margin-top:4px;font-size:.65rem;background:rgba(200,137,26,.07);border:1px solid rgba(200,137,26,.18);color:var(--gold);padding:3px 10px;border-radius:100px;font-weight:600;}
+
+/* ── FINAL CTA ── */
+#final-cta{background:var(--ink2);padding:100px 24px;position:relative;overflow:hidden;}
+.fc-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 65% at 50% 50%,rgba(200,137,26,.05),transparent 70%);pointer-events:none;}
+.fc-teal-line{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--teal-mid),var(--teal-bright),var(--teal-mid),transparent);}
+.fc-inner{text-align:center;position:relative;z-index:1;max-width:680px;margin:0 auto;}
+.fc-inner h2{font-family:'Playfair Display';font-size:clamp(2.2rem,5vw,3.8rem);font-weight:900;line-height:1.08;margin-bottom:18px;letter-spacing:-.02em;}
+.fc-inner h2 em{color:var(--gold-bright);font-style:italic}
+.fc-inner p{font-size:.96rem;color:rgba(240,237,231,.45);max-width:520px;margin:0 auto 36px;line-height:1.9;}
+.fc-chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:24px;}
+.fc-chip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:100px;padding:9px 18px;font-size:.76rem;color:rgba(240,237,231,.45);transition:.2s;}
+.fc-chip:hover{border-color:rgba(200,137,26,.3);color:var(--gold)}
 
 /* ── FOOTER ── */
-footer.ref-footer{background:var(--ink);border-top:1px solid var(--border);padding:40px 24px;}
+footer.ref-footer{background:var(--ink);border-top:1px solid var(--border);padding:44px 24px;}
 .footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
-.footer-copy{font-size:.76rem;color:var(--muted);}
+.footer-brand .fname{font-family:'Playfair Display';font-size:1.2rem;font-weight:900;color:var(--white);}
+.footer-brand .fname em{color:var(--gold-bright);font-style:italic}
+.footer-brand .ftag{font-size:.56rem;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;display:block;margin-top:3px;}
+.footer-copy{font-size:.74rem;color:var(--muted);}
 .footer-links{display:flex;gap:20px;}
-.footer-links a{font-size:.78rem;color:var(--muted2);text-decoration:none;transition:.2s;}
+.footer-links a{font-size:.8rem;color:var(--muted2);text-decoration:none;transition:.2s;}
 .footer-links a:hover{color:var(--gold)}
 
-/* ── REVEAL ANIMATION ── */
+/* ── WA FAB ── */
+.wa-fab{position:fixed;bottom:26px;right:26px;z-index:350;width:58px;height:58px;background:#25D366;border-radius:50%;display:grid;place-items:center;text-decoration:none;font-size:1.45rem;box-shadow:0 8px 36px rgba(37,211,102,.5);transition:transform .2s;animation:waPulse 3s infinite;}
+.wa-fab:hover{transform:scale(1.12)}
+@keyframes waPulse{0%,100%{box-shadow:0 8px 36px rgba(37,211,102,.4)}50%{box-shadow:0 8px 60px rgba(37,211,102,.7)}}
+
+/* ── REVEAL ── */
 .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s;}
 .reveal.in{opacity:1;transform:translateY(0);}
 
-/* ── WA FAB ── */
-.wa-fab{position:fixed;bottom:26px;right:26px;z-index:350;width:56px;height:56px;background:#25D366;border-radius:50%;display:grid;place-items:center;text-decoration:none;font-size:1.4rem;box-shadow:0 8px 36px rgba(37,211,102,.5);transition:transform .2s;}
-.wa-fab:hover{transform:scale(1.12)}
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  #hero{min-height:auto;padding:80px 20px 60px;}
+  .dark-section,.surface-section,.cream-section{padding:72px 20px;}
+  .tiers-grid{grid-template-columns:repeat(2,1fr);}
+  .steps-grid{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .tiers-grid{grid-template-columns:1fr;}
+  .hero-ctas{flex-direction:column;align-items:center;}
+  .btn-primary,.btn-secondary{width:100%;justify-content:center;}
+}
 </style>
 </head>
 <body>
@@ -285,6 +360,7 @@ footer.ref-footer{background:var(--ink);border-top:1px solid var(--border);paddi
   <div class="hero-grid-bg"></div>
   <div class="hero-orb1"></div>
   <div class="hero-orb2"></div>
+  <div class="hero-orb3"></div>
   <div class="hero-content">
     <div class="hero-pill">
       <span class="live-dot"></span>
@@ -293,9 +369,9 @@ footer.ref-footer{background:var(--ink);border-top:1px solid var(--border);paddi
     <h1 class="hero-h1">
       Turn Your Network<br>Into <span class="gold">Real Income</span>
     </h1>
-    <div class="hero-sub">Share once. Earn forever.</div>
+    <div class="hero-sub">Share once. Earn every time someone orders.</div>
     <p class="hero-p">
-      Join the GGS Global Referral Program. Share your unique link. Earn rewards for every confirmed order you bring in — <strong>automatically tracked, no manual work needed.</strong>
+      Join the GGS Global Referral Program. Share your unique link. Earn <strong>real rewards</strong> for every confirmed order you bring in — <strong>automatically tracked, no manual work needed, no upfront investment required.</strong>
     </p>
     <div class="hero-ctas">
       <a href="#apply" class="btn-primary">✍️ Apply Now — It's Free</a>
@@ -306,6 +382,12 @@ footer.ref-footer{background:var(--ink);border-top:1px solid var(--border);paddi
       <div class="referrer-count-chip">
         💰 <strong id="liveReferrerCount">—</strong> active referrers already earning with GGS Global
       </div>
+    </div>
+    <div class="hero-stats-row">
+      <div class="h-stat"><span class="dot"></span> Zero Investment Required</div>
+      <div class="h-stat"><span class="dot"></span> Automatic Link Tracking</div>
+      <div class="h-stat"><span class="dot"></span> 24–48hr Approval</div>
+      <div class="h-stat"><span class="dot"></span> Rewards Never Expire</div>
     </div>
   </div>
   <div class="hero-wave">
@@ -321,26 +403,47 @@ footer.ref-footer{background:var(--ink);border-top:1px solid var(--border);paddi
     <div class="sec-head reveal">
       <span class="sec-tag">Simple Process</span>
       <h2 class="sec-h">Three Steps to <em>Earning</em></h2>
-      <p class="sec-p">No stock. No investment. No complicated setup. Just share and earn.</p>
+      <p class="sec-p">No stock. No investment. No complicated setup. Just apply, share your link, and earn every time someone orders.</p>
     </div>
     <div class="steps-grid reveal">
       <div class="step-card">
         <div class="step-num">01</div>
         <span class="step-icon">✍️</span>
         <div class="step-title">Apply in 2 Minutes</div>
-        <div class="step-desc">Fill our simple application form. Tell us how you plan to promote GGS Global and we will review your application within 24–48 hours.</div>
+        <div class="step-desc">Fill our simple application form below. Tell us how you plan to promote GGS Global and we will review your application within 24–48 hours. Completely free to join.</div>
       </div>
       <div class="step-card">
         <div class="step-num">02</div>
         <span class="step-icon">🔗</span>
         <div class="step-title">Get Your Unique Link</div>
-        <div class="step-desc">Once approved, you receive your personal referral link via WhatsApp. Share it anywhere — Instagram, TikTok, WhatsApp Status, or direct messages.</div>
+        <div class="step-desc">Once approved, you receive your personal referral link directly via WhatsApp. Share it anywhere — Instagram, TikTok, WhatsApp Status, direct messages, anywhere your audience is.</div>
       </div>
       <div class="step-card">
         <div class="step-num">03</div>
         <span class="step-icon">💰</span>
         <div class="step-title">Earn on Every Order</div>
-        <div class="step-desc">When someone clicks your link and places an order, it is automatically tracked to you. No manual codes. No chasing anyone. Pure passive income.</div>
+        <div class="step-desc">When someone clicks your link and places a qualifying order, it is automatically tracked to you. No manual codes to chase. No follow-ups needed. Pure passive income that compounds.</div>
+      </div>
+    </div>
+    <!-- Testimonial strip -->
+    <div class="testimonial-strip reveal">
+      <div class="t-mini">
+        <div class="t-mini-stars">★★★★★</div>
+        <div class="t-mini-text">"Referred 3 friends and received ₦100,000 store credit — the referral rewards are absolutely real! Combined with my next order I basically got a discounted handbag."</div>
+        <div class="t-mini-author">Ifunanya A. · Owerri</div>
+        <span class="t-mini-tier">🥈 Silver Referrer</span>
+      </div>
+      <div class="t-mini">
+        <div class="t-mini-stars">★★★★★</div>
+        <div class="t-mini-text">"I shared my link on WhatsApp Status for two days and got my first Bronze reward. The tracking is automatic — my friend didn't even need to mention my name."</div>
+        <div class="t-mini-author">Chukwuemeka O. · Onitsha</div>
+        <span class="t-mini-tier">🥉 Bronze Referrer</span>
+      </div>
+      <div class="t-mini">
+        <div class="t-mini-stars">★★★★★</div>
+        <div class="t-mini-text">"Running my own mini side income through GGS. My audience trusts me so when I post about authentic products at cost price they respond immediately."</div>
+        <div class="t-mini-author">Adaeze O. · Lagos</div>
+        <span class="t-mini-tier">🥇 Gold Referrer</span>
       </div>
     </div>
   </div>
@@ -352,143 +455,198 @@ footer.ref-footer{background:var(--ink);border-top:1px solid var(--border);paddi
     <div class="sec-head reveal">
       <span class="sec-tag">🏆 Reward Tiers</span>
       <h2 class="sec-h">The More You Share,<br><em>The More You Earn</em></h2>
-      <p class="sec-p">Progress through four tiers. Every confirmed delivered order counts towards your tier.</p>
+      <p class="sec-p">Progress through four tiers as your referrals grow. Every confirmed delivered order counts. Rewards stack as you climb.</p>
     </div>
     <div class="tiers-grid reveal">
       <div class="tier-card t-bronze">
         <span class="tier-medal">🥉</span>
         <div class="tier-badge">Entry Level</div>
         <div class="tier-orders">1</div>
-        <div class="tier-req">Confirmed Order<br>Bronze Reward Unlocked</div>
+        <div class="tier-req">Confirmed Delivered Order<br>Bronze Tier Unlocked</div>
+        <div class="tier-highlight">Get Started Today</div>
       </div>
       <div class="tier-card t-silver">
         <span class="tier-medal">🥈</span>
         <div class="tier-badge">Growing</div>
         <div class="tier-orders">3</div>
-        <div class="tier-req">Confirmed Orders<br>Silver Reward Unlocked</div>
+        <div class="tier-req">Confirmed Delivered Orders<br>Silver Tier Unlocked</div>
+        <div class="tier-highlight">Weekend Goal</div>
       </div>
       <div class="tier-card t-gold">
         <span class="tier-medal">🥇</span>
         <div class="tier-badge">Top Performer</div>
         <div class="tier-orders">5</div>
-        <div class="tier-req">Confirmed Orders<br>Gold Reward Unlocked</div>
+        <div class="tier-req">Confirmed Delivered Orders<br>Gold Tier Unlocked</div>
+        <div class="tier-highlight">Monthly Target</div>
       </div>
       <div class="tier-card t-plat">
         <span class="tier-medal">💎</span>
         <div class="tier-badge">Elite</div>
         <div class="tier-orders">10+</div>
-        <div class="tier-req">Confirmed Orders<br>Platinum Reward Unlocked</div>
+        <div class="tier-req">Confirmed Delivered Orders<br>Platinum Tier Unlocked</div>
+        <div class="tier-highlight">Maximum Rewards</div>
       </div>
     </div>
     <div class="tiers-note reveal">
-      💬 Reward amounts are communicated personally upon approval. Every confirmed delivered order counts. Rewards released after the customer's goods are fully delivered and shipping paid.
+      💬 Reward amounts are communicated <strong>personally upon approval</strong>. Every confirmed delivered order counts — including orders placed weeks later through your link. Rewards released after the customer's goods are fully delivered and all fees paid.
     </div>
   </div>
 </section>
 
-<!-- WHY GGS -->
+<!-- WHY GGS GLOBAL -->
 <section class="cream-section" id="why">
   <div class="container">
     <div class="sec-head reveal">
       <span class="sec-tag">Why Partner With Us</span>
-      <h2 class="sec-h">Built for <em>Referrers Who Win</em></h2>
-      <p class="sec-p">We make it easy for you to earn because we have a product that genuinely sells itself.</p>
+      <h2 class="sec-h">A Product That<br><em>Sells Itself</em></h2>
+      <p class="sec-p">We give you a genuinely valuable product to share — authentic factory-direct imports at prices unavailable anywhere else in Nigeria.</p>
     </div>
     <div class="why-grid reveal">
       <div class="why-card">
         <span class="why-icon">📦</span>
         <div class="why-title">Real Products. Real Prices.</div>
-        <div class="why-desc">We source directly from verified Chinese factories — giving your audience genuine value that sells itself. 100% authentic tech and fashion at factory cost prices.</div>
+        <div class="why-desc">We source directly from verified Chinese factories — giving your audience genuine value at factory cost price. 100% authentic iPhones, MacBooks, fashion and more. Your audience does not need to be convinced — the price difference speaks for itself.</div>
       </div>
       <div class="why-card">
         <span class="why-icon">🇳🇬</span>
         <div class="why-title">Built for Nigeria</div>
-        <div class="why-desc">iPhones, Samsung, MacBooks, designer bags and more — products Nigerians actually want, at prices they cannot find anywhere else. Your audience already wants this.</div>
+        <div class="why-desc">iPhones, Samsung, MacBooks, designer bags and fashion — products Nigerians actively want, at prices they cannot find in Slot, Jumia, or Computer Village. Your referral is an instant win for everyone who sees it.</div>
       </div>
       <div class="why-card">
         <span class="why-icon">📲</span>
         <div class="why-title">Automatic Tracking</div>
-        <div class="why-desc">Your referral link does all the work. No codes to remember. No manual reporting. Every order placed through your link is captured and credited to you automatically.</div>
+        <div class="why-desc">Your unique referral link does all the tracking. When someone clicks it and places an order, it is credited to your account automatically — no manual codes, no chasing customers, no spreadsheets. Pure set-and-forget.</div>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">💳</span>
+        <div class="why-title">Trusted Checkout</div>
+        <div class="why-desc">GGS Global uses Flutterwave — Nigeria's most trusted payment gateway. When you share our link your audience pays securely with card, bank transfer, or USSD. No trust barrier to conversion.</div>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">📡</span>
+        <div class="why-title">Full WhatsApp Support</div>
+        <div class="why-desc">As a referrer you get direct WhatsApp access to the GGS team. Tier updates, reward confirmations, and performance reports come to you personally. We look after our referrers properly.</div>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">♾️</span>
+        <div class="why-title">No Expiry. No Cap.</div>
+        <div class="why-desc">Your referral link works forever. Rewards and store credits never expire. There is no cap on how much you can earn. Every person you ever refer who places an order counts — now or months from now.</div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- APPLICATION FORM -->
-<section class="cream-section" id="apply" style="padding-top:60px;">
+<section class="cream-section" id="apply" style="padding-top:60px;padding-bottom:100px;">
   <div class="container">
     <div class="sec-head reveal">
       <span class="sec-tag">✍️ Apply to Join</span>
       <h2 class="sec-h">Free to Join.<br><em>Takes 2 Minutes.</em></h2>
-      <p class="sec-p">Fill in the form below. We will review and contact you with your unique link within 24–48 hours.</p>
+      <p class="sec-p">Fill in the form below. We review every application and contact successful applicants with their unique link within 24–48 hours.</p>
     </div>
-    <div class="form-card reveal">
-      <!-- SUCCESS STATE -->
-      <div id="successState">
-        <span class="success-icon">✅</span>
-        <h2>Application Submitted!</h2>
-        <p>We have received your application and will review it within 24–48 hours. You will receive your approval and unique referral link directly on WhatsApp. Keep an eye on your messages!</p>
-        <a href="/" class="back-btn">← Back to Store</a>
-      </div>
+    <div class="form-wrap reveal">
+      <div class="form-card">
 
-      <!-- FORM -->
-      <div id="applicationForm">
-        <div class="wa-note">
-          <span>💬</span>
-          <span>Your approval and referral link will be sent to you on <strong>WhatsApp</strong>. Please make sure your number is correct.</span>
+        <!-- SUCCESS STATE -->
+        <div id="successState">
+          <span class="success-icon">✅</span>
+          <h2>Application Submitted!</h2>
+          <p>We have received your application and will review it within 24–48 hours. You will receive your approval and unique referral link directly on <strong>WhatsApp</strong>. Keep an eye on your messages!</p>
+          <a href="/" class="back-btn">← Back to Store</a>
         </div>
-        <div class="form-row">
-          <div class="field">
-            <label>Full Name *</label>
-            <input type="text" id="fName" placeholder="Your full name">
+
+        <!-- FORM -->
+        <div id="applicationForm">
+          <div class="wa-note">
+            <span class="wn-icon">💬</span>
+            <span>Your approval and referral link will be sent to you on <strong>WhatsApp</strong>. Please make sure your number is correct and active.</span>
           </div>
-          <div class="field">
-            <label>WhatsApp Number *</label>
-            <input type="tel" id="fWhatsapp" placeholder="+234 801 234 5678">
+
+          <div class="form-row">
+            <div class="field">
+              <label>Full Name *</label>
+              <input type="text" id="fName" placeholder="Your full name">
+            </div>
+            <div class="field">
+              <label>WhatsApp Number *</label>
+              <input type="tel" id="fWhatsapp" placeholder="+234 801 234 5678">
+            </div>
           </div>
+
+          <div class="field">
+            <label>Email Address *</label>
+            <input type="email" id="fEmail" placeholder="your@email.com">
+          </div>
+
+          <div class="field">
+            <label>State / Location *</label>
+            <select id="fState">
+              <option value="">Select your state...</option>
+              <option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option>
+              <option>Anambra</option><option>Bauchi</option><option>Bayelsa</option>
+              <option>Benue</option><option>Borno</option><option>Cross River</option>
+              <option>Delta</option><option>Ebonyi</option><option>Edo</option>
+              <option>Ekiti</option><option>Enugu</option><option>FCT – Abuja</option>
+              <option>Gombe</option><option>Imo</option><option>Jigawa</option>
+              <option>Kaduna</option><option>Kano</option><option>Katsina</option>
+              <option>Kebbi</option><option>Kogi</option><option>Kwara</option>
+              <option>Lagos</option><option>Nasarawa</option><option>Niger</option>
+              <option>Ogun</option><option>Ondo</option><option>Osun</option>
+              <option>Oyo</option><option>Plateau</option><option>Rivers</option>
+              <option>Sokoto</option><option>Taraba</option><option>Yobe</option>
+              <option>Zamfara</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>How do you plan to promote GGS Global? *</label>
+            <textarea id="fPlan" placeholder="e.g. I have 5,000 Instagram followers and run a WhatsApp group of 200 people interested in tech products. I plan to share product posts 3x per week and create short review videos showing the savings compared to local stores..."></textarea>
+          </div>
+
+          <div class="field">
+            <label>How did you hear about us? *</label>
+            <select id="fHeard">
+              <option value="">Select...</option>
+              <option>WhatsApp Status</option>
+              <option>Instagram</option>
+              <option>TikTok</option>
+              <option>Facebook</option>
+              <option>Referral from a friend</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div id="formError"></div>
+
+          <button class="submit-btn" id="submitBtn" onclick="submitApplication()">
+            Submit Application →
+          </button>
+          <p class="form-note">
+            We review all applications and reply within 24–48 hours via WhatsApp.<br>
+            Have a question first? <a href="https://wa.me/2348142717585" target="_blank">DM us directly →</a>
+          </p>
         </div>
-        <div class="field">
-          <label>Email Address *</label>
-          <input type="email" id="fEmail" placeholder="your@email.com">
-        </div>
-        <div class="field">
-          <label>State / Location *</label>
-          <select id="fState">
-            <option value="">Select your state...</option>
-            <option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option>
-            <option>Anambra</option><option>Bauchi</option><option>Bayelsa</option>
-            <option>Benue</option><option>Borno</option><option>Cross River</option>
-            <option>Delta</option><option>Ebonyi</option><option>Edo</option>
-            <option>Ekiti</option><option>Enugu</option><option>FCT – Abuja</option>
-            <option>Gombe</option><option>Imo</option><option>Jigawa</option>
-            <option>Kaduna</option><option>Kano</option><option>Katsina</option>
-            <option>Kebbi</option><option>Kogi</option><option>Kwara</option>
-            <option>Lagos</option><option>Nasarawa</option><option>Niger</option>
-            <option>Ogun</option><option>Ondo</option><option>Osun</option>
-            <option>Oyo</option><option>Plateau</option><option>Rivers</option>
-            <option>Sokoto</option><option>Taraba</option><option>Yobe</option>
-            <option>Zamfara</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>How do you plan to promote GGS Global? *</label>
-          <textarea id="fPlan" placeholder="e.g. I have 5,000 Instagram followers and run a WhatsApp group of 200 people interested in tech products. I plan to share product posts 3x per week and create short review videos…"></textarea>
-        </div>
-        <div class="field">
-          <label>How did you hear about us? *</label>
-          <select id="fHeard">
-            <option value="">Select...</option>
-            <option>WhatsApp Status</option>
-            <option>Instagram</option>
-            <option>TikTok</option>
-            <option>Facebook</option>
-            <option>Referral from a friend</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div id="formError"></div>
-        <button class="submit-btn" id="submitBtn" onclick="submitApplication()">Submit Application →</button>
-        <p class="form-note">We reply within 24–48 hours via WhatsApp. Or <a href="https://wa.me/2348142717585" target="_blank" style="color:var(--gold-deep);font-weight:700">DM us directly →</a></p>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section id="final-cta">
+  <div class="fc-glow"></div>
+  <div class="fc-teal-line"></div>
+  <div class="container">
+    <div class="fc-inner reveal">
+      <span class="sec-tag" style="display:inline-flex;margin-bottom:24px;">💰 Zero Investment. Real Rewards.</span>
+      <h2>Ready to Start <em>Earning?</em></h2>
+      <p>Join active referrers across Nigeria who are turning their networks into income by sharing authentic products people actually want to buy.</p>
+      <a href="#apply" class="btn-primary" style="font-size:1rem;padding:18px 44px;">✍️ Apply Now — It's Free</a>
+      <div class="fc-chips">
+        <div class="fc-chip">💬 +234 814 271 7585</div>
+        <div class="fc-chip">📍 Port Harcourt, Nigeria</div>
+        <div class="fc-chip">⏰ 24–48hr Approval</div>
+        <div class="fc-chip">🔗 Automatic Link Tracking</div>
       </div>
     </div>
   </div>
@@ -497,7 +655,11 @@ footer.ref-footer{background:var(--ink);border-top:1px solid var(--border);paddi
 <!-- FOOTER -->
 <footer class="ref-footer">
   <div class="footer-inner">
-    <span class="footer-copy">© 2025 GGS Global Consult · Port Harcourt, Nigeria</span>
+    <div class="footer-brand">
+      <div class="fname">GGS <em>Global</em></div>
+      <span class="ftag">Authentic Imports · Cost Price · Port Harcourt</span>
+    </div>
+    <span class="footer-copy">© 2025 GGS Global Consult · All rights reserved</span>
     <div class="footer-links">
       <a href="/">← Back to Store</a>
       <a href="https://wa.me/2348142717585" target="_blank">💬 WhatsApp Us</a>
@@ -505,13 +667,15 @@ footer.ref-footer{background:var(--ink);border-top:1px solid var(--border);paddi
   </div>
 </footer>
 
-<!-- WA FAB -->
-<a href="https://wa.me/2348142717585?text=Hi%20GGS%2C%20I%20want%20to%20ask%20about%20the%20referral%20program" class="wa-fab" target="_blank">💬</a>
+<!-- WhatsApp FAB -->
+<a href="https://wa.me/2348142717585?text=Hi%20GGS%2C%20I%20want%20to%20ask%20about%20the%20referral%20program" class="wa-fab" target="_blank" title="Chat with us on WhatsApp">💬</a>
 
 <script>
 // Reveal on scroll
 const obs = new IntersectionObserver(es => {
-  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+  es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+  });
 }, { threshold: .07 });
 document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
 </script>

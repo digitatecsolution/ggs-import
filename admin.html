@@ -398,7 +398,6 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <div class="nav-item" data-panel="referrals" onclick="navTo('referrals',this)">
         <span class="nav-icon">🎁</span><span class="nav-label">Referrals</span>
       </div>
-      <!-- NEW: Referrers nav item -->
       <div class="nav-item" data-panel="referrers" onclick="navTo('referrers',this)">
         <span class="nav-icon">👥</span><span class="nav-label">Referrers</span>
         <span class="nav-badge teal" id="pendingAppsBadge" style="display:none">0</span>
@@ -768,7 +767,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
         </div>
       </div>
 
-      <!-- ═══ REFERRERS PANEL (NEW) ═══ -->
+      <!-- ═══ REFERRERS PANEL ═══ -->
       <div class="panel" id="panel-referrers">
         <div class="section-header" style="margin-bottom:16px;">
           <div class="section-title">👥 Referrer Management</div>
@@ -1239,7 +1238,7 @@ window.closeSidebar = function(){
 let _allOrders      = [];
 let _allProducts    = [];
 let _settings       = {};
-let _allApps        = [];  // all referral applications
+let _allApps        = [];
 let _orderFilter    = 'all';
 let _orderPage      = 0;
 const PAGE_SIZE     = 20;
@@ -1248,20 +1247,20 @@ const PAGE_SIZE     = 20;
 // INIT LISTENERS
 // ─────────────────────────────
 function initDashboard(){
+  // Orders listener
   onSnapshot(query(collection(db,'orders'), orderBy('createdAt','desc')), snap=>{
     _allOrders = snap.docs.map(d=>({id:d.id,...d.data()}));
     renderOverviewOrders();
     renderOrders();
     renderReferrals();
     updateStatsFromOrders();
-    // Update referral order count stat
-    const refOrderCount = _allOrders.filter(o=>o.referralCode&&o.referralCode.trim()).length;
-    const rsRefEl = document.getElementById('rs-ref-orders');
-    if(rsRefEl) rsRefEl.textContent = refOrderCount;
-    // Re-render active referrers to update order counts
+    // FIX: Update referral order count stat whenever orders change
+    updateReferralOrderStat();
+    // Re-render active referrers to update live order counts
     renderActiveReferrers();
   }, err=>console.error('Orders error:',err));
 
+  // Products listener
   onSnapshot(collection(db,'products'), snap=>{
     _allProducts = snap.docs.map(d=>({id:d.id,...d.data()}));
     renderProducts();
@@ -1269,6 +1268,7 @@ function initDashboard(){
     updateProductStat();
   }, err=>console.error('Products error:',err));
 
+  // Settings listener
   onSnapshot(doc(db,'settings','site-config'), snap=>{
     if(!snap.exists()) return;
     _settings = snap.data();
@@ -1283,6 +1283,8 @@ function initDashboard(){
     renderReferrerStats();
     renderPendingApps();
     renderActiveReferrers();
+    // FIX: Also update referral order stat here so it stays in sync
+    updateReferralOrderStat();
     // Update sidebar badge for pending
     const pending = _allApps.filter(a=>a.status==='pending').length;
     const badge = document.getElementById('pendingAppsBadge');
@@ -1291,6 +1293,17 @@ function initDashboard(){
       badge.style.display = pending > 0 ? 'inline-flex' : 'none';
     }
   }, err=>console.error('Applications error:',err));
+}
+
+// ─────────────────────────────
+// FIX: Centralized referral order count updater
+// Called from BOTH orders and applications snapshots
+// so the stat is always consistent
+// ─────────────────────────────
+function updateReferralOrderStat(){
+  const refOrderCount = _allOrders.filter(o=>o.referralCode&&o.referralCode.trim()).length;
+  const rsRefEl = document.getElementById('rs-ref-orders');
+  if(rsRefEl) rsRefEl.textContent = refOrderCount;
 }
 
 // ─────────────────────────────
@@ -1994,7 +2007,7 @@ function renderReferrals(){
 }
 
 // ─────────────────────────────
-// REFERRERS PANEL (NEW)
+// REFERRERS PANEL
 // ─────────────────────────────
 window.switchRefTab = function(tab){
   document.querySelectorAll('.ref-tab').forEach(t=>t.classList.remove('active'));
@@ -2013,6 +2026,8 @@ function renderReferrerStats(){
   if(el_t) el_t.textContent = total;
   if(el_p) el_p.textContent = pending;
   if(el_a) el_a.textContent = active;
+  // FIX: Also update referral orders stat here (belt + suspenders)
+  updateReferralOrderStat();
 }
 
 function renderPendingApps(){
@@ -2025,14 +2040,14 @@ function renderPendingApps(){
   tbody.innerHTML = apps.map(a=>`
     <tr>
       <td><strong>${escHtml(a.fullName||'')}</strong><br><span style="font-size:11px;color:var(--muted2)">${escHtml(a.email||'')}</span></td>
-      <td><a href="https://wa.me/${escHtml(a.whatsapp||'')}" target="_blank" style="color:var(--teal-bright);text-decoration:none">+${escHtml(a.whatsapp||'')}</a></td>
+      <td><a href="https://wa.me/${escHtml((a.whatsapp||'').replace(/\D/g,''))}" target="_blank" style="color:var(--teal-bright);text-decoration:none">+${escHtml(a.whatsapp||'')}</a></td>
       <td style="color:var(--muted2)">${escHtml(a.state||'—')}</td>
       <td><span class="plan-preview" title="${escHtml(a.promotionPlan||'')}">${escHtml((a.promotionPlan||'').substring(0,60))}${(a.promotionPlan||'').length>60?'…':''}</span></td>
       <td style="color:var(--muted2);font-size:11px">${formatDate(a.appliedAt)}</td>
       <td>
         <div style="display:flex;gap:6px">
-          <button class="btn btn-primary btn-sm" onclick="approveApp('${escHtml(a.id)}','${escHtml(a.fullName||'')}','${escHtml(a.whatsapp||'')}')">✅ Approve</button>
-          <button class="btn btn-danger btn-sm" onclick="rejectApp('${escHtml(a.id)}','${escHtml(a.fullName||'')}')">❌ Reject</button>
+          <button class="btn btn-primary btn-sm" onclick="approveApp('${escHtml(a.id)}','${escHtml((a.fullName||'').replace(/'/g,"\\'"))}','${escHtml((a.whatsapp||'').replace(/'/g,"\\'"))}')">✅ Approve</button>
+          <button class="btn btn-danger btn-sm" onclick="rejectApp('${escHtml(a.id)}','${escHtml((a.fullName||'').replace(/'/g,"\\'"))}')">❌ Reject</button>
         </div>
       </td>
     </tr>`).join('');
@@ -2048,8 +2063,12 @@ function renderActiveReferrers(){
   tbody.innerHTML = refs.map(a=>{
     const code     = a.referralCode || '';
     const link     = `https://ggsglobal.store/?ref=${code}`;
+    // FIX: Case-insensitive matching against live _allOrders
     const orderCt  = _allOrders.filter(o=>(o.referralCode||'').toUpperCase()===(code).toUpperCase()).length;
     const tierChip = getTierChip(orderCt);
+    // Clean WhatsApp number for href
+    let waNum = (a.whatsapp||'').replace(/\D/g,'');
+    if(waNum.startsWith('0')) waNum = '234' + waNum.slice(1);
     return `
     <tr>
       <td><strong>${escHtml(a.fullName||'')}</strong><br><span style="font-size:11px;color:var(--muted2)">${escHtml(a.email||'')}</span></td>
@@ -2066,8 +2085,8 @@ function renderActiveReferrers(){
       <td>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn btn-outline btn-sm" onclick="copyReferralLink('${escHtml(link)}',this)" title="Copy link">📋</button>
-          <a href="https://wa.me/${escHtml(a.whatsapp||'')}" target="_blank" class="btn btn-outline btn-sm" title="Message on WhatsApp">💬</a>
-          <button class="btn btn-danger btn-sm" onclick="revokeReferrer('${escHtml(a.id)}','${escHtml(a.fullName||'')}')">🚫</button>
+          <a href="https://wa.me/${escHtml(waNum)}" target="_blank" class="btn btn-outline btn-sm" title="Message on WhatsApp">💬</a>
+          <button class="btn btn-danger btn-sm" onclick="revokeReferrer('${escHtml(a.id)}','${escHtml((a.fullName||'').replace(/'/g,"\\'"))}')">🚫</button>
         </div>
       </td>
     </tr>`;
@@ -2094,15 +2113,17 @@ window.copyReferralLink = function(link, btn){
 // ── APPROVE APPLICATION ──
 window.approveApp = async function(docId, fullName, whatsapp){
   try {
-    // Generate unique referral code
+    // Generate unique referral code: first 4 letters of name (uppercase) + 4 random digits
     const prefix = (fullName||'USER').replace(/[^A-Za-z]/g,'').substring(0,4).toUpperCase().padEnd(4,'X');
     let code = '';
     let attempts = 0;
-    while(attempts < 20){
+    while(attempts < 30){
       const digits = String(Math.floor(1000+Math.random()*9000));
       const candidate = prefix + digits;
-      // Check uniqueness
-      const existing = _allApps.find(a=>a.referralCode===candidate);
+      // Check uniqueness against all existing apps in memory
+      const existing = _allApps.find(a=>
+        a.referralCode && a.referralCode.toUpperCase() === candidate.toUpperCase()
+      );
       if(!existing){ code = candidate; break; }
       attempts++;
     }
@@ -2117,36 +2138,14 @@ window.approveApp = async function(docId, fullName, whatsapp){
       approvedAt:   serverTimestamp()
     });
 
-    // Clean WhatsApp number
+    // Format WhatsApp number correctly
     let wa = (whatsapp||'').replace(/\D/g,'');
-    if(wa.startsWith('0')) wa = '234' + wa.slice(1);
+    if(wa.startsWith('0'))  wa = '234' + wa.slice(1);
+    if(wa.startsWith('+'))  wa = wa.slice(1);
+    if(!wa.startsWith('234')) wa = '234' + wa;
 
     // Compose approval message
-    const msg = `Hi ${fullName}! 🎉
-
-Your GGS Global Referral application has been APPROVED!
-
-Here is your unique referral link 👇
-
-🔗 ${referralLink}
-
-*How it works:*
-Simply share this link anywhere — WhatsApp Status, Instagram, TikTok, or direct messages.
-
-When someone clicks your link and places an order on our store, it is *automatically tracked to you.* They do not need to enter any code — it works silently in the background.
-
-*Your Reward Tiers:*
-🥉 1 order  = Bronze Reward
-🥈 3 orders = Silver Reward
-🥇 5 orders = Gold Reward
-💎 10 orders = Platinum Reward
-
-Rewards are communicated personally as you hit each tier. We track everything and update you regularly.
-
-Start sharing and let us know if you have any questions. We are rooting for you! 💪
-
-— GGS Global Consult ✅
-_ggsglobal.store_`;
+    const msg = `Hi ${fullName}! 🎉\n\nYour GGS Global Referral application has been APPROVED!\n\nHere is your unique referral link 👇\n\n🔗 ${referralLink}\n\n*How it works:*\nSimply share this link anywhere — WhatsApp Status, Instagram, TikTok, or direct messages.\n\nWhen someone clicks your link and places an order on our store, it is *automatically tracked to you.* They do not need to enter any code — it works silently in the background.\n\n*Your Reward Tiers:*\n🥉 1 order  = Bronze Reward\n🥈 3 orders = Silver Reward\n🥇 5 orders = Gold Reward\n💎 10 orders = Platinum Reward\n\nRewards are communicated personally as you hit each tier. We track everything and update you regularly.\n\nStart sharing and let us know if you have any questions. We are rooting for you! 💪\n\n— GGS Global Consult ✅\n_ggsglobal.store_`;
 
     window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank');
     toast(`✅ ${fullName} approved! WhatsApp opened.`);
@@ -2167,12 +2166,12 @@ window.rejectApp = async function(docId, fullName){
 
 // ── REVOKE REFERRER ──
 window.revokeReferrer = async function(docId, fullName){
-  if(!confirm(`Revoke ${fullName}'s referrer status? Their referral code will be deactivated.\n\nThis sets them back to pending. You can re-approve later.`)) return;
+  if(!confirm(`Revoke ${fullName}'s referrer status?\n\nTheir referral code will be deactivated. This sets them back to pending — you can re-approve later.`)) return;
   try {
     await updateDoc(doc(db,'referralApplications',docId),{
-      status:      'pending',
+      status:       'pending',
       referralCode: null,
-      approvedAt:  null
+      approvedAt:   null
     });
     toast(`${fullName}'s referral access revoked`);
   } catch(e){ toast('Error: '+e.message, true); }
