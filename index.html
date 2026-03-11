@@ -166,9 +166,14 @@ body{background:var(--ink);color:var(--white);font-family:'Plus Jakarta Sans',sa
 body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.5;}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--ink)}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px}
 
+/* ── ANNOUNCEMENT BAR ── */
 .ann-bar{background:linear-gradient(90deg,var(--teal),var(--teal-mid),var(--teal-bright),var(--teal-mid),var(--teal));background-size:400%;animation:annShift 8s linear infinite;text-align:center;padding:10px 20px;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;position:relative;overflow:hidden;}
 @keyframes annShift{0%{background-position:0%}100%{background-position:400%}}
 .ann-bar span{position:relative;z-index:1}
+
+/* ── ANNOUNCEMENT BAR — rotating messages ── */
+.ann-msg{display:none;position:relative;z-index:1;}
+.ann-msg.ann-active{display:inline;}
 
 header{position:sticky;top:0;z-index:400;background:rgba(8,9,12,.95);backdrop-filter:blur(40px) saturate(200%);border-bottom:1px solid rgba(200,137,26,.12);transition:.3s;}
 .hdr{max-width:1360px;margin:0 auto;padding:0 32px;height:76px;display:flex;align-items:center;gap:20px;justify-content:space-between;}
@@ -241,6 +246,23 @@ nav a:hover{color:var(--white);background:rgba(255,255,255,.06)}
 .hbadge{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:100px;padding:8px 16px;font-size:.7rem;color:rgba(240,237,231,.5);font-weight:500;}
 .hbadge .dot{width:5px;height:5px;border-radius:50%;background:var(--teal-bright);flex-shrink:0;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════════
+   DELIVERABLE 3 — PLACEMENT 2
+   Referral Banner (after hero section)
+   ═══════════════════════════════════════ */
+.ref-banner{background:var(--ink);border-top:1px solid rgba(200,137,26,.1);border-bottom:1px solid rgba(200,137,26,.1);padding:0;}
+.ref-banner-inner{max-width:1280px;margin:0 auto;padding:22px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+.ref-banner-left{display:flex;align-items:center;gap:18px;}
+.ref-banner-icon{font-size:2rem;flex-shrink:0;line-height:1;}
+.ref-banner-text h4{font-family:'Playfair Display';font-size:1.05rem;font-weight:700;color:var(--gold-bright);margin-bottom:2px;}
+.ref-banner-text p{font-size:.76rem;color:var(--muted2);line-height:1.5;}
+.ref-banner-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold-deep),var(--gold-mid),var(--gold-bright));color:var(--ink);font-weight:800;font-size:.82rem;padding:12px 24px;border-radius:10px;text-decoration:none;white-space:nowrap;transition:.25s;flex-shrink:0;}
+.ref-banner-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,137,26,.35);}
+@media(max-width:640px){
+  .ref-banner-inner{flex-direction:column;text-align:center;padding:20px 20px;}
+  .ref-banner-left{flex-direction:column;gap:10px;}
+}
 
 .stats-section{background:var(--cream);padding:0}
 .stats-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid var(--cream2);}
@@ -329,13 +351,11 @@ nav a:hover{color:var(--white);background:rgba(255,255,255,.06)}
 .prod-card:hover .pc-img img.pc-main-img{transform:scale(1.08)}
 .pc-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(8,9,12,.65));pointer-events:none;}
 .pc-emoji{font-size:5rem;opacity:.5}
-/* Thumbnail strip */
 .pc-thumbs{display:flex;gap:5px;padding:8px 10px 0;overflow-x:auto;scrollbar-width:none;}
 .pc-thumbs::-webkit-scrollbar{display:none}
 .pc-thumb{width:42px;height:42px;border-radius:7px;overflow:hidden;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:.2s;background:var(--card2);}
 .pc-thumb.active{border-color:var(--gold-bright);}
 .pc-thumb img{width:100%;height:100%;object-fit:cover}
-/* Multi-image count badge */
 .pc-img-count{position:absolute;bottom:8px;left:8px;background:rgba(8,9,12,.75);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:3px 8px;font-size:.62rem;color:rgba(255,255,255,.7);font-weight:700;backdrop-filter:blur(4px);z-index:2;}
 
 .pc-body{padding:22px;flex:1;display:flex;flex-direction:column}
@@ -357,7 +377,6 @@ nav a:hover{color:var(--white);background:rgba(255,255,255,.06)}
 .var-select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:10px 13px;color:var(--white);font-family:'Plus Jakarta Sans';font-size:.82rem;outline:none;transition:.2s;-webkit-appearance:none;cursor:pointer;}
 .var-select:focus{border-color:rgba(200,137,26,.4)}
 .var-select option{background:var(--card);color:var(--white)}
-/* Color chip selector */
 .color-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
 .color-chip{border:2px solid transparent;border-radius:8px;padding:5px 10px;font-size:.73rem;font-weight:600;cursor:pointer;transition:.2s;background:rgba(255,255,255,.04);color:var(--white);}
 .color-chip:hover{background:rgba(255,255,255,.08);border-color:rgba(200,137,26,.3);}
@@ -368,7 +387,6 @@ nav a:hover{color:var(--white);background:rgba(255,255,255,.06)}
 .add-btn.added{background:linear-gradient(135deg,var(--gold-deep),var(--gold-mid));color:var(--ink);box-shadow:0 4px 16px rgba(200,137,26,.3);}
 .add-btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
 
-/* View Details button */
 .detail-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border:1.5px solid rgba(200,137,26,.25);border-radius:10px;color:var(--gold);font-weight:700;font-size:.78rem;cursor:pointer;font-family:'Plus Jakarta Sans';transition:.3s;background:transparent;margin-top:8px;}
 .detail-btn:hover{border-color:rgba(200,137,26,.5);background:rgba(200,137,26,.07);color:var(--gold-bright);}
 
@@ -387,18 +405,15 @@ nav a:hover{color:var(--white);background:rgba(255,255,255,.06)}
 .pdm-box::-webkit-scrollbar{width:3px}
 .pdm-box::-webkit-scrollbar-thumb{background:rgba(200,137,26,.2);border-radius:4px}
 
-/* Back button + Close */
 .pdm-topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 0;}
 .pdm-back{display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted2);cursor:pointer;transition:.2s;background:none;border:none;font-family:'Plus Jakarta Sans';}
 .pdm-back:hover{color:var(--gold)}
 .pdm-close{width:34px;height:34px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--muted2);font-size:.88rem;transition:.2s;border:none;}
 .pdm-close:hover{color:var(--white);background:rgba(255,255,255,.1)}
 
-/* Hero image area */
 .pdm-hero{position:relative;height:320px;background:var(--card2);overflow:hidden;margin:14px 24px 0;border-radius:var(--r2);}
 .pdm-hero-img{width:100%;height:100%;object-fit:cover;transition:.5s;}
 .pdm-hero-emoji{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:6rem;opacity:.4;}
-/* Thumbnail strip in detail modal */
 .pdm-thumbs{display:flex;gap:8px;padding:12px 24px 0;overflow-x:auto;scrollbar-width:none;}
 .pdm-thumbs::-webkit-scrollbar{display:none}
 .pdm-thumb{width:58px;height:58px;border-radius:10px;overflow:hidden;cursor:pointer;border:2px solid var(--border);flex-shrink:0;transition:.25s;background:var(--card2);}
@@ -414,13 +429,11 @@ nav a:hover{color:var(--white);background:rgba(255,255,255,.06)}
 .pdm-stars{color:var(--gold-bright);font-size:.8rem;letter-spacing:2px}
 .pdm-rating-n{font-size:.74rem;color:var(--muted2)}
 
-/* Price display in modal */
 .pdm-price-block{background:rgba(13,138,114,.07);border:1px solid rgba(18,184,150,.15);border-radius:var(--r2);padding:16px 20px;margin-bottom:18px;}
 .pdm-cost-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-bright);margin-bottom:4px;display:block;}
 .pdm-price{font-family:'Playfair Display';font-size:2.6rem;font-weight:900;color:var(--gold-bright);line-height:1;}
 .pdm-ship-note{font-size:.68rem;color:var(--muted);margin-top:5px;display:flex;align-items:center;gap:5px;}
 
-/* Variant selectors in modal */
 .pdm-variants{margin-bottom:18px;}
 .pdm-var-label{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:7px;display:block;}
 .pdm-var-select{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:12px 15px;color:var(--white);font-family:'Plus Jakarta Sans';font-size:.88rem;outline:none;transition:.2s;-webkit-appearance:none;cursor:pointer;}
@@ -430,12 +443,10 @@ nav a:hover{color:var(--white);background:rgba(255,255,255,.06)}
 .pdm-color-chip:hover{background:rgba(255,255,255,.08);border-color:rgba(200,137,26,.35);}
 .pdm-color-chip.active{border-color:var(--gold-bright);background:rgba(200,137,26,.1);color:var(--gold-bright);}
 
-/* Add to cart in modal */
 .pdm-add-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:16px;background:linear-gradient(135deg,var(--teal),var(--teal-mid),var(--teal-bright));border:none;border-radius:12px;color:#fff;font-weight:800;font-size:.96rem;cursor:pointer;font-family:'Plus Jakarta Sans';transition:.3s;box-shadow:0 6px 28px rgba(13,138,114,.3);margin-bottom:14px;}
 .pdm-add-btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(18,184,150,.4);}
 .pdm-add-btn.added{background:linear-gradient(135deg,var(--gold-deep),var(--gold-mid));color:var(--ink);}
 
-/* Share row */
 .pdm-share{display:flex;gap:9px;margin-bottom:24px;}
 .pdm-share-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;transition:.25s;font-family:'Plus Jakarta Sans';}
 .pdm-copy-btn{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted2);}
@@ -443,7 +454,6 @@ nav a:hover{color:var(--white);background:rgba(255,255,255,.06)}
 .pdm-wa-share{background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.25);color:#25D366;}
 .pdm-wa-share:hover{background:rgba(37,211,102,.2);}
 
-/* Description section */
 .pdm-desc-section{border-top:1px solid var(--border);padding-top:20px;}
 .pdm-desc-title{font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
 .pdm-desc-text{font-size:.86rem;color:rgba(240,237,231,.55);line-height:1.9;white-space:pre-line;}
@@ -721,10 +731,37 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
 </head>
 <body>
 
-<!-- ANNOUNCEMENT BAR -->
+<!-- ═══════════════════════════════════════════════════════════════
+     DELIVERABLE 3 — PLACEMENT 1: Announcement Bar
+     Rotating messages — one of them promotes the referral program
+     ═══════════════════════════════════════════════════════════════ -->
 <div class="ann-bar">
-  <span>⚡ Pre-Order Round 2 LIVE — Only 7 Slots Left · Lock In Cost Prices Before Sunday 11:59 PM · 100% Authentic · Flutterwave Secured ⚡</span>
+  <span id="annBarText">⚡ Pre-Order Round 2 LIVE — Only 7 Slots Left · Lock In Cost Prices Before Sunday 11:59 PM · 100% Authentic · Flutterwave Secured ⚡</span>
 </div>
+<script>
+// Rotating announcement bar messages
+// The second message promotes the referral program (Placement 1)
+const ANN_MESSAGES = [
+  '⚡ Pre-Order Round 2 LIVE — Only 7 Slots Left · Lock In Cost Prices Before Sunday 11:59 PM · 100% Authentic · Flutterwave Secured ⚡',
+  '💰 Earn While You Share! Join the GGS Referral Program → ggsglobal.store/referral.html · Turn Your Network Into Income 💰',
+  '📦 100% Authentic · Factory Cost Price · Free Delivery in Port Harcourt · All 36 States Covered · Flutterwave Secure ⚡',
+];
+let _annIdx = 0;
+function rotateAnn() {
+  _annIdx = (_annIdx + 1) % ANN_MESSAGES.length;
+  const el = document.getElementById('annBarText');
+  if (el) {
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.textContent = ANN_MESSAGES[_annIdx];
+      el.style.transition = 'opacity .5s';
+      el.style.opacity = '1';
+    }, 400);
+  }
+}
+// Rotate every 6 seconds
+setInterval(rotateAnn, 6000);
+</script>
 
 <!-- HEADER -->
 <header>
@@ -797,6 +834,23 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
     </svg>
   </div>
 </section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DELIVERABLE 3 — PLACEMENT 2: Referral Banner (after hero)
+     Slim full-width dark banner with gold accent
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="ref-banner">
+  <div class="ref-banner-inner">
+    <div class="ref-banner-left">
+      <div class="ref-banner-icon">💰</div>
+      <div class="ref-banner-text">
+        <h4>Earn While You Share</h4>
+        <p>Join our referral program and earn real cash rewards for every confirmed order you bring in.</p>
+      </div>
+    </div>
+    <a href="/referral.html" class="ref-banner-btn">Become a Referrer →</a>
+  </div>
+</div>
 
 <!-- STATS -->
 <div class="stats-section">
@@ -1163,6 +1217,8 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
           </div>
         </div>
         <a href="https://wa.me/2348142717585?text=I%20want%20to%20check%20my%20referral%20progress%20and%20rewards" target="_blank" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-size:.82rem;color:var(--gold-bright);text-decoration:none;font-weight:700;background:rgba(200,137,26,.08);border:1px solid rgba(200,137,26,.2);padding:10px 18px;border-radius:9px;transition:.2s;width:100%">📊 Check My Referral Progress on WhatsApp →</a>
+        <!-- Referral program page link -->
+        <a href="/referral.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-size:.82rem;color:var(--teal-bright);text-decoration:none;font-weight:700;background:rgba(18,184,150,.06);border:1px solid rgba(18,184,150,.18);padding:10px 18px;border-radius:9px;transition:.2s;width:100%">🤝 Apply to Join as a Referrer →</a>
       </div>
     </div>
     <div class="reveal" style="margin-top:52px;background:linear-gradient(135deg,rgba(11,110,92,.12),rgba(18,184,150,.06));border:1px solid rgba(18,184,150,.2);border-radius:var(--r3);padding:40px;position:relative;overflow:hidden">
@@ -1172,7 +1228,7 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
           <span style="display:inline-flex;align-items:center;gap:8px;background:rgba(18,184,150,.1);border:1px solid rgba(18,184,150,.25);border-radius:100px;padding:6px 16px;font-size:.62rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--teal-bright);margin-bottom:18px">🤝 City Rep Program</span>
           <h3 style="font-family:'Playfair Display';font-size:1.8rem;font-weight:900;line-height:1.15;margin-bottom:14px">Become a GGS Agent.<br><em style="color:var(--teal-bright)">Earn Every Month.</em></h3>
           <p style="font-size:.85rem;color:rgba(240,237,231,.5);line-height:1.85;margin-bottom:24px">Represent GGS in your city. Share products with your network. Earn <strong style="color:var(--white)">5% commission</strong> on every order placed through your code. Zero investment. Zero stock. Just share and earn.</p>
-          <a href="https://wa.me/2348142717585?text=I%20want%20to%20become%20a%20GGS%20Agent%20in%20my%20city" target="_blank" style="display:inline-flex;align-items:center;gap:9px;background:linear-gradient(135deg,var(--teal),var(--teal-mid),var(--teal-bright));color:#fff;font-weight:800;font-size:.92rem;padding:15px 30px;border-radius:12px;text-decoration:none;transition:.3s;box-shadow:0 6px 28px rgba(13,138,114,.3)">💬 Apply to Become an Agent →</a>
+          <a href="/referral.html" style="display:inline-flex;align-items:center;gap:9px;background:linear-gradient(135deg,var(--teal),var(--teal-mid),var(--teal-bright));color:#fff;font-weight:800;font-size:.92rem;padding:15px 30px;border-radius:12px;text-decoration:none;transition:.3s;box-shadow:0 6px 28px rgba(13,138,114,.3)">💬 Apply to Become an Agent →</a>
         </div>
         <div style="display:flex;flex-direction:column;gap:14px">
           <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-bright);font-weight:700;margin-bottom:4px">💰 Agent Earning Potential</div>
@@ -1249,6 +1305,8 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 24p
       <a href="#referral">Referral Program</a>
       <a href="#testimonials">Reviews</a>
       <a href="#faq">FAQ</a>
+      <!-- DELIVERABLE 3 — PLACEMENT 3: Footer referral link -->
+      <a href="/referral.html" style="color:var(--gold-bright);font-weight:700;margin-top:6px">💰 Referral Program</a>
     </div>
     <div class="f-col">
       <h4>Shipping Times</h4>
@@ -1390,7 +1448,7 @@ document.addEventListener('mouseleave', function(e){
       <select id="ckState"><option value="">Select state...</option><option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option><option>Anambra</option><option>Bauchi</option><option>Bayelsa</option><option>Benue</option><option>Borno</option><option>Cross River</option><option>Delta</option><option>Ebonyi</option><option>Edo</option><option>Ekiti</option><option>Enugu</option><option>FCT – Abuja</option><option>Gombe</option><option>Imo</option><option>Jigawa</option><option>Kaduna</option><option>Kano</option><option>Katsina</option><option>Kebbi</option><option>Kogi</option><option>Kwara</option><option>Lagos</option><option>Nasarawa</option><option>Niger</option><option>Ogun</option><option>Ondo</option><option>Osun</option><option>Oyo</option><option>Plateau</option><option>Rivers</option><option>Sokoto</option><option>Taraba</option><option>Yobe</option><option>Zamfara</option></select>
     </div>
     <div class="ck-field"><label>Delivery Address</label><input type="text" id="ckAddr" placeholder="Street address, estate, city"></div>
-    <div class="ck-field"><label>Referral Code (optional)</label><input type="text" id="ckRef" placeholder="Referred-by-Name"></div>
+    <div class="ck-field"><label>Referral Code (optional)</label><input type="text" id="ckRef" placeholder="e.g. BLES4821"></div>
     <div class="ship-caveat">
       <p><strong>⚠️ Shipping Notice:</strong> The amount above is product cost only. When goods arrive in Nigeria, you'll receive the shipping company's weight-based invoice. <strong>Port Harcourt: Free · South-South/SE: ₦5,000 · Lagos/Abuja: ₦7,500 · Other States: ₦9,000.</strong></p>
     </div>
@@ -1419,14 +1477,11 @@ document.addEventListener('mouseleave', function(e){
       <button class="pdm-back" onclick="closePDM()">← Back to Catalog</button>
       <button class="pdm-close" onclick="closePDM()">✕</button>
     </div>
-    <!-- Hero image -->
     <div class="pdm-hero" id="pdmHero">
       <img class="pdm-hero-img" id="pdmHeroImg" src="" alt="" onerror="this.style.display='none'">
       <div class="pdm-hero-emoji" id="pdmHeroEmoji"></div>
     </div>
-    <!-- Thumbnails -->
     <div class="pdm-thumbs" id="pdmThumbs"></div>
-    <!-- Body -->
     <div class="pdm-body">
       <div class="pdm-cat" id="pdmCat"></div>
       <div class="pdm-name" id="pdmName"></div>
@@ -1435,22 +1490,17 @@ document.addEventListener('mouseleave', function(e){
         <span class="pdm-stars">★★★★★</span>
         <span class="pdm-rating-n">(4.9) Verified Reviews</span>
       </div>
-      <!-- Price block -->
       <div class="pdm-price-block">
         <span class="pdm-cost-label">✅ Factory Cost Price — Zero Markup</span>
         <div class="pdm-price" id="pdmPrice">₦0</div>
         <div class="pdm-ship-note">🚢 + Shipping paid on arrival (weight-based)</div>
       </div>
-      <!-- Variants -->
       <div class="pdm-variants" id="pdmVariants"></div>
-      <!-- Add to cart -->
       <button class="pdm-add-btn" id="pdmAddBtn" onclick="pdmAddToCart()">🛒 Add to Cart</button>
-      <!-- Share -->
       <div class="pdm-share">
         <button class="pdm-share-btn pdm-copy-btn" onclick="pdmCopyLink()">📋 Copy Link</button>
         <button class="pdm-share-btn pdm-wa-share" onclick="pdmShareWA()">💬 Share on WhatsApp</button>
       </div>
-      <!-- Description -->
       <div class="pdm-desc-section" id="pdmDescSection" style="display:none">
         <div class="pdm-desc-title">Product Description</div>
         <div class="pdm-desc-text" id="pdmDesc"></div>
@@ -1458,6 +1508,61 @@ document.addEventListener('mouseleave', function(e){
     </div>
   </div>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DELIVERABLE 4 — REFERRAL CAPTURE SNIPPET
+     Paste this entire block BEFORE the MAIN SCRIPT tag.
+     It handles ?ref= URL param → sessionStorage → checkout injection.
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+// ── DELIVERABLE 4: REFERRAL CAPTURE ──────────────────────────────
+// Step 1: On page load, read ?ref= from URL and save to sessionStorage
+(function captureReferralCode() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref && ref.trim()) {
+      const cleaned = ref.trim().toUpperCase();
+      sessionStorage.setItem('ggsReferralCode', cleaned);
+      console.log('[GGS] Referral code captured:', cleaned);
+    }
+  } catch (e) {
+    console.warn('[GGS] Could not capture referral code:', e);
+  }
+})();
+
+// Step 2: Helper — read the referral code from sessionStorage at any time
+// Used by checkout to attach the code to the order automatically
+function getStoredReferralCode() {
+  try {
+    return sessionStorage.getItem('ggsReferralCode') || '';
+  } catch (e) {
+    return '';
+  }
+}
+
+// Step 3: Pre-fill the checkout referral field if a code is stored
+// Called when the checkout modal opens (wired into openCheckout below)
+function prefillReferralField() {
+  try {
+    const code = getStoredReferralCode();
+    const ckRefEl = document.getElementById('ckRef');
+    if (ckRefEl && code && !ckRefEl.value) {
+      ckRefEl.value = code;
+    }
+  } catch (e) {}
+}
+
+// Step 4: Clear referral code from sessionStorage after successful order
+// Called inside the Flutterwave callback on successful payment
+function clearReferralCode() {
+  try {
+    sessionStorage.removeItem('ggsReferralCode');
+    console.log('[GGS] Referral code cleared after order');
+  } catch (e) {}
+}
+// ── END REFERRAL CAPTURE ─────────────────────────────────────────
+</script>
 
 <!-- MAIN SCRIPT -->
 <script>
@@ -1513,38 +1618,18 @@ let isSearchMode   = false;
 // ── PRODUCT DETAIL STATE ──
 let _pdmProduct  = null;
 let _pdmCat      = null;
-let _pdmSelStorage = null;  // selected storage variant id
-let _pdmSelColor   = null;  // selected color string
+let _pdmSelStorage = null;
+let _pdmSelColor   = null;
 
 // ── UTILS ──
 const fmt = n => '₦' + Number(n).toLocaleString('en-NG');
 function escAttr(s){ return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// ═══════════════════════════════════════════
-// ── VARIANT SYSTEM HELPERS
-//    Two-tier: variantPrices (new) vs variants[] (legacy)
-// ═══════════════════════════════════════════
-
-/*
-  NEW schema (variantPrices in Firestore):
-  variantPrices: [
-    { label: "256GB", price: 895000 },
-    { label: "512GB", price: 1050000 },
-    { label: "1TB",   price: 1250000 }
-  ]
-  colors: ["Natural Titanium","Blue Titanium","Black Titanium","White Titanium"]
-  price: base price (= first variantPrices entry price, or standalone)
-
-  LEGACY schema:
-  variants: ["Black","White","Gold"]
-  price: single price
-*/
-
+// ── VARIANT SYSTEM HELPERS ──
 function hasNewVariants(p) {
   return Array.isArray(p.variantPrices) && p.variantPrices.length > 0;
 }
-
 function getBasePrice(p, storageLabel) {
   if (hasNewVariants(p)) {
     if (storageLabel) {
@@ -1555,7 +1640,6 @@ function getBasePrice(p, storageLabel) {
   }
   return p.price || 0;
 }
-
 function buildVariantLabel(storageLabel, colorLabel) {
   const parts = [];
   if (storageLabel) parts.push(storageLabel);
@@ -1563,13 +1647,10 @@ function buildVariantLabel(storageLabel, colorLabel) {
   return parts.length ? parts.join(' · ') : 'Standard';
 }
 
-// ── Build variant selectors for PRODUCT CARD ──
 function buildCardVariants(p) {
   const pid = escHtml(p.id);
   let html = '';
-
   if (hasNewVariants(p)) {
-    // Storage selector (price-bearing)
     html += `<div class="variant-group">
       <span class="variant-group-label">Storage / Model</span>
       <select class="var-select" id="vs-${pid}" onchange="onCardStorageChange('${escAttr(p.id)}',this)">`;
@@ -1577,7 +1658,6 @@ function buildCardVariants(p) {
       html += `<option value="${escHtml(vp.label)}" data-price="${vp.price}">${escHtml(vp.label)} — ${fmt(vp.price)}</option>`;
     });
     html += `</select></div>`;
-    // Color chips (free choice)
     if (Array.isArray(p.colors) && p.colors.length) {
       html += `<div class="variant-group">
         <span class="variant-group-label">Color</span>
@@ -1588,7 +1668,6 @@ function buildCardVariants(p) {
       html += `</div></div>`;
     }
   } else if (Array.isArray(p.variants) && p.variants.length) {
-    // Legacy flat variant list
     html += `<select class="var-select" id="v-${pid}">
       <option value="">Select option…</option>`;
     p.variants.forEach(v => {
@@ -1596,28 +1675,21 @@ function buildCardVariants(p) {
     });
     html += `</select>`;
   } else {
-    // No variants — hidden default
     html += `<input type="hidden" id="v-${pid}" value="Standard">`;
   }
-
   return html;
 }
 
-// Card storage change → update displayed price
 window.onCardStorageChange = function(id, sel) {
   const price = Number(sel.selectedOptions[0]?.dataset?.price || 0);
   const priceEl = document.querySelector(`[data-id="${CSS.escape(id)}"] .pc-price`);
   if (priceEl && price) priceEl.textContent = fmt(price);
 };
-
-// Card color chip click
 window.onCardColorClick = function(id, el) {
   const container = document.getElementById('cc-' + id);
   if (container) container.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
 };
-
-// Get selected variant label for CARD add-to-cart
 function getCardVariant(p) {
   if (hasNewVariants(p)) {
     const storageSel = document.getElementById('vs-' + p.id);
@@ -1629,8 +1701,6 @@ function getCardVariant(p) {
   const legacySel = document.getElementById('v-' + p.id);
   return legacySel ? legacySel.value : 'Standard';
 }
-
-// Get price for card add-to-cart
 function getCardPrice(p) {
   if (hasNewVariants(p)) {
     const storageSel = document.getElementById('vs-' + p.id);
@@ -1640,19 +1710,12 @@ function getCardPrice(p) {
   return p.price || 0;
 }
 
-// ═══════════════════════════════════════════
-// ── MULTI-IMAGE HELPERS
-// ═══════════════════════════════════════════
-
-// Returns normalized images array from product
-// Supports: img (string), images[] (array), or fallback to []
+// ── MULTI-IMAGE HELPERS ──
 function getProductImages(p) {
   if (Array.isArray(p.images) && p.images.length) return p.images;
   if (p.img) return [p.img];
   return [];
 }
-
-// Build thumbnail strip HTML for product card
 function buildCardThumbs(p, pid) {
   const imgs = getProductImages(p);
   if (imgs.length <= 1) return '';
@@ -1665,8 +1728,6 @@ function buildCardThumbs(p, pid) {
   html += `</div>`;
   return html;
 }
-
-// Switch main image on product card
 window.switchCardImg = function(id, idx, src) {
   const mainImg = document.querySelector(`[data-id="${CSS.escape(id)}"] .pc-main-img`);
   if (mainImg) mainImg.src = src;
@@ -1674,16 +1735,13 @@ window.switchCardImg = function(id, idx, src) {
   thumbs.forEach((t, i) => t.classList.toggle('active', i === idx));
 };
 
-// ═══════════════════════════════════════════
-// ── RENDER CATALOG
-// ═══════════════════════════════════════════
+// ── RENDER CATALOG ──
 window.renderCatalog = function() {
   const categoryMap = window.allProducts || {};
   const cats = Object.keys(categoryMap);
   if (!activeCat || (activeCat !== 'all' && activeCat !== '_search' && !categoryMap[activeCat])) {
     activeCat = cats.length ? cats[0] : 'all';
   }
-  // Build tabs
   const catBar = document.getElementById('catBar');
   if (!catBar) return;
   let tabsHTML = cats.map(cat => {
@@ -1694,7 +1752,6 @@ window.renderCatalog = function() {
   const allActive = !isSearchMode && activeCat === 'all';
   tabsHTML += `<button class="cat-tab${allActive ? ' active' : ''}" data-cat="all" onclick="switchTab('all')">✨ All Products</button>`;
   catBar.innerHTML = tabsHTML;
-  // Build panels
   const panelsContainer = document.getElementById('catalogPanels');
   if (!panelsContainer) return;
   let panelsHTML = '';
@@ -1708,8 +1765,6 @@ window.renderCatalog = function() {
   panelsHTML += `<div class="panel${allIsActive ? ' active' : ''}" id="panel-all"><div class="prod-grid">${allProds.length ? allProds.map(p => buildProductCard(p, p._cat)).join('') : '<div class="no-results"><span class="nr-icon">📭</span><p>No products yet. Check back soon!</p></div>'}</div></div>`;
   panelsHTML += `<div class="panel" id="panel-_search"><div class="prod-grid" id="searchGrid"></div></div>`;
   panelsContainer.innerHTML = panelsHTML;
-
-  // Handle hash-based product URL on page load
   checkHashProduct();
 };
 
@@ -1722,7 +1777,6 @@ function switchTab(cat) {
   if (target) target.classList.add('active');
   document.getElementById('searchBanner').classList.remove('show');
 }
-
 function activateSearchPanel(results, query) {
   isSearchMode = true;
   document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
@@ -1748,8 +1802,6 @@ function buildProductCard(p, cat) {
   const safeName = escAttr(p.name);
   const safeIcon = escAttr(p.icon || '📦');
   const basePrice = getBasePrice(p);
-
-  // Images
   const imgs = getProductImages(p);
   const firstImg = imgs[0] || '';
   const imgHtml = firstImg
@@ -1757,13 +1809,8 @@ function buildProductCard(p, cat) {
     : '';
   const emojiStyle = firstImg ? 'display:none' : '';
   const imgCount = imgs.length > 1 ? `<div class="pc-img-count">📷 ${imgs.length}</div>` : '';
-
-  // Badge
   const badgeHtml = p.badge ? `<div class="pc-badge b-${p.badge}">${escHtml(p.badgeText || '')}</div>` : '';
-
-  // Thumbnails strip (only shown if >1 image)
   const thumbsHtml = buildCardThumbs(p, pid);
-
   return `
     <div class="prod-card" data-id="${escHtml(p.id)}" data-cat="${escHtml(cat)}">
       ${badgeHtml}
@@ -1791,9 +1838,7 @@ function buildProductCard(p, cat) {
     </div>`;
 }
 
-// ═══════════════════════════════════════════
-// ── SEARCH
-// ═══════════════════════════════════════════
+// ── SEARCH ──
 function getAllProdsFlat() {
   const cm = window.allProducts || {};
   return Object.keys(cm).flatMap(cat => (cm[cat] || []).map(p => ({ ...p, _cat: cat })));
@@ -1886,10 +1931,7 @@ function clearSearch() {
   window.renderCatalog();
 }
 
-// ═══════════════════════════════════════════
-// ── PRODUCT DETAIL MODAL (PDM)
-// ═══════════════════════════════════════════
-
+// ── PRODUCT DETAIL MODAL (PDM) ──
 window.openPDM = function(id, cat) {
   const allFlat = getAllProdsFlat();
   const p = allFlat.find(x => x.id === id) || (window.allProducts[cat] || []).find(x => x.id === id);
@@ -1898,11 +1940,8 @@ window.openPDM = function(id, cat) {
   _pdmCat      = cat || p._cat || p.category || 'general';
   _pdmSelStorage = null;
   _pdmSelColor   = null;
-
   const meta = getCatMeta(_pdmCat);
   const imgs = getProductImages(p);
-
-  // Hero image
   const heroImg = document.getElementById('pdmHeroImg');
   const heroEmoji = document.getElementById('pdmHeroEmoji');
   if (imgs.length) {
@@ -1915,7 +1954,6 @@ window.openPDM = function(id, cat) {
     heroEmoji.style.display = 'flex';
     heroEmoji.textContent = p.icon || '📦';
   }
-    // Thumbnails
   const thumbsContainer = document.getElementById('pdmThumbs');
   if (imgs.length > 1) {
     thumbsContainer.innerHTML = imgs.map((src, i) => `
@@ -1927,21 +1965,13 @@ window.openPDM = function(id, cat) {
     thumbsContainer.innerHTML = '';
     thumbsContainer.style.display = 'none';
   }
-
-  // Meta
   document.getElementById('pdmCat').textContent = `${meta.icon} ${meta.label}`;
   document.getElementById('pdmName').textContent = p.name || '';
   document.getElementById('pdmSpec').textContent = p.spec || '';
-
-  // Price
   const basePrice = getBasePrice(p);
   document.getElementById('pdmPrice').textContent = fmt(basePrice);
-
-  // Variants
   const varContainer = document.getElementById('pdmVariants');
   varContainer.innerHTML = buildPDMVariants(p);
-
-  // Description
   const descSection = document.getElementById('pdmDescSection');
   const descEl = document.getElementById('pdmDesc');
   if (p.description && p.description.trim()) {
@@ -1950,43 +1980,29 @@ window.openPDM = function(id, cat) {
   } else {
     descSection.style.display = 'none';
   }
-
-  // Reset add btn
   const addBtn = document.getElementById('pdmAddBtn');
   addBtn.classList.remove('added');
   addBtn.textContent = '🛒 Add to Cart';
-
-  // Open overlay
   document.getElementById('pdmOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
-
-  // Update URL hash (SEO-friendly deep link)
   history.pushState(null, '', '#product/' + id);
-
-  // Inject SEO meta tags
   injectPDMMeta(p);
 };
-
 window.closePDM = function() {
   document.getElementById('pdmOverlay').classList.remove('open');
   document.body.style.overflow = '';
   _pdmProduct = null;
-  // Restore URL
   history.pushState(null, '', location.pathname);
-  // Restore original meta
   restoreOrigMeta();
 };
-
 window.pdmSwitchImg = function(idx, src) {
   const heroImg = document.getElementById('pdmHeroImg');
   if (heroImg) { heroImg.src = src; heroImg.style.display = 'block'; }
   document.querySelectorAll('.pdm-thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
 };
-
 function buildPDMVariants(p) {
   let html = '';
   if (hasNewVariants(p)) {
-    // Storage options with prices
     html += `<div style="margin-bottom:14px">
       <span class="pdm-var-label">Storage / Model — <span style="color:var(--gold-bright);font-weight:700">Price changes with selection</span></span>
       <select class="pdm-var-select" id="pdm-storage-sel" onchange="pdmOnStorageChange(this)">`;
@@ -1994,7 +2010,6 @@ function buildPDMVariants(p) {
       html += `<option value="${escHtml(vp.label)}" data-price="${vp.price}"${i===0?' selected':''}>${escHtml(vp.label)} — ${fmt(vp.price)}</option>`;
     });
     html += `</select></div>`;
-    // Color chips
     if (Array.isArray(p.colors) && p.colors.length) {
       html += `<div style="margin-bottom:14px">
         <span class="pdm-var-label">Color</span>
@@ -2004,11 +2019,9 @@ function buildPDMVariants(p) {
       });
       html += `</div></div>`;
     }
-    // Set initial storage selection state
     _pdmSelStorage = p.variantPrices[0]?.label || null;
     _pdmSelColor   = (Array.isArray(p.colors) && p.colors.length) ? p.colors[0] : null;
   } else if (Array.isArray(p.variants) && p.variants.length) {
-    // Legacy
     html += `<div style="margin-bottom:14px">
       <span class="pdm-var-label">Select Option</span>
       <select class="pdm-var-select" id="pdm-legacy-sel">
@@ -2020,26 +2033,21 @@ function buildPDMVariants(p) {
   }
   return html;
 }
-
 window.pdmOnStorageChange = function(sel) {
   const price = Number(sel.selectedOptions[0]?.dataset?.price || 0);
   _pdmSelStorage = sel.value;
   if (price) document.getElementById('pdmPrice').textContent = fmt(price);
 };
-
 window.pdmOnColorClick = function(el) {
   document.querySelectorAll('#pdm-color-chips .pdm-color-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   _pdmSelColor = el.dataset.color || '';
 };
-
-// Add to cart from PDM
 window.pdmAddToCart = function() {
   if (!_pdmProduct) return;
   const p = _pdmProduct;
   let variant = 'Standard';
   let price = getBasePrice(p);
-
   if (hasNewVariants(p)) {
     const storage = _pdmSelStorage || p.variantPrices[0]?.label || '';
     const color   = _pdmSelColor || '';
@@ -2053,12 +2061,10 @@ window.pdmAddToCart = function() {
     variant = legSel ? legSel.value : 'Standard';
     price   = p.price || 0;
   }
-
   const existing = window.cart.find(i => i.id === p.id && i.variant === variant);
   if (existing) { existing.qty++; showToast('Quantity updated ✓'); }
   else { window.cart.push({ id: p.id, name: p.name, icon: p.icon || '📦', price, variant, qty: 1 }); showToast('✅ Added to cart!'); }
   renderCart(); updateDot();
-
   const addBtn = document.getElementById('pdmAddBtn');
   addBtn.classList.add('added');
   addBtn.textContent = '✓ Added to Cart!';
@@ -2067,8 +2073,6 @@ window.pdmAddToCart = function() {
     addBtn.textContent = '🛒 Add to Cart';
   }, 2400);
 };
-
-// PDM share
 window.pdmCopyLink = function() {
   if (!_pdmProduct) return;
   const url = location.origin + location.pathname + '#product/' + _pdmProduct.id;
@@ -2082,12 +2086,10 @@ window.pdmShareWA = function() {
   window.open('https://wa.me/?text=' + msg, '_blank');
 };
 
-// ── SEO META INJECTION ──
 function injectPDMMeta(p) {
   const name  = p.name || '';
   const seo   = p.seoMeta || (p.spec ? `Buy authentic ${name} in Nigeria at factory cost price. ${p.spec}. Secure Flutterwave checkout.` : `Buy authentic ${name} at factory cost price. GGS Global Consult — Nigeria's trusted import store.`);
   const title = `${name} — Factory Cost Price | GGS Global Consult`;
-
   const d = document.getElementById('meta-description');
   const ot = document.getElementById('og-title');
   const od = document.getElementById('og-description');
@@ -2105,8 +2107,6 @@ function restoreOrigMeta() {
   if (od) od.setAttribute('content', _origMeta.ogDesc);
   document.title = _origMeta.title;
 }
-
-// ── HASH-BASED DEEP LINK ──
 function checkHashProduct() {
   const hash = location.hash;
   if (!hash.startsWith('#product/')) return;
@@ -2114,11 +2114,8 @@ function checkHashProduct() {
   if (!id) return;
   const allFlat = getAllProdsFlat();
   const p = allFlat.find(x => x.id === id);
-  if (p) {
-    setTimeout(() => openPDM(id, p._cat || p.category), 400);
-  }
+  if (p) setTimeout(() => openPDM(id, p._cat || p.category), 400);
 }
-// Also listen for hash changes
 window.addEventListener('hashchange', () => {
   if (!location.hash.startsWith('#product/')) return;
   const id = location.hash.replace('#product/', '').trim();
@@ -2126,29 +2123,19 @@ window.addEventListener('hashchange', () => {
   const p = allFlat.find(x => x.id === id);
   if (p) openPDM(id, p._cat || p.category);
 });
-
-// Close PDM on overlay click (outside box)
 document.getElementById('pdmOverlay').addEventListener('click', function(e) {
   if (e.target === this) closePDM();
 });
 
-// ═══════════════════════════════════════════
-// ── CART
-// ═══════════════════════════════════════════
-
-// addItem — called from card button
-// price=0 means we calculate it here from current selectors
+// ── CART ──
 window.addItem = function(id, name, icon, priceOverride, cat) {
   const allFlat = getAllProdsFlat();
   const p = allFlat.find(x => x.id === id);
   if (!p) return;
-
   const variant = getCardVariant(p);
   const price   = getCardPrice(p);
-
   if (!variant) {
     showToast('⚠️ Please select an option first');
-    // Highlight selector
     const sel = document.getElementById('vs-' + id) || document.getElementById('v-' + id);
     if (sel && sel.tagName === 'SELECT') {
       sel.style.borderColor = 'rgba(18,184,150,.7)';
@@ -2157,7 +2144,6 @@ window.addItem = function(id, name, icon, priceOverride, cat) {
     }
     return;
   }
-
   const ex = window.cart.find(i => i.id === id && i.variant === variant);
   if (ex) { ex.qty++; showToast('Quantity updated ✓'); }
   else { window.cart.push({ id, name: p.name || name, icon: p.icon || icon || '📦', price, variant, qty: 1 }); showToast('✅ Added to cart!'); }
@@ -2218,11 +2204,11 @@ function openCart() {
   document.body.style.overflow = 'hidden';
 }
 
-// ═══════════════════════════════════════════
-// ── CHECKOUT
-// ═══════════════════════════════════════════
+// ── CHECKOUT ──
 let chosenShip = 'Express Air (3–7 days)';
 function pickShip(el) { document.querySelectorAll('.sopt').forEach(o => o.classList.remove('on')); el.classList.add('on'); chosenShip = el.dataset.ship; }
+
+// ── DELIVERABLE 4: openCheckout — prefill referral code automatically ──
 function openCheckout() {
   if (!window.cart.length) return;
   if (document.getElementById('checkoutCta').disabled) return;
@@ -2233,7 +2219,10 @@ function openCheckout() {
   document.getElementById('obTotal').textContent = fmt(total);
   document.getElementById('checkoutModal').classList.add('open');
   document.body.style.overflow = 'hidden';
+  // DELIVERABLE 4 — Step 3: Auto-prefill the referral code field from sessionStorage
+  prefillReferralField();
 }
+
 function closeCheckout() { document.getElementById('checkoutModal').classList.remove('open'); document.body.style.overflow = ''; }
 
 // FLUTTERWAVE
@@ -2244,7 +2233,9 @@ function doPayment() {
   const phone = document.getElementById('ckPhone').value.trim();
   const state = document.getElementById('ckState').value;
   const addr  = document.getElementById('ckAddr').value.trim();
-  const ref   = document.getElementById('ckRef').value.trim();
+  // DELIVERABLE 4 — Step 3: Read referral code — prefer the input field (typed/prefilled),
+  // fall back to sessionStorage if the field is somehow empty
+  const ref = document.getElementById('ckRef').value.trim() || getStoredReferralCode();
   if (!first || !last) { alert('Please enter your full name.'); return; }
   if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
   if (!phone) { alert('Please enter your WhatsApp number.'); return; }
@@ -2296,6 +2287,8 @@ function doPayment() {
         if (typeof window.saveOrderToFirebase === 'function') {
           window.saveOrderToFirebase(r, first, last, email, phone, state, addr, ref, chosenShip, total, txRef);
         }
+        // DELIVERABLE 4 — Step 4: Clear referral code from sessionStorage after successful order
+        clearReferralCode();
         closeCheckout();
         document.getElementById('txnNum').textContent = r.transaction_id || txRef;
         document.getElementById('waLink').href = 'https://wa.me/' + window.GGS_WA + '?text=' + encodeURIComponent(waMsg);
