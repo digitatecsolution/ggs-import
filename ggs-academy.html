@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="GGS Global Academy — International Automotive Supply Chain & Sourcing Course. Technical training in maritime logistics, auction navigation, and customs clearance frameworks." />
+  <title>GGS Global Academy | International Automotive Supply Chain & Sourcing Course</title>
+
+  <style>
+    /* ─── RESET & BASE ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: #ffffff;
+      color: #0F172A;
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; display: block; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ─── DESIGN TOKENS ────────────────────────────────────────── */
+    :root {
+      --navy:      #0F172A;
+      --navy-mid:  #1E293B;
+      --navy-soft: #334155;
+      --slate:     #64748B;
+      --slate-lt:  #94A3B8;
+      --green:     #10B981;
+      --green-dk:  #059669;
+      --green-lt:  #D1FAE5;
+      --white:     #FFFFFF;
+      --off-white: #F8FAFC;
+      --border:    #E2E8F0;
+      --border-dk: rgba(255,255,255,0.08);
+
+      --radius-sm: 6px;
+      --radius:    12px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+
+      --shadow-sm: 0 1px 3px rgba(15,23,42,0.08), 0 1px 2px rgba(15,23,42,0.04);
+      --shadow-md: 0 4px 16px rgba(15,23,42,0.10), 0 2px 6px rgba(15,23,42,0.06);
+      --shadow-lg: 0 12px 40px rgba(15,23,42,0.14), 0 4px 12px rgba(15,23,42,0.06);
+      --shadow-xl: 0 24px 64px rgba(15,23,42,0.18);
+
+      --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+
+      --max-w: 1100px;
+    }
+
+    /* ─── TYPOGRAPHY ───────────────────────────────────────────── */
+    .label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .display {
+      font-size: clamp(2.1rem, 5.5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+    }
+    .headline {
+      font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+      font-weight: 700;
+      line-height: 1.22;
+      letter-spacing: -0.02em;
+    }
+    .subhead {
+      font-size: clamp(1rem, 2vw, 1.18rem);
+      font-weight: 400;
+      line-height: 1.72;
+      color: var(--slate);
+    }
+    .body-sm {
+      font-size: 0.9rem;
+      line-height: 1.68;
+      color: var(--slate);
+    }
+
+    /* ─── LAYOUT HELPERS ───────────────────────────────────────── */
+    .container {
+      max-width: var(--max-w);
+      margin-inline: auto;
+      padding-inline: clamp(20px, 5vw, 48px);
+    }
+    .section {
+      padding-block: clamp(64px, 9vw, 104px);
+    }
+    .section--dark {
+      background: var(--navy);
+      color: var(--white);
+    }
+    .section--off {
+      background: var(--off-white);
+    }
+
+    /* ─── NAV ──────────────────────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav__inner {
+      max-width: var(--max-w);
+      margin-inline: auto;
+      padding-inline: clamp(20px, 5vw, 48px);
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .nav__brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+    .nav__mark {
+      width: 36px;
+      height: 36px;
+      background: var(--navy);
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .nav__mark svg {
+      width: 20px;
+      height: 20px;
+    }
+    .nav__wordmark {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+    .nav__name {
+      font-size: 0.92rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--navy);
+    }
+    .nav__sub {
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--slate);
+      margin-top: 2px;
+    }
+    .nav__pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--green-lt);
+      color: var(--green-dk);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 6px 13px;
+      border-radius: 100px;
+    }
+    .nav__dot {
+      width: 7px;
+      height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 2.2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.8); }
+    }
+    @media (max-width: 520px) {
+      .nav__pill { display: none; }
+    }
+
+    /* ─── HERO ─────────────────────────────────────────────────── */
+    .hero {
+      background: var(--navy);
+      padding-block: clamp(64px, 10vw, 112px) clamp(0px, 0px, 0px);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 80% -10%, rgba(16,185,129,0.15) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 80% at -10% 80%, rgba(16,185,129,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero__grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(40px, 6vw, 64px);
+      align-items: center;
+    }
+    @media (min-width: 820px) {
+      .hero__grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .hero__kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(16,185,129,0.3);
+      border-radius: 100px;
+      padding: 5px 14px 5px 8px;
+      margin-bottom: 22px;
+      color: var(--green);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .hero__kicker-icon {
+      width: 22px;
+      height: 22px;
+      background: rgba(16,185,129,0.15);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .hero__heading {
+      font-size: clamp(2rem, 5.2vw, 3.3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.035em;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+    .hero__heading em {
+      font-style: normal;
+      color: var(--green);
+    }
+    .hero__sub {
+      font-size: clamp(1rem, 1.8vw, 1.12rem);
+      line-height: 1.72;
+      color: var(--slate-lt);
+      max-width: 520px;
+      margin-bottom: 36px;
+    }
+    .hero__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 36px;
+    }
+    .hero__meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: var(--slate-lt);
+      font-weight: 500;
+    }
+    .hero__meta-item svg {
+      flex-shrink: 0;
+      color: var(--green);
+    }
+    .hero__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--green);
+      color: #fff;
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 15px 28px;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      text-decoration: none;
+    }
+    .hero__cta:hover {
+      background: var(--green-dk);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(16,185,129,0.35);
+    }
+    .hero__cta svg { flex-shrink: 0; }
+
+    /* ── DASHBOARD FRAME ── */
+    .hero__visual {
+      position: relative;
+    }
+    @media (max-width: 819px) {
+      .hero__visual {
+        margin-inline: -clamp(20px, 5vw, 48px);
+        margin-bottom: -clamp(64px, 10vw, 112px);
+      }
+    }
+    .dashboard {
+      background: var(--navy-mid);
+      border: 1px solid var(--border-dk);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      overflow: hidden;
+      box-shadow: var(--shadow-xl), 0 0 0 1px rgba(255,255,255,0.04);
+      transform-origin: bottom center;
+    }
+    @media (min-width: 820px) {
+      .dashboard {
+        border-radius: var(--radius-xl);
+        margin-top: -8px;
+      }
+    }
+    .dash-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 16px;
+      background: var(--navy);
+      border-bottom: 1px solid var(--border-dk);
+    }
+    .dash-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dash-dot:nth-child(1) { background: #EF4444; }
+    .dash-dot:nth-child(2) { background: #F59E0B; }
+    .dash-dot:nth-child(3) { background: #10B981; }
+    .dash-url {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+      height: 22px;
+      margin-inline: 8px;
+      display: flex;
+      align-items: center;
+      padding-inline: 10px;
+    }
+    .dash-url span {
+      font-size: 0.64rem;
+      color: var(--slate-lt);
+      letter-spacing: 0.02em;
+      opacity: 0.7;
+    }
+    .dash-body {
+      padding: 20px;
+      display: grid;
+      gap: 12px;
+    }
+    .dash-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .dash-stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-dk);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+    .dash-stat__label {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--slate-lt);
+      opacity: 0.7;
+      margin-bottom: 6px;
+    }
+    .dash-stat__val {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+    .dash-stat__badge {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 100px;
+      background: rgba(16,185,129,0.15);
+      color: var(--green);
+    }
+    .dash-track {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-dk);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+    .dash-track__head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .dash-track__title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.01em;
+    }
+    .dash-track__tag {
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 100px;
+      background: rgba(16,185,129,0.18);
+      color: var(--green);
+      letter-spacing: 0.06em;
+    }
+    .dash-steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      align-items: center;
+    }
+    .dash-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .dash-step__circle {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 0.58rem;
+      font-weight: 800;
+      border: 2px solid;
+      transition: all var(--transition);
+    }
+    .dash-step__circle--done {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+    .dash-step__circle--active {
+      background: transparent;
+      border-color: var(--green);
+      color: var(--green);
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+    }
+    .dash-step__circle--pending {
+      background: transparent;
+      border-color: rgba(255,255,255,0.15);
+      color: var(--slate-lt);
+      opacity: 0.5;
+    }
+    .dash-step__label {
+      font-size: 0.52rem;
+      color: var(--slate-lt);
+      opacity: 0.6;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .dash-connector {
+      height: 2px;
+      background: linear-gradient(90deg, var(--green) 0%, rgba(16,185,129,0.25) 100%);
+      border-radius: 1px;
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .dash-connector--partial {
+      background: linear-gradient(90deg, var(--green) 60%, rgba(255,255,255,0.08) 60%);
+    }
+    .dash-modules {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-dk);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+    .dash-modules__head {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .dash-module-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .dash-module-row:last-child { border-bottom: none; }
+    .dash-module-row__bar-wrap {
+      flex: 1;
+      background: rgba(255,255,255,0.06);
+      border-radius: 100px;
+      height: 5px;
+      overflow: hidden;
+    }
+    .dash-module-row__bar {
+      height: 100%;
+      border-radius: 100px;
+      background: var(--green);
+    }
+    .dash-module-row__name {
+      font-size: 0.62rem;
+      color: var(--slate-lt);
+      width: 80px;
+      flex-shrink: 0;
+    }
+    .dash-module-row__pct {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--green);
+      width: 26px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ─── INTRO SECTION ────────────────────────────────────────── */
+    .intro {
+      position: relative;
+    }
+    .intro__inner {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    @media (min-width: 780px) {
+      .intro__inner {
+        grid-template-columns: auto 1fr;
+      }
+    }
+    .intro__stat-stack {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+    }
+    @media (min-width: 780px) {
+      .intro__stat-stack {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 16px;
+        min-width: 210px;
+        max-width: 240px;
+      }
+    }
+    .stat-card {
+      background: var(--navy);
+      color: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      min-width: 150px;
+      flex: 1;
+    }
+    .stat-card__num {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 6px;
+      color: var(--green);
+    }
+    .stat-card__label {
+      font-size: 0.75rem;
+      color: var(--slate-lt);
+      line-height: 1.4;
+    }
+    .intro__copy .kicker {
+      display: inline-block;
+      color: var(--green-dk);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .intro__copy h2 {
+      font-size: clamp(1.5rem, 3.2vw, 2rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.22;
+      color: var(--navy);
+      margin-bottom: 18px;
+    }
+    .intro__copy p {
+      font-size: 1rem;
+      line-height: 1.78;
+      color: var(--slate);
+    }
+
+    /* ─── CURRICULUM ────────────────────────────────────────────── */
+    .curriculum__header {
+      text-align: center;
+      max-width: 600px;
+      margin-inline: auto;
+      margin-bottom: clamp(40px, 6vw, 64px);
+    }
+    .curriculum__header .kicker {
+      display: inline-block;
+      color: var(--white);
+      opacity: 0.5;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .curriculum__header h2 {
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .curriculum__header p {
+      font-size: 1rem;
+      line-height: 1.68;
+      color: var(--slate-lt);
+    }
+    .modules-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 640px) {
+      .modules-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .module-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg);
+      padding: 28px 26px;
+      position: relative;
+      overflow: hidden;
+      transition: background var(--transition), border-color var(--transition), transform var(--transition);
+    }
+    .module-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--green) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .module-card:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(16,185,129,0.25);
+      transform: translateY(-3px);
+    }
+    .module-card:hover::before {
+      opacity: 1;
+    }
+    .module-card__index {
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: var(--green);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .module-card__icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(16,185,129,0.12);
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+    }
+    .module-card__icon svg {
+      width: 22px;
+      height: 22px;
+      color: var(--green);
+    }
+    .module-card__title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.015em;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .module-card__desc {
+      font-size: 0.88rem;
+      line-height: 1.68;
+      color: var(--slate-lt);
+    }
+    .module-card__tag {
+      margin-top: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--green);
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── DELIVERY FORMAT ───────────────────────────────────────── */
+    .format__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 640px) {
+      .format__grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    .format-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+    .format-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .format-card__icon {
+      width: 52px;
+      height: 52px;
+      background: var(--green-lt);
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 16px;
+    }
+    .format-card__icon svg {
+      width: 26px;
+      height: 26px;
+      color: var(--green-dk);
+    }
+    .format-card__title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 7px;
+      letter-spacing: -0.01em;
+    }
+    .format-card__desc {
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--slate);
+    }
+    .section__header {
+      text-align: center;
+      margin-bottom: clamp(36px, 5vw, 56px);
+    }
+    .section__header .kicker {
+      display: inline-block;
+      color: var(--green-dk);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section__header h2 {
+      font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--navy);
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+    .section__header p {
+      font-size: 1rem;
+      line-height: 1.68;
+      color: var(--slate);
+      max-width: 540px;
+      margin-inline: auto;
+    }
+
+    /* ─── TRUST STRIP ───────────────────────────────────────────── */
+    .trust {
+      background: var(--off-white);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding-block: 28px;
+    }
+    .trust__inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px 40px;
+      align-items: center;
+      justify-content: center;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--slate);
+    }
+    .trust-item svg {
+      color: var(--green);
+      flex-shrink: 0;
+    }
+
+    /* ─── CTA SECTION ───────────────────────────────────────────── */
+    .cta-section {
+      background: var(--navy);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 70% at 50% 110%, rgba(16,185,129,0.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .cta-inner {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 640px;
+      margin-inline: auto;
+    }
+    .cta-inner .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(16,185,129,0.3);
+      border-radius: 100px;
+      padding: 5px 16px;
+      margin-bottom: 24px;
+      color: var(--green);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .cta-inner h2 {
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      color: var(--white);
+      line-height: 1.14;
+      margin-bottom: 16px;
+    }
+    .cta-inner p {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--slate-lt);
+      margin-bottom: 36px;
+    }
+    .cta-btn-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--green);
+      color: #fff;
+      font-size: 0.88rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 18px 36px;
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      border: none;
+      box-shadow: 0 4px 20px rgba(16,185,129,0.25);
+    }
+    .cta-btn:hover {
+      background: var(--green-dk);
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 10px 40px rgba(16,185,129,0.4);
+    }
+    .cta-btn:active {
+      transform: translateY(0) scale(0.99);
+    }
+    .cta-btn svg { flex-shrink: 0; }
+    .cta-secure {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.75rem;
+      color: var(--slate-lt);
+      opacity: 0.75;
+    }
+    .cta-secure svg { color: var(--green); flex-shrink: 0; }
+
+    /* ─── FOOTER ────────────────────────────────────────────────── */
+    .footer {
+      background: var(--navy-mid);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-block: 40px 28px;
+    }
+    .footer__inner {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .footer__top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .footer__brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .footer__mark {
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+    }
+    .footer__mark svg { width: 18px; height: 18px; }
+    .footer__name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .footer__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 4px;
+      align-items: center;
+    }
+    .footer__link {
+      font-size: 0.78rem;
+      color: var(--slate-lt);
+      transition: color var(--transition);
+      padding: 4px 8px;
+    }
+    .footer__link:hover { color: var(--white); }
+    .footer__sep {
+      color: rgba(255,255,255,0.15);
+      font-size: 0.78rem;
+    }
+    .footer__divider {
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+    }
+    .footer__disclaimer {
+      font-size: 0.73rem;
+      line-height: 1.7;
+      color: var(--slate-lt);
+      opacity: 0.65;
+      max-width: 780px;
+    }
+    .footer__bottom {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer__copy {
+      font-size: 0.72rem;
+      color: var(--slate-lt);
+      opacity: 0.5;
+    }
+    .footer__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--green);
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.2);
+      padding: 4px 10px;
+      border-radius: 100px;
+    }
+
+    /* ─── SCROLL ANIMATION ──────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      * { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       NAV
+  ════════════════════════════════════════════ -->
+  <header class="nav" role="banner">
+    <div class="nav__inner">
+      <a href="#" class="nav__brand" aria-label="GGS Global Academy home">
+        <div class="nav__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l4-4 4 4 4-4 4 4"/>
+            <path d="M3 15l4-4 4 4 4-4 4 4"/>
+          </svg>
+        </div>
+        <div class="nav__wordmark">
+          <span class="nav__name">GGS Global Academy</span>
+          <span class="nav__sub">Logistics Training Division</span>
+        </div>
+      </a>
+      <div class="nav__pill" aria-label="Enrollment now open">
+        <span class="nav__dot" aria-hidden="true"></span>
+        Enrollment Open
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════
+       HERO
+  ════════════════════════════════════════════ -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="container">
+      <div class="hero__grid">
+
+        <!-- Copy -->
+        <div>
+          <div class="hero__kicker" role="doc-subtitle">
+            <span class="hero__kicker-icon" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="#10B981"><circle cx="6" cy="6" r="4"/></svg>
+            </span>
+            Vocational Training Programme
+          </div>
+          <h1 class="hero__heading" id="hero-heading">
+            International <em>Automotive Supply Chain</em> &amp; Sourcing Course
+          </h1>
+          <p class="hero__sub">
+            A structured, technical training programme focused on international maritime logistics, auction navigation, and customs clearance frameworks — built for the serious practitioner.
+          </p>
+          <div class="hero__meta" aria-label="Course details">
+            <div class="hero__meta-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              Video-Based Modules
+            </div>
+            <div class="hero__meta-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              Self-Paced Access
+            </div>
+            <div class="hero__meta-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Practitioner-Level Content
+            </div>
+          </div>
+          <a href="https://selar.com/ggs_carimport" class="hero__cta" aria-label="Proceed to course enrollment portal">
+            Proceed to Enrollment Portal
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Dashboard Visual -->
+        <div class="hero__visual" aria-hidden="true" role="presentation">
+          <div class="dashboard">
+            <div class="dash-bar">
+              <span class="dash-dot"></span>
+              <span class="dash-dot"></span>
+              <span class="dash-dot"></span>
+              <div class="dash-url">
+                <span>academy.ggsglobal.com/portal</span>
+              </div>
+            </div>
+            <div class="dash-body">
+              <!-- Stats -->
+              <div class="dash-row">
+                <div class="dash-stat">
+                  <div class="dash-stat__label">Modules</div>
+                  <div class="dash-stat__val">4</div>
+                  <div class="dash-stat__badge">Active</div>
+                </div>
+                <div class="dash-stat">
+                  <div class="dash-stat__label">Duration</div>
+                  <div class="dash-stat__val">24h</div>
+                  <div class="dash-stat__badge">On-demand</div>
+                </div>
+                <div class="dash-stat">
+                  <div class="dash-stat__label">Format</div>
+                  <div class="dash-stat__val">HD</div>
+                  <div class="dash-stat__badge">Video</div>
+                </div>
+              </div>
+
+              <!-- Shipment Track -->
+              <div class="dash-track">
+                <div class="dash-track__head">
+                  <span class="dash-track__title">Freight Transit Tracker — Sample Module View</span>
+                  <span class="dash-track__tag">IN TRANSIT</span>
+                </div>
+                <div style="margin-bottom:10px;">
+                  <div class="dash-connector dash-connector--partial"></div>
+                  <div class="dash-steps">
+                    <div class="dash-step">
+                      <div class="dash-step__circle dash-step__circle--done">✓</div>
+                      <div class="dash-step__label">Auction Lot</div>
+                    </div>
+                    <div class="dash-step">
+                      <div class="dash-step__circle dash-step__circle--done">✓</div>
+                      <div class="dash-step__label">Port of Origin</div>
+                    </div>
+                    <div class="dash-step">
+                      <div class="dash-step__circle dash-step__circle--active">▶</div>
+                      <div class="dash-step__label">Ocean Transit</div>
+                    </div>
+                    <div class="dash-step">
+                      <div class="dash-step__circle dash-step__circle--pending">○</div>
+                      <div class="dash-step__label">Customs Clearance</div>
+                    </div>
+                    <div class="dash-step">
+                      <div class="dash-step__circle dash-step__circle--pending">○</div>
+                      <div class="dash-step__label">Final Delivery</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Module Progress -->
+              <div class="dash-modules">
+                <div class="dash-modules__head">Course Progress Overview</div>
+                <div class="dash-module-row">
+                  <div class="dash-module-row__name">Auction Access</div>
+                  <div class="dash-module-row__bar-wrap"><div class="dash-module-row__bar" style="width:100%"></div></div>
+                  <div class="dash-module-row__pct">100%</div>
+                </div>
+                <div class="dash-module-row">
+                  <div class="dash-module-row__name">Maritime Freight</div>
+                  <div class="dash-module-row__bar-wrap"><div class="dash-module-row__bar" style="width:72%"></div></div>
+                  <div class="dash-module-row__pct">72%</div>
+                </div>
+                <div class="dash-module-row">
+                  <div class="dash-module-row__name">Customs Valuation</div>
+                  <div class="dash-module-row__bar-wrap"><div class="dash-module-row__bar" style="width:40%"></div></div>
+                  <div class="dash-module-row__pct">40%</div>
+                </div>
+                <div class="dash-module-row">
+                  <div class="dash-module-row__name">Asset Inspection</div>
+                  <div class="dash-module-row__bar-wrap"><div class="dash-module-row__bar" style="width:0%"></div></div>
+                  <div class="dash-module-row__pct" style="color:var(--slate-lt);opacity:0.5">0%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       TRUST STRIP
+  ════════════════════════════════════════════ -->
+  <div class="trust" aria-label="Course features">
+    <div class="container">
+      <div class="trust__inner">
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Verified Technical Curriculum
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          HD Video Instruction
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Lifetime Course Access
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Completion Certificate
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Practitioner-Level Content
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       LOGISTICS INTRO
+  ════════════════════════════════════════════ -->
+  <section class="section intro" aria-labelledby="intro-heading">
+    <div class="container">
+      <div class="intro__inner">
+        <div class="intro__stat-stack" aria-hidden="true">
+          <div class="stat-card reveal">
+            <div class="stat-card__num">4</div>
+            <div class="stat-card__label">Technical<br>Core Modules</div>
+          </div>
+          <div class="stat-card reveal reveal-delay-1">
+            <div class="stat-card__num">24+</div>
+            <div class="stat-card__label">Hours of<br>Structured Content</div>
+          </div>
+          <div class="stat-card reveal reveal-delay-2">
+            <div class="stat-card__num">100%</div>
+            <div class="stat-card__label">Self-Paced<br>Online Delivery</div>
+          </div>
+        </div>
+        <div class="intro__copy reveal reveal-delay-1">
+          <span class="kicker">About This Programme</span>
+          <h2 id="intro-heading">Why Specialised Logistics Knowledge Matters</h2>
+          <p>
+            The international vehicle sourcing sector is one of the most structured, process-driven channels in global commerce. Navigating maritime freight, tracking international port movements, and understanding complex customs valuation metrics requires specific technical expertise.
+          </p>
+          <br>
+          <p>
+            This comprehensive video-based training programme is built strictly to break down these complex supply chain operations into clear, manageable educational modules — covering every stage from auction access through to final port clearance. Whether you are building institutional knowledge or entering the sector as a new practitioner, this course provides the procedural foundation you need.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CURRICULUM MODULES
+  ════════════════════════════════════════════ -->
+  <section class="section section--dark" aria-labelledby="curriculum-heading">
+    <div class="container">
+      <div class="curriculum__header reveal">
+        <span class="kicker">Core Curriculum</span>
+        <h2 id="curriculum-heading">Four Technical Training Modules</h2>
+        <p>Each module is structured around real-world supply chain procedures, with documented frameworks and step-by-step procedural walkthroughs.</p>
+      </div>
+
+      <div class="modules-grid" role="list">
+
+        <!-- Module 1 -->
+        <article class="module-card reveal" role="listitem">
+          <div class="module-card__index">Module 01</div>
+          <div class="module-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+              <path d="M14 17h7M17.5 14v7"/>
+            </svg>
+          </div>
+          <h3 class="module-card__title">Auction Access Framework</h3>
+          <p class="module-card__desc">
+            Learn verified procedures to safely navigate international automotive bidding platforms and evaluate vehicle history documentation metrics. Covers platform architecture, bid sequence workflows, and documentation verification protocols.
+          </p>
+          <div class="module-card__tag" aria-label="Module tag: Foundational">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Foundational
+          </div>
+        </article>
+
+        <!-- Module 2 -->
+        <article class="module-card reveal reveal-delay-1" role="listitem">
+          <div class="module-card__index">Module 02</div>
+          <div class="module-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="7.5 4.21 12 6.81 16.5 4.21"/><polyline points="7.5 19.79 7.5 14.6 3 12"/><polyline points="21 12 16.5 14.6 16.5 19.79"/>
+            </svg>
+          </div>
+          <h3 class="module-card__title">Maritime Freight &amp; Logistics</h3>
+          <p class="module-card__desc">
+            Understand container tracking systems, ocean transit management, and coordinating freight logistics across international ports. Covers Bill of Lading structures, port-to-port documentation, and transit timelines.
+          </p>
+          <div class="module-card__tag" aria-label="Module tag: Operational">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Operational
+          </div>
+        </article>
+
+        <!-- Module 3 -->
+        <article class="module-card reveal reveal-delay-2" role="listitem">
+          <div class="module-card__index">Module 03</div>
+          <div class="module-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </div>
+          <h3 class="module-card__title">Customs Valuation Navigation</h3>
+          <p class="module-card__desc">
+            A technical breakdown of domestic duty assessment frameworks, port documentation rules, and legal clearing procedures. Includes tariff schedule reading, valuation adjustment principles, and agent coordination workflows.
+          </p>
+          <div class="module-card__tag" aria-label="Module tag: Regulatory">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Regulatory
+          </div>
+        </article>
+
+        <!-- Module 4 -->
+        <article class="module-card reveal reveal-delay-3" role="listitem">
+          <div class="module-card__index">Module 04</div>
+          <div class="module-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+            </svg>
+          </div>
+          <h3 class="module-card__title">Asset Inspection Standards</h3>
+          <p class="module-card__desc">
+            Methodologies for utilising verified electronic history databases to accurately evaluate mechanical condition metrics prior to acquisition. Covers VIN decoding, inspection report interpretation, and condition grading standards.
+          </p>
+          <div class="module-card__tag" aria-label="Module tag: Technical">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Technical
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       DELIVERY FORMAT
+  ════════════════════════════════════════════ -->
+  <section class="section section--off" aria-labelledby="format-heading">
+    <div class="container">
+      <div class="section__header reveal">
+        <span class="kicker">How It Works</span>
+        <h2 id="format-heading">Structured for Independent Study</h2>
+        <p>Each component of this training programme is designed to be completed at your own pace, with a clear sequence that builds systematically from foundational to advanced procedures.</p>
+      </div>
+      <div class="format__grid">
+        <div class="format-card reveal">
+          <div class="format-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+          </div>
+          <div class="format-card__title">HD Video Lessons</div>
+          <p class="format-card__desc">Each module is delivered as structured video instruction with clear chapter breakdowns, screen-share walkthroughs, and procedural demonstrations.</p>
+        </div>
+        <div class="format-card reveal reveal-delay-1">
+          <div class="format-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+          </div>
+          <div class="format-card__title">Modular Sequence</div>
+          <p class="format-card__desc">Modules are arranged in a logical operational sequence — from sourcing and inspection through to freight management and port clearance procedures.</p>
+        </div>
+        <div class="format-card reveal reveal-delay-2">
+          <div class="format-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+            </svg>
+          </div>
+          <div class="format-card__title">Completion Certificate</div>
+          <p class="format-card__desc">Participants who complete all modules receive a GGS Global Academy vocational training certificate verifying completion of the supply chain programme.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       PRIMARY CTA
+  ════════════════════════════════════════════ -->
+  <section class="section cta-section" aria-labelledby="cta-heading">
+    <div class="container">
+      <div class="cta-inner">
+        <div class="kicker" role="doc-subtitle">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="#10B981" aria-hidden="true"><circle cx="6" cy="6" r="4"/></svg>
+          Enrolment Now Open
+        </div>
+        <h2 id="cta-heading">Begin Your Logistics Training Today</h2>
+        <p>
+          Gain structured technical knowledge across all four core areas of international automotive supply chain management — delivered on-demand, at your own pace.
+        </p>
+        <div class="cta-btn-wrap">
+          <a
+            href="https://selar.com/ggs_carimport"
+            class="cta-btn"
+            aria-label="Proceed to secure course enrollment portal"
+            rel="noopener noreferrer"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Proceed to Secure Course Enrollment Portal
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <div class="cta-secure">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Secure checkout &amp; instant access via Selar
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════════ -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <div class="footer__mark" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l4-4 4 4 4-4 4 4"/><path d="M3 15l4-4 4 4 4-4 4 4"/>
+              </svg>
+            </div>
+            <span class="footer__name">GGS Global Academy</span>
+          </div>
+          <nav class="footer__links" aria-label="Footer links">
+            <a href="#" class="footer__link">Privacy Policy</a>
+            <span class="footer__sep" aria-hidden="true">|</span>
+            <a href="#" class="footer__link">Terms of Service</a>
+            <span class="footer__sep" aria-hidden="true">|</span>
+            <a href="mailto:support@yourbrand.com" class="footer__link">Contact: support@yourbrand.com</a>
+          </nav>
+        </div>
+        <div class="footer__divider" role="separator"></div>
+        <p class="footer__disclaimer">
+          <strong>Disclaimer:</strong> GGS Global Academy is an independent educational training provider. This course is strictly designed for vocational training and professional skill development purposes. We do not provide financial advice, employment placement guarantees, or specific business income opportunities. All international logistics operations carry standard maritime supply chain factors. Course content reflects educational frameworks only and does not constitute professional legal, customs, or commercial advisory services.
+        </p>
+        <div class="footer__bottom">
+          <span class="footer__copy">&copy; 2025 GGS Global Academy. All rights reserved.</span>
+          <div class="footer__badge" aria-label="Educational programme verified">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Vocational Training Programme
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════
+       SCROLL REVEAL
+  ════════════════════════════════════════════ -->
+  <script>
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (!els.length) return;
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(function (el) { obs.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>
